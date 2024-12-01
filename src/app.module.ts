@@ -19,12 +19,12 @@ import { UserModule } from './user/user.module';
         const dbPassword = configService.get('DB_PASSWORD');
         const dbName = configService.get('DB_NAME') || 'estates';  // Default value if DB_NAME is not set
 
-        console.log('DB Connection Settings:');
-        console.log('DB_HOST:', dbHost);
-        console.log('DB_PORT:', dbPort);
-        console.log('DB_USERNAME:', dbUsername);
-        console.log('DB_PASSWORD:', dbPassword);  // Be careful about logging sensitive info like password
-        console.log('DB_NAME:', dbName);
+        // console.log('DB Connection Settings:');
+        // console.log('DB_HOST:', dbHost);
+        // console.log('DB_PORT:', dbPort);
+        // console.log('DB_USERNAME:', dbUsername);
+        // console.log('DB_PASSWORD:', dbPassword);  // Be careful about logging sensitive info like password
+        // console.log('DB_NAME:', dbName);
 
         // Return the database configuration
         return {

@@ -23,7 +23,8 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.USER, Role.ADMIN)
   async findOne(@Param('id') id: number) {
     return this.userService.findOne(id);
   }

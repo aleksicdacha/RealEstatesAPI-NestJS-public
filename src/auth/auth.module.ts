@@ -8,18 +8,13 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
-      }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET, // Access JWT secret directly from process.env
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }, // Access JWT expiration from process.env
     }),
     UserModule, // Ensure UsersModule is imported to access user logic
   ],

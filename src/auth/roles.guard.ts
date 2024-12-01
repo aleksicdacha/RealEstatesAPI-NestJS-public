@@ -12,6 +12,12 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    return roles.includes(user.role);
+    console.log('User:', user); // Log user to verify its structure
+
+    if (!user) {
+      return false; // If no user is attached (e.g., authentication failed)
+    }
+
+    return roles.some((role) => user.role?.includes(role)); // Check if user's role matches
   }
 }
