@@ -1,95 +1,65 @@
-// import { Injectable } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
-// import { UserService } from '../user/user.service';
-// import { JwtPayload } from './jwt-payload.interface'; // A simple interface to describe the JWT payload
-//
-// @Injectable()
-// export class AuthService {
-//   constructor(
-//     private readonly userService: UserService,
-//     private readonly jwtService: JwtService,
-//   ) {}
-//
-//   async login(username: string, password: string): Promise<string | null> {
-//     const user = await this.userService.validateUser(username, password);
-//
-//     console.log(user);
-//
-//     if (!user) {
-//       // If user is not found or password is incorrect, return null or throw an exception
-//       throw new Error('Invalid credentials');
-//     }
-//
-//     // If user is valid, create a payload for the JWT
-//     const payload: JwtPayload = {
-//       username: user.username,
-//       sub: user.id, // Use the user ID or another unique identifier
-//       role: user.role, // Assuming you have a role field in the user entity
-//     };
-//
-//     // Generate the JWT token
-//     return this.jwtService.sign(payload);
-//   }
-//
-//   async generateToken(user: any) {
-//     console.log('here');
-//
-//     const payload: JwtPayload = {
-//       username: user.username,
-//       sub: user.id,
-//       role: user.role, // Ensure the role is added
-//     };
-//     console.log('Generated token payload:', payload);
-//
-//     return this.jwtService.sign(payload);
-//   }
-//
-//   // Example validate function
-//   async validateUser(username: string, password: string) {
-//     const user = await this.userService.findByUsername(username);
-//     if (user && user.password === password) {
-//       return user;
-//     }
-//     return null;
-//   }
-// }
-
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { User } from '../user/user.entity';
-import { LoginDto } from "./dto/login.dto";
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { JwtPayload } from './jwt-payload.interface';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    private readonly usersService: UserService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   // async validateUser(username: string, password: string): Promise<any> {
-  //   const user = await this.userService.findByUsername(username);
+  //   const user = await this.usersService.findByUsername(username);
   //   if (user && user.password === password) {
-  //     // Use proper hashing for passwords
-  //     const { password, ...result } = user;
+  //     const { password, ...result } = user; // Exclude the password
   //     return result;
   //   }
   //   return null;
   // }
 
-  async validateUser(username: string, password: string) {
-    const user = await this.userService.findByUsername(username);
-    if (user && user.password === password) {
-      return user;
+  // async login(user: any): Promise<{ accessToken: string }> {
+  //   const payload = { username: user.username, role: user.role };
+  //   const accessToken = this.jwtService.sign(payload);
+  //   return { accessToken };
+  // }
+
+  async login(authCredentialsDto: AuthCredentialsDto) {
+    const { username, password } = authCredentialsDto;
+    const user = await this.validateUser(username, password);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid username or password');
     }
-    return null;
+
+    const payload: JwtPayload = { username: user.username, role: user.role };
+    const accessToken = await this.jwtService.sign(payload);
+
+    return { accessToken };
   }
 
-  async login(user: LoginDto) {
-    const payload = { username: user.username, role: user.role }; // Ensure these fields match the ones you validate in JwtStrategy
-    console.log('Generating token with payload:', payload); // Debug payload
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await this.usersService.findByUsername(username);
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return user;
+  }
+
+  async register(createUserDto: any) {
+    return this.usersService.create(createUserDto);
   }
 }

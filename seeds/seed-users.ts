@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import { User } from '../src/user/user.entity';
 import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
 
 // Database configuration (should match your TypeORM configuration in app.module.ts)
 const AppDataSource = new DataSource({
@@ -15,6 +17,15 @@ const AppDataSource = new DataSource({
   logging: true,
 });
 
+console.log('Environment Variables:');
+console.log({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
 async function seed() {
   try {
     // Initialize the database connection
@@ -25,7 +36,7 @@ async function seed() {
     const userRepository = AppDataSource.getRepository(User);
 
     // Check if the user already exists
-    const existingUser = await userRepository.findOne({ where: { email: 'john.doe@example.com' } });
+    const existingUser = await userRepository.findOne({ where: { username: 'john.doe@example.com' } });
     if (existingUser) {
       console.log('User already exists. Skipping seed.');
       return;
@@ -36,8 +47,7 @@ async function seed() {
     const hashedPassword = await bcrypt.hash('password123', salt);
 
     const user = userRepository.create({
-      username: 'John Doe',
-      email: 'john.doe@example.com',
+      username: 'john.doe@example.com',
       password: hashedPassword,
     });
 

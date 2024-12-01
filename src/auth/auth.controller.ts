@@ -1,20 +1,25 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserService } from '../user/user.service';
+import { LocalAuthGuard } from './local-auth.guard';
 import { LoginDto } from './dto/login.dto';
-// import { LoginDto } from './dto/login.dto'; // DTO for login
+import { Public } from './public.decorator';
+import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
+  @Public() // Indicates that this route does not require authentication
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    // Call the AuthService's login method
-    const token = await this.authService.login(loginDto);
-    return { accessToken: token }; // Return the token
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() authCredentialsDto: AuthCredentialsDto) {
+    return this.authService.login(authCredentialsDto);
+  }
+
+  @Public()
+  @Post('register')
+  async register(@Body() createUserDto: any) {
+    return this.authService.register(createUserDto);
   }
 }
