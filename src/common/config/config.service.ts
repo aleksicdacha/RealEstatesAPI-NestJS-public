@@ -7,7 +7,7 @@ dotenvExpand.expand(myEnv);     // Expands variables in the .env file
 
 @Injectable()
 export class ConfigService {
-  private config: Record<string, string>;
+  private readonly config: Record<string, string>;
 
   constructor() {
     this.config = process.env; // Load all environment variables
