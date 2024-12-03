@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from './common/config/config.service';
+import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +12,12 @@ async function bootstrap() {
   const port = configService.get('PORT') || 3000;
 
   app.enableCors();
+
+  // Apply global validation pipe
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  // Enable global class serialization
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await app.listen(port);
 
   console.log(`Application is running on: http://localhost:${port}`);

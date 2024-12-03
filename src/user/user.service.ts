@@ -4,6 +4,9 @@ import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { PaginationOptions } from '../common/interfaces/pagination-options.interface';
+import { SortOptions } from '../common/interfaces/sort-options.interface';
 
 @Injectable()
 export class UserService {
@@ -12,8 +15,43 @@ export class UserService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async findAll() {
-    return this.userRepository.find();
+  async findAll(
+    options: PaginationOptions,
+    filters?: { role: string; username: string }, // Optional filtering
+    sorting?: SortOptions,  // Optional sorting
+  ): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    // Apply filters if provided
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          queryBuilder.andWhere(`user.${key} = :${key}`, { [key]: value });
+        }
+      });
+    }
+
+    // Apply sorting if provided
+    if (sorting) {
+      queryBuilder.orderBy(`user.${sorting.column}`, sorting.order);
+    }
+
+    // Apply pagination
+    const totalItems = await queryBuilder.getCount();
+    queryBuilder.skip((options.page - 1) * options.limit).take(options.limit);
+
+    const items = await queryBuilder.getMany();
+
+    return new Pagination<User>(
+      items,
+      {
+        totalItems,
+        itemCount: items.length,
+        itemsPerPage: options.limit,
+        totalPages: Math.ceil(totalItems / options.limit),
+        currentPage: options.page,
+      },
+    );
   }
 
   async findOne(id: number) {
