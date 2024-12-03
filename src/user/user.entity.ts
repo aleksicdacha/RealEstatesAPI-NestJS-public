@@ -20,5 +20,8 @@ export class User {
   role: Role;
 
   @Column({ nullable: true })
-  refreshTokenHash: string;
+  refreshTokenHash: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastLogoutTime: Date | null;
 }

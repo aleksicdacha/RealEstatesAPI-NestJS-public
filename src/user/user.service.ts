@@ -40,15 +40,6 @@ export class UserService {
     return this.userRepository.findOne({ where: { username } });
   }
 
-  // async validateUser(username: string, password: string): Promise<any> {
-  //   const user = await this.userRepository.findOneBy({ username });
-  //   if (user && (await bcrypt.compare(password, user.password))) {
-  //     const { password, ...result } = user;
-  //     return result;
-  //   }
-  //   return null;
-  // }
-
   async validateUser(username: string, pass: string): Promise<any> {
     console.log('Validate user fired !!!!');
     const user = await this.userRepository.findOne({ where: { username } });
@@ -68,11 +59,35 @@ export class UserService {
     return user;
   }
 
+  async setRefreshToken(userId: number, refreshToken: string): Promise<void> {
+    const hashedToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepository.update(userId, { refreshTokenHash: hashedToken });
+  }
+
+  async validateRefreshToken(userId: number, refreshToken: string): Promise<boolean> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user || !user.refreshTokenHash) return false;
+
+    return bcrypt.compare(refreshToken, user.refreshTokenHash);
+  }
+
   async updateRefreshToken(userId: number, refreshToken: string) {
     const salt = await bcrypt.genSalt();
     const hashedToken = await bcrypt.hash(refreshToken, salt);
 
     await this.userRepository.update(userId, { refreshTokenHash: hashedToken });
+  }
+
+  async clearRefreshToken(userId: number) {
+    if (!userId) {
+      throw new Error('User ID is required for clearing refresh token');
+    }
+
+    await this.userRepository.update({ id: userId }, { refreshTokenHash: null });
+  }
+
+  async updateLastLogoutTime(userId: number): Promise<void> {
+    await this.userRepository.update(userId, { lastLogoutTime: new Date() });
   }
 
 }

@@ -27,6 +27,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       console.error('Role is missing from JWT payload');
     }
 
-    return { username: payload.username, role: payload.role };
+    // Validate against lastLogoutTime
+    if (user.lastLogoutTime && payload.iat * 1000 < user.lastLogoutTime.getTime()) {
+      throw new UnauthorizedException('Token is invalid (revoked)');
+    }
+
+    return { id: user.id, username: payload.username, role: payload.role };
   }
 }
