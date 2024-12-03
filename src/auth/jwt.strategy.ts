@@ -15,9 +15,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+
+    console.log('Payload: ', payload);
     const user = await this.userService.findByUsername(payload.username);
     if (!user) {
       throw new UnauthorizedException('Invalid token');
+    }
+
+    // Ensure the user role is extracted correctly from the payload
+    if (!payload.role) {
+      console.error('Role is missing from JWT payload');
     }
 
     return { username: payload.username, role: payload.role };

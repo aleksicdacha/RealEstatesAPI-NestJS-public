@@ -21,9 +21,21 @@ export class AuthService {
     }
 
     const payload: JwtPayload = { username: user.username, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
 
-    return { accessToken };
+    console.log('Payload:', payload);
+    // this.jwtService.sign(payload);
+
+    const accessToken = this.jwtService.sign(payload);
+    //
+    // return { accessToken };
+
+    const tokens = await this.issueTokens(user.id, user.username);
+    await this.usersService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    console.log('Tokens:', tokens);
+
+    // return tokens;
+    return { accessToken, refreshToken: tokens.refreshToken };
   }
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -44,5 +56,20 @@ export class AuthService {
 
   async register(createUserDto: any) {
     return this.usersService.create(createUserDto);
+  }
+
+  private async issueTokens(userId: number, username: string) {
+    const payload = { sub: userId, username };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    });
+
+    return { accessToken, refreshToken };
   }
 }
