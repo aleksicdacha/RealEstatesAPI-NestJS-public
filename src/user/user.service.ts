@@ -36,6 +36,33 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async updateUser(id: number, updateData: Partial<User>): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (updateData.password) {
+      // Hash password if it's being updated
+      const salt = await bcrypt.genSalt();
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    }
+
+    await this.userRepository.update(id, updateData); // Partial update
+    return this.userRepository.findOneBy({ id }); // Return the updated user
+  }
+
+  async deleteUser(id: number): Promise<{ message: string }> {
+    const result = await this.userRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return { message: `User with ID ${id} deleted successfully` };
+  }
+
   async findByUsername(username: string): Promise<User> {
     return this.userRepository.findOne({ where: { username } });
   }
