@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 import { Role } from './enums/role.enum';
 import { Exclude } from 'class-transformer';
 
@@ -8,6 +8,7 @@ export class User {
   id: number;
 
   @Column({ unique: true })
+  @Index('username_search_index')
   username: string;
 
   @Exclude()

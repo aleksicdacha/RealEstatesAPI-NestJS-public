@@ -1,0 +1,17 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class AddUsernameSearchIndex1733355336065 implements MigrationInterface {
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(
+          `CREATE INDEX username_search_index ON "user" ("username")`
+        );
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(
+          `DROP INDEX IF EXISTS username_search_index`
+        );
+    }
+
+}
