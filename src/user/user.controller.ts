@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Patch, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Patch,
+  Delete,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -7,10 +18,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { Pagination } from 'nestjs-typeorm-paginate';
-import { PaginationOptions } from '../common/interfaces/pagination-options.interface';
-import { SortOptions } from '../common/interfaces/sort-options.interface';
+import { UserQueryDto } from './dto/user-query.dto';
 
 @Controller('users')
 export class UserController {
@@ -19,19 +27,24 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  async findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('username') username?: string, // Filtering by username
-    @Query('role') role?: string, // Filtering by role
-    @Query('sortBy') sortBy: string = 'id', // Sorting column
-    @Query('order') order: 'ASC' | 'DESC' = 'ASC', // Sorting order
-  ): Promise<Pagination<User>> {
-    const options: PaginationOptions = { page, limit };
-    const filters = { username, role };
-    const sorting: SortOptions = { column: sortBy, order };
+  @Get()
+  async findAll(@Query() query: UserQueryDto) {
+    console.log('Received Query:', query);  // Log the raw query to check
 
-    return this.userService.findAll(options, filters, sorting);
+    // Parse filters manually from the string
+    let filters = {};
+    if (query.filters) {
+      try {
+        filters = JSON.parse(query.filters);
+      } catch (e) {
+        throw new BadRequestException('Invalid filters format');
+      }
+    }
+
+    console.log('Parsed Filters:', filters);
+
+    // Pass filters to the service method
+    return this.userService.findAll(query, filters);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

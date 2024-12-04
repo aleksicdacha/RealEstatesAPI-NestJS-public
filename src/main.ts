@@ -14,7 +14,13 @@ async function bootstrap() {
   app.enableCors();
 
   // Apply global validation pipe
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // Automatically transform input to DTO types
+      whitelist: true, // Strip properties not in the DTO
+      forbidNonWhitelisted: true, // Throw error for extra properties
+    }),
+  );
 
   // Enable global class serialization
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
