@@ -1,5 +1,5 @@
 const { DataSource } = require('typeorm');
-const AppDataSource = new DataSource({
+export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 5432,
@@ -11,5 +11,3 @@ const AppDataSource = new DataSource({
   entities: ['src/entities/**/*.ts'],
   migrations: ['src/migrations/**/*.ts'],
 });
-
-module.exports = AppDataSource;

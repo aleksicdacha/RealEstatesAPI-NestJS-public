@@ -4,7 +4,6 @@ import { ConfigModule } from './common/config/config.module';
 import { ConfigService } from './common/config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { AppDataSource } from './data-source';
 
 @Module({
   imports: [
@@ -24,13 +23,6 @@ import { AppDataSource } from './data-source';
           synchronize: configService.get('DB_SYNC') === 'true',  // Synchronize schema based on environment variable
           autoLoadEntities: true,  // Automatically load all entities
           logging: true,  // Enable logging for debugging
-          migrations: [  // Specify the migration files location
-            'src/migrations/**/*{.ts,.js}',  // Adjust the path if necessary
-          ],
-          migrationsRun: false,  // Set to false to manually run migrations
-          cli: {
-            migrationsDir: 'src/migrations',  // Directory to create migration files
-          },
         };
       },
     }),
@@ -38,15 +30,4 @@ import { AppDataSource } from './data-source';
     UserModule,
   ],
 })
-export class AppModule {
-  constructor() {
-    // Make sure to initialize the DataSource here
-    AppDataSource.initialize()
-      .then(() => {
-        console.log('DataSource has been initialized!');
-      })
-      .catch((error) => {
-        console.error('Error during DataSource initialization:', error);
-      });
-  }
-}
+export class AppModule {}
