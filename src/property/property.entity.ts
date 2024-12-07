@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn, Generated,
 } from 'typeorm';
-import { PropertyImage } from '../property-image.entity/property-image.entity';
+import { PropertyImage } from '../property-image/property-image.entity';
 
 export enum PropertyType {
   Apartment = 'Apartment',

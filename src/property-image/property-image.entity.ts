@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Property } from '../property.entity/property.entity';
+import { Property } from '../property/property.entity';
 
 @Entity('property_images')
 export class PropertyImage {

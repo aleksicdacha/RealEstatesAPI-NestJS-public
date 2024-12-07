@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Param, Get, Patch, Delete } from '@nestjs/common';
 import { PropertyImageService } from './property-image.service';
-import { CreatePropertyImageDto } from '../property/dto/create-propertyImage.dto';
-import { UpdatePropertyImageDto } from '../property/dto/update-propertyImage.dto';
+import { CreatePropertyImageDto } from './dto/create-propertyImage.dto';
+import { UpdatePropertyImageDto } from './dto/update-propertyImage.dto';
 
 @Controller('properties/:propertyId/images')
 export class PropertyImageController {

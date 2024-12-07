@@ -3,7 +3,7 @@ import { PropertyImageService } from './property-image.service';
 import { PropertyImageController } from './property-image.controller';
 import { PropertyImageRepository } from './propertyImage-repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PropertyImage } from '../property/entities/property-image.entity/property-image.entity';
+import { PropertyImage } from './property-image.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PropertyImage])],

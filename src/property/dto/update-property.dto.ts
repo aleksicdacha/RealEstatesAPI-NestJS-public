@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsEnum, IsNumber, IsUUID } from 'class-validator';
-import { PropertyType } from '../entities/property.entity/property.entity'; // Enum for property type
+import { PropertyType } from '../property.entity'; // Enum for property type
 
 export class UpdatePropertyDTO {
   // Optional field to update the name

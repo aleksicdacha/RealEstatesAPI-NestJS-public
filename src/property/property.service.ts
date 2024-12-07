@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindManyOptions, ILike, Repository } from 'typeorm';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
-import { Property, PropertyType } from './entities/property.entity/property.entity';
+import { Property, PropertyType } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
-import { PropertyImage } from './entities/property-image.entity/property-image.entity';
+import { PropertyImage } from '../property-image/property-image.entity';
 
 @Injectable()
 export class PropertyService {

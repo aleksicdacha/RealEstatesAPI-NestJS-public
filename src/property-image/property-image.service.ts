@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PropertyImage } from '../property/entities/property-image.entity/property-image.entity';
-import { CreatePropertyImageDto } from '../property/dto/create-propertyImage.dto';
-import { UpdatePropertyImageDto } from '../property/dto/update-propertyImage.dto';
+import { PropertyImage } from './property-image.entity';
+import { CreatePropertyImageDto } from './dto/create-propertyImage.dto';
+import { UpdatePropertyImageDto } from './dto/update-propertyImage.dto';
 
 @Injectable()
 export class PropertyImageService {
