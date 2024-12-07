@@ -4,6 +4,8 @@ import { ConfigModule } from './common/config/config.module';
 import { ConfigService } from './common/config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { PropertyModule } from './property/property.module';
+import { PropertyImageModule } from './property-image/property-image.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { UserModule } from './user/user.module';
     }),
     AuthModule,
     UserModule,
+    PropertyModule,
+    PropertyImageModule,
   ],
 })
 export class AppModule {}
