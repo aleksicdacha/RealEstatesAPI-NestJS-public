@@ -36,7 +36,7 @@ async function seed() {
 
     // Create a property with images
     const property = propertyRepository.create({
-      name: 'Luxury Apartment',
+      code: 'Luxury Apartment',
       description: 'A beautiful luxury apartment in the city center.',
       price: 250000.0,
       area: 120.5,

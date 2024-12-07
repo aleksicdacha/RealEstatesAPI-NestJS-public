@@ -3,7 +3,7 @@ import { IsBoolean, IsInt, IsOptional, IsUrl } from 'class-validator';
 export class UpdatePropertyImageDto {
   @IsOptional()
   @IsUrl()
-  imageUrl?: string;
+  url?: string;
 
   @IsOptional()
   @IsBoolean()

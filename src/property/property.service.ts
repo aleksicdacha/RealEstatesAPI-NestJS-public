@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindManyOptions, ILike, Repository } from 'typeorm';
+import { Between, FindManyOptions, ILike, Like, Repository } from 'typeorm';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
-import { Property, PropertyType } from './property.entity';
+import { Property, PropertyType, PropertyStatus } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyImage } from '../property-image/property-image.entity';
 
@@ -25,7 +25,8 @@ export class PropertyService {
   async findAll(query: FilterPropertyDto): Promise<Property[]> {
     const {
       search,
-      // propertyType,
+      propertyType,
+      status,
       minPrice,
       maxPrice,
       minArea,
@@ -44,16 +45,23 @@ export class PropertyService {
     if (search) {
       options.where = {
         ...options.where,
-        name: ILike(`%${search}%`),
+        code: ILike(`%${search}%`),
       };
     }
 
-    // if (propertyType) {
-    //   options.where = {
-    //     ...options.where,
-    //     propertyType,
-    //   };
-    // }
+    if (propertyType) {
+      options.where = {
+        ...options.where,
+        propertyType,
+      };
+    }
+
+    if (status) {
+      options.where = {
+        ...options.where,
+        status, // Ensure `status` is properly defined in the Property entity
+      };
+    }
 
     if (minPrice || maxPrice) {
       options.where = {
@@ -83,11 +91,10 @@ export class PropertyService {
       };
     }
 
-    const [items, total] = await this.propertyRepository.findAndCount(options);
-
-    // return { items, total };
-
-    return this.propertyRepository.find({ relations: ['images'] });
+    return this.propertyRepository.find({
+      ...options,
+      relations: ['images'], // Include relations, if required
+    });
   }
 
   async findAllByPropertyWithPagination(
@@ -130,23 +137,23 @@ export class PropertyService {
     await this.propertyRepository.delete(guid);
   }
 
-  // async findNearby(
-  //   centerLatitude: number,
-  //   centerLongitude: number,
-  //   radiusKm: number,
-  // ): Promise<Property[]> {
-  //   return await this.propertyRepository.query(`
-  //   SELECT *,
-  //     (6371 * acos(
-  //         cos(radians(${centerLatitude}))
-  //         * cos(radians(latitude))
-  //         * cos(radians(longitude) - radians(${centerLongitude}))
-  //         + sin(radians(${centerLatitude}))
-  //         * sin(radians(latitude))
-  //     )) AS distance
-  //   FROM properties
-  //   HAVING distance <= ${radiusKm}
-  //   ORDER BY distance;
-  // `);
-  // }
+  async findNearby(
+    centerLatitude: number,
+    centerLongitude: number,
+    radiusKm: number,
+  ): Promise<Property[]> {
+    return await this.propertyRepository.query(`
+    SELECT *,
+      (6371 * acos(
+          cos(radians(${centerLatitude}))
+          * cos(radians(lat))
+          * cos(radians(lon) - radians(${centerLongitude}))
+          + sin(radians(${centerLatitude}))
+          * sin(radians(lat))
+      )) AS distance
+    FROM properties
+    HAVING distance <= ${radiusKm}
+    ORDER BY distance;
+  `);
+  }
 }

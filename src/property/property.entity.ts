@@ -14,13 +14,19 @@ export enum PropertyType {
   Office = 'Office',
 }
 
+export enum PropertyStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+  Deleted = 'deleted',
+}
+
 @Entity('properties')
 export class Property {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  name: string;
+  code: string;
 
   @Column({ type: 'text', nullable: true })
   description: string;
@@ -31,6 +37,13 @@ export class Property {
     default: PropertyType.Apartment, // Optional: set a default value
   })
   propertyType: PropertyType;  // Use the enum type
+
+  @Column({
+    type: 'enum',
+    enum: PropertyStatus,
+    default: PropertyStatus.Active
+  })
+  status: PropertyStatus;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;

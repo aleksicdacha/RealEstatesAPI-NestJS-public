@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsEnum, IsNumber, IsUUID } from 'class-validator';
-import { PropertyType } from '../property.entity'; // Enum for property type
+import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
 
 export class UpdatePropertyDTO {
   // Optional field to update the name
@@ -16,6 +16,11 @@ export class UpdatePropertyDTO {
   @IsOptional()  // Makes this field optional when updating
   @IsEnum(PropertyType)
   propertyType?: PropertyType;
+
+  // Optional field for the property type
+  @IsOptional()  // Makes this field optional when updating
+  @IsEnum(PropertyStatus)
+  status?: PropertyStatus;
 
   // Optional field for the property price (can be updated)
   @IsOptional()  // Makes this field optional when updating

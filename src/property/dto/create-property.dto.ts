@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsNumber, IsUUID, IsOptional } from 'class-validator';
-import { PropertyType } from '../property.entity'; // Enum for property type
+import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
 
 export class CreatePropertyDto {
   // Required field for property name
@@ -13,6 +13,10 @@ export class CreatePropertyDto {
   // Required field for property type (apartment, house, office)
   @IsEnum(PropertyType)
   propertyType: PropertyType;
+
+  // Required field for property type (active, inactive, deleted)
+  @IsEnum(PropertyStatus)
+  status: PropertyStatus;
 
   // Required field for property price
   @IsNumber()

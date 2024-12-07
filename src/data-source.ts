@@ -1,3 +1,7 @@
+import { User } from '@src/user/user.entity';
+import { Property } from '@src/property/property.entity';
+import { PropertyImage } from '@src/property-image/property-image.entity';
+
 const { DataSource } = require('typeorm');
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -8,6 +12,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'estates',
   synchronize: false,
   logging: true,
-  entities: ['src/entities/**/*.ts'],
-  migrations: ['src/migrations/**/*.ts'],
+  entities: [User, Property, PropertyImage],
+  migrations: ['src/migrations/*.ts'],
 });

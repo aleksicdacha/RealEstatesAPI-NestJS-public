@@ -1,4 +1,5 @@
 import { IsOptional, IsEnum, IsNumber, IsString } from 'class-validator';
+import { PropertyStatus, PropertyType } from '@src/property/property.entity';
 
 export class FilterPropertyDto {
   @IsOptional()
@@ -6,8 +7,12 @@ export class FilterPropertyDto {
   search?: string;
 
   @IsOptional()
-  @IsEnum(['Apartment', 'House', 'Office'])
-  propertyType?: 'Apartment' | 'House' | 'Office';
+  // @IsEnum(['Apartment', 'House', 'Office'])
+  propertyType?: PropertyType;
+
+  @IsOptional()
+  // @IsEnum(['active', 'inactive', 'deleted'])
+  status?: PropertyStatus;
 
   @IsOptional()
   @IsNumber()

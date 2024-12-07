@@ -1,5 +1,7 @@
-import { EntityRepository, Repository } from 'typeorm';
-import { Property } from './property.entity';
+import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { Property } from '@src/property/property.entity';
 
-@EntityRepository(Property)
+@Injectable()
 export class PropertyRepository extends Repository<Property> {}
+
