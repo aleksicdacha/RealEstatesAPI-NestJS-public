@@ -6,7 +6,6 @@ import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyImage } from '../property-image/property-image.entity';
-import { QueryBuilderHelper } from '@src/common/query-builder.helper';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
@@ -80,23 +79,23 @@ export class PropertyService {
     await this.propertyRepository.delete(guid);
   }
 
-  async findNearby(
-    centerLatitude: number,
-    centerLongitude: number,
-    radiusKm: number,
-  ): Promise<Property[]> {
-    return await this.propertyRepository.query(`
-    SELECT *,
-      (6371 * acos(
-          cos(radians(${centerLatitude}))
-          * cos(radians(lat))
-          * cos(radians(lon) - radians(${centerLongitude}))
-          + sin(radians(${centerLatitude}))
-          * sin(radians(lat))
-      )) AS distance
-    FROM properties
-    HAVING distance <= ${radiusKm}
-    ORDER BY distance;
-  `);
-  }
+  // async findNearby(
+  //   centerLatitude: number,
+  //   centerLongitude: number,
+  //   radiusKm: number,
+  // ): Promise<Property[]> {
+  //   return await this.propertyRepository.query(`
+  //   SELECT *,
+  //     (6371 * acos(
+  //         cos(radians(${centerLatitude}))
+  //         * cos(radians(lat))
+  //         * cos(radians(lon) - radians(${centerLongitude}))
+  //         + sin(radians(${centerLatitude}))
+  //         * sin(radians(lat))
+  //     )) AS distance
+  //   FROM properties
+  //   HAVING distance <= ${radiusKm}
+  //   ORDER BY distance;
+  // `);
+  // }
 }

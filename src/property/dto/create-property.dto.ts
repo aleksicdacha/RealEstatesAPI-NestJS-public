@@ -1,10 +1,10 @@
-import { IsString, IsEnum, IsNumber, IsUUID, IsOptional, MinLength, MaxLength, IsBoolean } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsOptional, MinLength, MaxLength, IsBoolean } from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
 
 export class CreatePropertyDto {
   // Required field for property name
   @IsString()
-  name: string;
+  code: string;
 
   // Required field for property description
   @IsString()
@@ -55,8 +55,4 @@ export class CreatePropertyDto {
   @IsString()
   address: string;
 
-  // // Optional field for GUID if you want to generate it manually or use default UUID
-  // @IsOptional()  // Makes this field optional
-  // @IsUUID()
-  // guid?: string;
 }

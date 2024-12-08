@@ -7,8 +7,7 @@ import {
   UseGuards,
   Patch,
   Delete,
-  Query,
-  BadRequestException,
+  Query
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';

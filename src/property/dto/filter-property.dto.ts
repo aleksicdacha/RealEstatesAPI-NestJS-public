@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, IsEnum, Min, Max } from 'class-validator';
+import { IsOptional, IsString, IsEnum, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class FilterPropertyDto {

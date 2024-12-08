@@ -46,7 +46,8 @@ async function seed() {
       lon: 20.4489,
     });
 
-    const images = [
+    // Save property and images
+    property.images = [
       propertyImageRepository.create({
         url: 'https://example.com/image1.jpg',
         order: 1,
@@ -57,9 +58,6 @@ async function seed() {
         order: 2,
       }),
     ];
-
-    // Save property and images
-    property.images = images;
     await propertyRepository.save(property);
 
     console.log('Property and images have been seeded successfully:', property);

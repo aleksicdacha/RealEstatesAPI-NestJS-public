@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
-  UpdateDateColumn, Generated,
+  UpdateDateColumn
 } from 'typeorm';
 import { PropertyImage } from '../property-image/property-image.entity';
 import { IsPositive } from 'class-validator';
