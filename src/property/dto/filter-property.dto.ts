@@ -1,48 +1,73 @@
-import { IsOptional, IsEnum, IsNumber, IsString } from 'class-validator';
-import { PropertyStatus, PropertyType } from '@src/property/property.entity';
+import { IsOptional, IsString, IsNumber, IsEnum, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class FilterPropertyDto {
   @IsOptional()
+  @Type(() => Number)
+  @Min(1)
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @Min(1)
+  limit?: number;
+
+  @IsOptional()
   @IsString()
-  search?: string;
+  sortBy?: string;
 
   @IsOptional()
-  // @IsEnum(['Apartment', 'House', 'Office'])
-  propertyType?: PropertyType;
+  @IsEnum(['ASC', 'DESC'])
+  order?: 'ASC' | 'DESC';
 
   @IsOptional()
-  // @IsEnum(['active', 'inactive', 'deleted'])
-  status?: PropertyStatus;
+  @IsString()
+  searchField?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsString()
+  searchValue?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  role?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @Min(0)
   minPrice?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   maxPrice?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @Min(0)
   minArea?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   maxArea?: number;
 
+  // Additional filters
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   minLatitude?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   maxLatitude?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   minLongitude?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   maxLongitude?: number;
 }

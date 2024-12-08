@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserQueryDto } from './dto/user-query.dto';
+import { QueryBuilderHelper } from '@src/common/query-builder.helper';
 
 @Injectable()
 export class UserService {
@@ -14,72 +15,91 @@ export class UserService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async findAll(
-    options: UserQueryDto,
-    filters?: { [p: string]: any },
-  ): Promise<Pagination<User>> {
+  async findAll(options: UserQueryDto, filters?: { [key: string]: any }): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user'); // Use 'user' as alias
 
-    // Convert page and limit to numbers, use defaults if not provided
-    const page = options.page ? Number(options.page) : 1;  // Default to 1 if not provided
-    const limit = options.limit ? Math.min(Number(options.limit), 100) : 10;  // Default to 10, max 100
+    // Apply common query options
+    QueryBuilderHelper.applyQueryOptions(queryBuilder, options, filters);
 
-    // Log values to inspect
-    console.log('Page:', page, 'Limit:', limit);
+    // Get results with pagination
+    const totalItems = await queryBuilder.getCount();
+    const items = await queryBuilder.getMany();
 
-    // Validate page and limit
-    if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
-      throw new BadRequestException('Page and limit must be valid positive numbers.');
-    }
-
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-
-    // Apply filters if provided
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
-          queryBuilder.andWhere(`user.${key} = :${key}`, { [key]: value });
-        }
-      });
-    }
-
-    // Apply search if provided
-    if (options.searchField && options.searchValue && options.searchValue.length >= 3) {
-      console.log(`Searching in field: ${options.searchField} for value: ${options.searchValue}`);
-      // Use ILIKE for case-insensitive search (works with PostgreSQL)
-      queryBuilder.andWhere(`user.${options.searchField} ILIKE :searchValue`, {
-        searchValue: `%${options.searchValue}%`,
-      });
-    }
-
-    // Apply sorting if provided
-    if (options.sortBy && options.order) {
-      queryBuilder.orderBy(`user.${options.sortBy}`, options.order);
-    }
-
-    // Apply pagination
-    try {
-      // Validate skip and take are valid numbers before calling
-      queryBuilder.skip((page - 1) * limit).take(limit);
-
-      // Get the total number of items and apply pagination
-      const totalItems = await queryBuilder.getCount();
-      const items = await queryBuilder.getMany();
-
-      return new Pagination<User>(
-        items,
-        {
-          totalItems,
-          itemCount: items.length,
-          itemsPerPage: limit,
-          totalPages: Math.ceil(totalItems / limit),
-          currentPage: page,
-        },
-      );
-    } catch (err) {
-      console.error('Error while applying pagination', err);
-      throw new BadRequestException('Error while applying pagination');
-    }
+    return new Pagination<User>(items, {
+      totalItems,
+      itemCount: items.length,
+      itemsPerPage: options.limit || 10,
+      totalPages: Math.ceil(totalItems / (options.limit || 10)),
+      currentPage: options.page || 1,
+    });
   }
+
+  // async findAll(
+  //   options: UserQueryDto,
+  //   filters?: { [p: string]: any },
+  // ): Promise<Pagination<User>> {
+  //
+  //   // Convert page and limit to numbers, use defaults if not provided
+  //   const page = options.page ? Number(options.page) : 1;  // Default to 1 if not provided
+  //   const limit = options.limit ? Math.min(Number(options.limit), 100) : 10;  // Default to 10, max 100
+  //
+  //   // Log values to inspect
+  //   console.log('Page:', page, 'Limit:', limit);
+  //
+  //   // Validate page and limit
+  //   if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+  //     throw new BadRequestException('Page and limit must be valid positive numbers.');
+  //   }
+  //
+  //   const queryBuilder = this.userRepository.createQueryBuilder('user');
+  //
+  //   // Apply filters if provided
+  //   if (filters) {
+  //     Object.entries(filters).forEach(([key, value]) => {
+  //       if (value) {
+  //         queryBuilder.andWhere(`user.${key} = :${key}`, { [key]: value });
+  //       }
+  //     });
+  //   }
+  //
+  //   // Apply search if provided
+  //   if (options.searchField && options.searchValue && options.searchValue.length >= 3) {
+  //     console.log(`Searching in field: ${options.searchField} for value: ${options.searchValue}`);
+  //     // Use ILIKE for case-insensitive search (works with PostgreSQL)
+  //     queryBuilder.andWhere(`user.${options.searchField} ILIKE :searchValue`, {
+  //       searchValue: `%${options.searchValue}%`,
+  //     });
+  //   }
+  //
+  //   // Apply sorting if provided
+  //   if (options.sortBy && options.order) {
+  //     queryBuilder.orderBy(`user.${options.sortBy}`, options.order);
+  //   }
+  //
+  //   // Apply pagination
+  //   try {
+  //     // Validate skip and take are valid numbers before calling
+  //     queryBuilder.skip((page - 1) * limit).take(limit);
+  //
+  //     // Get the total number of items and apply pagination
+  //     const totalItems = await queryBuilder.getCount();
+  //     const items = await queryBuilder.getMany();
+  //
+  //     return new Pagination<User>(
+  //       items,
+  //       {
+  //         totalItems,
+  //         itemCount: items.length,
+  //         itemsPerPage: limit,
+  //         totalPages: Math.ceil(totalItems / limit),
+  //         currentPage: page,
+  //       },
+  //     );
+  //   } catch (err) {
+  //     console.error('Error while applying pagination', err);
+  //     throw new BadRequestException('Error while applying pagination');
+  //   }
+  // }
 
   async findOne(id: number) {
     const user = await this.userRepository.findOneBy({ id });

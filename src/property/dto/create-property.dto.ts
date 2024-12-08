@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsNumber, IsUUID, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsUUID, IsOptional, MinLength, MaxLength, IsBoolean } from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
 
 export class CreatePropertyDto {
@@ -22,6 +22,10 @@ export class CreatePropertyDto {
   @IsNumber()
   price: number;
 
+  // Required field for property price
+  @IsNumber()
+  salePrice: number;
+
   // Required field for property area
   @IsNumber()
   area: number;
@@ -36,12 +40,23 @@ export class CreatePropertyDto {
   @IsNumber()
   lon?: number;
 
+  // Optional field for Comment, only if needed
+  @IsString({ message: 'Comment must be a string' })
+  @IsOptional()
+  @MinLength(10, { message: 'Comment must be at least 10 characters long' })
+  @MaxLength(500, { message: 'Comment must not exceed 500 characters' })
+  comment?: string;
+
+  // Required field for Elevator, only if needed
+  @IsBoolean({ message: 'Comment must be a boolean' })
+  elevator: boolean;
+
   // Required field for property address
   @IsString()
   address: string;
 
-  // Optional field for GUID if you want to generate it manually or use default UUID
-  @IsOptional()  // Makes this field optional
-  @IsUUID()
-  guid?: string;
+  // // Optional field for GUID if you want to generate it manually or use default UUID
+  // @IsOptional()  // Makes this field optional
+  // @IsUUID()
+  // guid?: string;
 }

@@ -18,7 +18,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserQueryDto } from './dto/user-query.dto';
+import { FilterPropertyDto } from '@src/property/dto/filter-property.dto';
 
 @Controller('users')
 export class UserController {
@@ -28,24 +28,27 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Get()
-  async findAll(@Query() query: UserQueryDto) {
-    console.log('Received Query:', query);  // Log the raw query to check
-
-    // Parse filters manually from the string
-    let filters = {};
-    if (query.filters) {
-      try {
-        filters = JSON.parse(query.filters);
-      } catch (e) {
-        throw new BadRequestException('Invalid filters format');
-      }
-    }
-
-    console.log('Parsed Filters:', filters);
-
-    // Pass filters to the service method
-    return this.userService.findAll(query, filters);
+  async findAll(@Query() query: FilterPropertyDto) {
+    return this.userService.findAll(query);
   }
+  // async findAll(@Query() query: UserQueryDto) {
+  //   console.log('Received Query:', query);  // Log the raw query to check
+  //
+  //   // Parse filters manually from the string
+  //   let filters = {};
+  //   if (query.filters) {
+  //     try {
+  //       filters = JSON.parse(query.filters);
+  //     } catch (e) {
+  //       throw new BadRequestException('Invalid filters format');
+  //     }
+  //   }
+  //
+  //   console.log('Parsed Filters:', filters);
+  //
+  //   // Pass filters to the service method
+  //   return this.userService.findAll(query, filters);
+  // }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)

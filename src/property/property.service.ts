@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindManyOptions, ILike, Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
-import { Property, PropertyType, PropertyStatus } from './property.entity';
+import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyImage } from '../property-image/property-image.entity';
+import { QueryBuilderHelper } from '@src/common/query-builder.helper';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PropertyService {
@@ -22,107 +24,48 @@ export class PropertyService {
     return this.propertyRepository.save(property);
   }
 
-  async findAll(query: FilterPropertyDto): Promise<Property[]> {
-    const {
-      search,
-      propertyType,
-      status,
-      minPrice,
-      maxPrice,
-      minArea,
-      maxArea,
-      minLatitude,
-      maxLatitude,
-      minLongitude,
-      maxLongitude,
-    } = query;
+  async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
+    const queryBuilder = this.propertyRepository.createQueryBuilder('property');
 
-    const options: FindManyOptions<Property> = {
-      where: {},
-      order: { createdAt: 'DESC' }, // Default order
-    };
+    // Join the images relation
+    queryBuilder.leftJoinAndSelect('property.images', 'images');
 
-    if (search) {
-      options.where = {
-        ...options.where,
-        code: ILike(`%${search}%`),
-      };
+    // Apply search
+    if (options.searchField && options.searchValue) {
+      queryBuilder.andWhere(`property.${options.searchField} ILIKE :searchValue`, {
+        searchValue: `%${options.searchValue}%`,
+      });
     }
 
-    if (propertyType) {
-      options.where = {
-        ...options.where,
-        propertyType,
-      };
+    // Apply filters
+    if (options.status) {
+      queryBuilder.andWhere('property.status = :status', { status: options.status });
     }
 
-    if (status) {
-      options.where = {
-        ...options.where,
-        status, // Ensure `status` is properly defined in the Property entity
-      };
-    }
+    // Apply pagination
+    queryBuilder.skip((options.page - 1) * options.limit).take(options.limit);
 
-    if (minPrice || maxPrice) {
-      options.where = {
-        ...options.where,
-        price: Between(minPrice || 0, maxPrice || Infinity),
-      };
-    }
+    // Apply sorting
+    queryBuilder.orderBy(`property.${options.sortBy}`, options.order as 'ASC' | 'DESC');
 
-    if (minArea || maxArea) {
-      options.where = {
-        ...options.where,
-        area: Between(minArea || 0, maxArea || Infinity),
-      };
-    }
+    // Fetch results
+    const totalItems = await queryBuilder.getCount();
+    const items = await queryBuilder.getMany();
 
-    if (minLatitude || maxLatitude) {
-      options.where = {
-        ...options.where,
-        lat: Between(minLatitude || -90, maxLatitude || 90),
-      };
-    }
-
-    if (minLongitude || maxLongitude) {
-      options.where = {
-        ...options.where,
-        lon: Between(minLongitude || -180, maxLongitude || 180),
-      };
-    }
-
-    return this.propertyRepository.find({
-      ...options,
-      relations: ['images'], // Include relations, if required
-    });
-  }
-
-  async findAllByPropertyWithPagination(
-    propertyId: string,
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<{ items: PropertyImage[]; meta: any }> {
-    const [items, total] = await this.propertyImageRepository.findAndCount({
-      where: { property: { id: propertyId } },
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { order: 'ASC' },
-    });
-
-    const meta = {
-      totalItems: total,
+    return new Pagination<Property>(items, {
+      totalItems,
       itemCount: items.length,
-      itemsPerPage: limit,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
-    };
-
-    return { items, meta };
+      itemsPerPage: options.limit,
+      totalPages: Math.ceil(totalItems / options.limit),
+      currentPage: options.page,
+    });
   }
 
-
-  async findOne(guid: string): Promise<Property> {
-    return this.propertyRepository.findOneBy({ guid });
+  async findOne(id: string): Promise<Property> {
+    return this.propertyRepository.findOne({
+      where: { id },
+      relations: ['images'], // Eager load the images relation
+    });
   }
 
   async update(

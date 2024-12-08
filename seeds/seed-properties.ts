@@ -38,7 +38,8 @@ async function seed() {
     const property = propertyRepository.create({
       code: 'Luxury Apartment',
       description: 'A beautiful luxury apartment in the city center.',
-      price: 250000.0,
+      price: 250000,
+      salePrice: 270000,
       area: 120.5,
       address: '123 Main Street, Metropolis',
       lat: 44.7866,

@@ -1,4 +1,14 @@
-import { IsString, IsOptional, IsEnum, IsNumber, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  IsUUID,
+  MinLength,
+  MaxLength,
+  IsBoolean,
+  IsNotEmpty,
+} from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
 
 export class UpdatePropertyDTO {
@@ -27,6 +37,11 @@ export class UpdatePropertyDTO {
   @IsNumber()
   price?: number;
 
+  // Optional field for the property salePrice (can be updated)
+  @IsOptional()  // Makes this field optional when updating
+  @IsNumber()
+  salePrice?: number;
+
   // Optional field for the property area (can be updated)
   @IsOptional()  // Makes this field optional when updating
   @IsNumber()
@@ -42,13 +57,23 @@ export class UpdatePropertyDTO {
   @IsNumber()
   lon?: number;
 
+  @IsString({ message: 'Comment must be a string' })
+  @IsOptional()
+  @MinLength(10, { message: 'Comment must be at least 10 characters long' })
+  @MaxLength(500, { message: 'Comment must not exceed 500 characters' })
+  comment?: string;
+
+  @IsBoolean({ message: 'Elevator must be a boolean' })
+  @IsNotEmpty({ message: 'Elevator field is required' })
+  elevator: boolean;
+
   // Optional field for the address
   @IsOptional()  // Makes this field optional when updating
   @IsString()
   address?: string;
 
-  // Optional field for updating the GUID if needed
-  @IsOptional()  // Makes this field optional when updating
-  @IsUUID()
-  guid?: string;  // You may choose to leave this out, depending on your logic
+  // // Optional field for updating the GUID if needed
+  // @IsOptional()  // Makes this field optional when updating
+  // @IsUUID()
+  // guid?: string;  // You may choose to leave this out, depending on your logic
 }

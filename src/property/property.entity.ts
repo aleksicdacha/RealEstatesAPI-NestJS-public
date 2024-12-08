@@ -7,6 +7,7 @@ import {
   UpdateDateColumn, Generated,
 } from 'typeorm';
 import { PropertyImage } from '../property-image/property-image.entity';
+import { IsPositive } from 'class-validator';
 
 export enum PropertyType {
   Apartment = 'Apartment',
@@ -24,6 +25,10 @@ export enum PropertyStatus {
 export class Property {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  // @Column({ unique: true })
+  // @Generated('uuid')
+  // guid: string;
 
   @Column()
   code: string;
@@ -45,8 +50,13 @@ export class Property {
   })
   status: PropertyStatus;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 0 })
+  @IsPositive()
   price: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 0 })
+  @IsPositive()
+  salePrice: number;
 
   @Column({ type: 'float' })
   area: number;
@@ -60,9 +70,11 @@ export class Property {
   @Column({ type: 'float', nullable: true })
   lon: number;
 
-  @Column({ unique: true })
-  @Generated('uuid')
-  guid: string;
+  @Column({ type: 'text', nullable: true })
+  comment: string;
+
+  @Column({ type: 'boolean', nullable: false })
+  elevator: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -70,6 +82,9 @@ export class Property {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true })
+  // @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true })
+  // images: PropertyImage[];
+
+  @OneToMany(() => PropertyImage, (image) => image.property)
   images: PropertyImage[];
 }
