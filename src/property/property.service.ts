@@ -17,10 +17,20 @@ export class PropertyService {
     private propertyImageRepository: Repository<PropertyImage>,
   ) {}
 
-  async create(createPropertyDto: CreatePropertyDto) {
-    const property = this.propertyRepository.create(createPropertyDto);
+  async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
+    const { images, ...propertyData } = createPropertyDto;
 
-    return this.propertyRepository.save(property);
+    const property = this.propertyRepository.create(propertyData);
+    const savedProperty = await this.propertyRepository.save(property);
+
+    if (images && images.length > 0) {
+      const propertyImages = images.map((image) =>
+        this.propertyImageRepository.create({ ...image, property: savedProperty }),
+      );
+      await this.propertyImageRepository.save(propertyImages);
+    }
+
+    return savedProperty;
   }
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {

@@ -29,9 +29,6 @@ export class PropertyController {
   async findAll(@Query() query: FilterPropertyDto) {
     return this.propertyService.findAll(query);
   }
-  // findAll(@Query() query: FilterPropertyDto) {
-  //   return this.propertyService.findAll(query);
-  // }
 
   @Get(':guid')
   findOne(@Param('guid') guid: string) {

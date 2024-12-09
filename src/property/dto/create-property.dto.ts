@@ -1,5 +1,28 @@
-import { IsString, IsEnum, IsNumber, IsOptional, MinLength, MaxLength, IsBoolean } from 'class-validator';
-import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
+import {
+  IsString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  MinLength,
+  MaxLength,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { PropertyType, PropertyStatus } from '../property.entity';
+import { Type } from 'class-transformer'; // Enum for property type
+
+class ImageDto {
+  @IsString()
+  url: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isFavorite?: boolean;
+
+  @IsNumber()
+  order?: number;
+}
 
 export class CreatePropertyDto {
   // Required field for property name
@@ -54,5 +77,10 @@ export class CreatePropertyDto {
   // Required field for property address
   @IsString()
   address: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImageDto)
+  images: ImageDto[];
 
 }
