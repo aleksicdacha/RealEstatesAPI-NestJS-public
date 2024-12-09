@@ -11,18 +11,7 @@ import {
 } from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity';
 import { Type } from 'class-transformer'; // Enum for property type
-
-class ImageDto {
-  @IsString()
-  url: string;
-
-  @IsBoolean()
-  @IsOptional()
-  isFavorite?: boolean;
-
-  @IsNumber()
-  order?: number;
-}
+import { CreatePropertyImageDto } from '@src/property/dto/property-image-create.dto';
 
 export class CreatePropertyDto {
   // Required field for property name
@@ -80,7 +69,7 @@ export class CreatePropertyDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ImageDto)
-  images: ImageDto[];
+  @Type(() => CreatePropertyImageDto)
+  images: CreatePropertyImageDto[];
 
 }
