@@ -4,12 +4,11 @@ import {
   IsString,
   Min,
   Max,
-  ValidateNested,
   MinLength, IsInt,
 } from 'class-validator';
 import { VALID_SEARCH_FIELDS } from '../../common/config/constants';
 import { IsValidSearchField } from '../../common/validators/search-field.validator';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class FiltersDto {
   @IsOptional()
@@ -53,18 +52,6 @@ export class UserQueryDto {
   @Min(1, { message: 'limit must be a positive number' })
   @Max(100, { message: 'limit must not be greater than 100' })
   limit?: number;
-
-  // @IsOptional()
-  // @ValidateNested()
-  // @Type(() => FiltersDto)
-  // @Transform(({ value }) => {
-  //   if (value) {
-  //     // Handle the filters transformation (e.g., parse JSON from query string)
-  //     return JSON.parse(value);
-  //   }
-  //   return value;
-  // }, { toClassOnly: true })
-  // filters?: FiltersDto;
 
   @IsOptional()
   filters?: string;

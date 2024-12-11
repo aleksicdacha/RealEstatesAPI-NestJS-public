@@ -26,10 +26,6 @@ export class Property {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // @Column({ unique: true })
-  // @Generated('uuid')
-  // guid: string;
-
   @Column()
   code: string;
 
@@ -82,9 +78,6 @@ export class Property {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true })
-  // images: PropertyImage[];
-
-  @OneToMany(() => PropertyImage, (image) => image.property)
+  @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true })
   images: PropertyImage[];
 }

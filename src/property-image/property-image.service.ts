@@ -18,6 +18,8 @@ export class PropertyImageService {
   }
 
   async findAllByProperty(propertyId: string): Promise<PropertyImage[]> {
+
+    console.log('HERE!!!!!!!!!!!!!!!!!!!');
     return this.propertyImageRepository.find({ where: { property: { id: propertyId } }, order: { order: 'ASC' } });
   }
 

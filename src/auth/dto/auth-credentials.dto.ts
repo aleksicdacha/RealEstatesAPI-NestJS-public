@@ -1,5 +1,3 @@
-// src/auth/dto/auth-credentials.dto.ts
-
 import { IsString, IsNotEmpty } from 'class-validator';
 
 export class AuthCredentialsDto {

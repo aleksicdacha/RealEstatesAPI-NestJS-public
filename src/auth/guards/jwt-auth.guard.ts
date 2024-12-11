@@ -9,6 +9,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
+  // console log Auth information
   handleRequest(err, user, info) {
     console.log('JWT Auth Guard');
     console.log('user:', user); // Log the user object

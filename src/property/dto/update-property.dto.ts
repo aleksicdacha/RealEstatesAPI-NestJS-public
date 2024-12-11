@@ -70,9 +70,4 @@ export class UpdatePropertyDTO {
   @IsOptional()  // Makes this field optional when updating
   @IsString()
   address?: string;
-
-  // // Optional field for updating the GUID if needed
-  // @IsOptional()  // Makes this field optional when updating
-  // @IsUUID()
-  // guid?: string;  // You may choose to leave this out, depending on your logic
 }
