@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PropertyModule } from './property/property.module';
 import { PropertyImageModule } from './property-image/property-image.module';
+import { UploadModule } from '@src/upload/upload.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PropertyImageModule } from './property-image/property-image.module';
     UserModule,
     PropertyModule,
     PropertyImageModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

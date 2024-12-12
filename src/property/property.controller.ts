@@ -7,22 +7,44 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
+  UseGuards, UseInterceptors, UploadedFiles,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UploadService } from '@src/upload/upload.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('properties')
 @UseGuards(JwtAuthGuard)
 export class PropertyController {
-  constructor(private readonly propertyService: PropertyService) {}
+  constructor(
+    private readonly propertyService: PropertyService,
+    private readonly uploadService: UploadService,
+  ) {}
 
+  // This is the route to handle property creation with file uploads
   @Post()
-  create(@Body() createPropertyDto: CreatePropertyDto) {
-    return this.propertyService.create(createPropertyDto);
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'files', maxCount: 10 }, // "files" is the field name for uploading multiple images
+  ]))
+
+  async create(@Body() createPropertyDto: CreatePropertyDto, @UploadedFiles() files: Express.Multer.File[]) {
+
+    console.log('createPropertyDto:::', createPropertyDto);
+    // console.log('UPLOADED FILES:::', await this.uploadService.uploadFiles(files));
+
+    // const uploadedFileUrls = await this.uploadService.uploadFiles(files);
+
+
+    // Handle files and get their URLs
+    // Add the uploaded file URLs to the createPropertyDto object
+    // createPropertyDto.images = await this.uploadService.uploadFiles(files);
+
+    // Create the property and associate the uploaded images
+    return await this.propertyService.create(createPropertyDto);
   }
 
   @Get()

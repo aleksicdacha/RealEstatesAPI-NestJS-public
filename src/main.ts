@@ -4,14 +4,21 @@ import { ConfigService } from './common/config/config.service';
 import { ValidationPipe } from '@nestjs/common';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT') || 3000;
 
   app.enableCors();
+
+  // Serve static files from the "uploads" directory
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads', // The URL prefix for accessing the static files
+  });
 
   // Apply global validation pipe
   app.useGlobalPipes(

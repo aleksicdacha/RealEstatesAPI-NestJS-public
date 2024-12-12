@@ -7,7 +7,7 @@ import {
   MaxLength,
   IsBoolean,
   IsArray,
-  ValidateNested,
+  IsUrl,
 } from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity';
 import { Type } from 'class-transformer'; // Enum for property type
@@ -68,8 +68,6 @@ export class CreatePropertyDto {
   address: string;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreatePropertyImageDto)
-  images: CreatePropertyImageDto[];
+  images: string[];  // Array of image URLs
 
 }

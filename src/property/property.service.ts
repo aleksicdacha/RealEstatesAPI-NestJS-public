@@ -20,12 +20,17 @@ export class PropertyService {
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
     const { images, ...propertyData } = createPropertyDto;
 
+    // Create the property
     const property = this.propertyRepository.create(propertyData);
     const savedProperty = await this.propertyRepository.save(property);
 
+    // Save the images and associate them with the property
     if (images && images.length > 0) {
-      const propertyImages = images.map((image) =>
-        this.propertyImageRepository.create({ ...image, property: savedProperty }),
+      const propertyImages = images.map((imageUrl) =>
+        this.propertyImageRepository.create({
+          url: imageUrl,  // Store the image URL
+          property: savedProperty,  // Associate with the property
+        }),
       );
       await this.propertyImageRepository.save(propertyImages);
     }

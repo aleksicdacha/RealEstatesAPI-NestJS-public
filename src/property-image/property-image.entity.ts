@@ -22,7 +22,7 @@ export class PropertyImage {
   @Column({ type: 'boolean', default: false })
   isFavorite: boolean;
 
-  @ManyToOne(() => Property, (property) => property.images, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Property, (property) => property.images)
   property: Property;
 
   @CreateDateColumn()

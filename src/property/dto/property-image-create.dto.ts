@@ -5,9 +5,8 @@ export class CreatePropertyImageDto {
   url: string;
 
   @IsBoolean()
-  @IsOptional()
-  isFavorite?: boolean;
+  isFavorite: boolean;
 
   @IsNumber()
-  order?: number;
+  order: number;
 }

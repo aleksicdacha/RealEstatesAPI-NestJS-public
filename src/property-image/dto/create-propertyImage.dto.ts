@@ -1,15 +1,14 @@
-import { IsNotEmpty, IsBoolean, IsInt, IsOptional, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsBoolean, IsOptional, IsUrl, IsNumber } from 'class-validator';
 
 export class CreatePropertyImageDto {
   @IsNotEmpty()
   @IsUrl()
   url: string;
 
-  @IsOptional()
   @IsBoolean()
-  isFavorite?: boolean;
+  isFavorite: boolean;
 
   @IsOptional()
-  @IsInt()
-  order?: number;
+  @IsNumber()
+  order: number;
 }
