@@ -78,6 +78,6 @@ export class Property {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true })
+  @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true, eager: true })
   images: PropertyImage[];
 }

@@ -26,17 +26,47 @@ export class PropertyService {
 
     // Save the images and associate them with the property
     if (images && images.length > 0) {
-      const propertyImages = images.map((imageUrl) =>
+      const propertyImages = images.map((imageUrl, index) =>
         this.propertyImageRepository.create({
-          url: imageUrl,  // Store the image URL
-          property: savedProperty,  // Associate with the property
+          url: imageUrl, // Use the string directly as the URL
+          isFavorite: index === 0, // The first image isFavorite: true, others false
+          order: index + 1, // Set order starting from 1
+          property: savedProperty, // Associate with the property
         }),
       );
       await this.propertyImageRepository.save(propertyImages);
     }
 
-    return savedProperty;
+    // Fetch the property again, including the images
+    return await this.propertyRepository.findOne({
+      where: { id: savedProperty.id },
+      relations: ['images'], // Ensure the images are loaded
+    });
+
   }
+
+  // async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
+  //   const { images, ...propertyData } = createPropertyDto;
+  //
+  //   // Create the property
+  //   const property = this.propertyRepository.create(propertyData);
+  //   const savedProperty = await this.propertyRepository.save(property);
+  //
+  //   // Save the images and associate them with the property
+  //   if (images && images.length > 0) {
+  //     const propertyImages = images.map((imageUrl, index) =>
+  //       this.propertyImageRepository.create({
+  //         url: imageUrl, // Use the string directly as the URL
+  //         isFavorite: index === 0, // The first image isFavorite: true, others false
+  //         order: index + 1, // Set order starting from 1
+  //         property: savedProperty, // Associate with the property
+  //       }),
+  //     );
+  //     await this.propertyImageRepository.save(propertyImages);
+  //   }
+  //
+  //   return savedProperty;
+  // }
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
     const queryBuilder = this.propertyRepository.createQueryBuilder('property');
