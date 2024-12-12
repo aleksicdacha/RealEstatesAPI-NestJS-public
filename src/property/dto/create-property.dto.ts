@@ -7,11 +7,8 @@ import {
   MaxLength,
   IsBoolean,
   IsArray,
-  IsUrl,
 } from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity';
-import { Type } from 'class-transformer'; // Enum for property type
-import { CreatePropertyImageDto } from '@src/property/dto/property-image-create.dto';
 
 export class CreatePropertyDto {
   // Required field for property name
