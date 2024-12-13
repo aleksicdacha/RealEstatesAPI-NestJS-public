@@ -1,8 +1,12 @@
-import { IsBoolean, IsInt, IsOptional, IsUrl } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class UpdatePropertyImageDto {
   @IsOptional()
-  @IsUrl()
+  @IsString()
+  id?: string; // For existing images
+
+  @IsOptional()
+  @IsString()
   url?: string;
 
   @IsOptional()

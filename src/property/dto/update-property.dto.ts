@@ -6,11 +6,18 @@ import {
   MinLength,
   MaxLength,
   IsBoolean,
-  IsNotEmpty,
+  IsNotEmpty, IsArray, ValidateNested,
 } from 'class-validator';
-import { PropertyType, PropertyStatus } from '../property.entity'; // Enum for property type
+import { PropertyType, PropertyStatus } from '../property.entity';
+import { Type } from 'class-transformer';
+import { UpdatePropertyImageDto } from '@src/property-image/dto/update-propertyImage.dto'; // Enum for property type
 
 export class UpdatePropertyDTO {
+  // Optional field to update the name
+  @IsOptional()  // Makes this field optional when updating
+  @IsString()
+  code?: string;
+
   // Optional field to update the name
   @IsOptional()  // Makes this field optional when updating
   @IsString()
@@ -70,4 +77,10 @@ export class UpdatePropertyDTO {
   @IsOptional()  // Makes this field optional when updating
   @IsString()
   address?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdatePropertyImageDto)
+  images?: UpdatePropertyImageDto[];
 }
