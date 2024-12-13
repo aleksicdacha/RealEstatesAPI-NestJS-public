@@ -7,6 +7,9 @@ import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyImage } from '../property-image/property-image.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { join } from 'path';
+import { unlink } from 'fs/promises';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PropertyService {
@@ -15,6 +18,7 @@ export class PropertyService {
     private propertyRepository: Repository<Property>,
     @InjectRepository(PropertyImage)
     private propertyImageRepository: Repository<PropertyImage>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
@@ -89,10 +93,7 @@ export class PropertyService {
     });
   }
 
-  async update(
-    id: string,
-    updatePropertyDto: UpdatePropertyDTO,
-  ): Promise<Property> {
+  async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
     const { images, ...propertyData } = updatePropertyDto;
 
     // Update the property fields
@@ -159,17 +160,78 @@ export class PropertyService {
     });
   }
 
+  async remove(id: string): Promise<void> {
+    await this.dataSource.transaction(async (manager) => {
+      // Fetch the property with its associated images
+      const property = await manager
+        .createQueryBuilder(Property, 'property')
+        .leftJoinAndSelect('property.images', 'images')
+        .setLock('pessimistic_write', undefined, ['property']) // Lock only the "property"
+        .where('property.id = :id', { id })
+        .getOne();
 
-  // async update(
-  //   guid: string,
-  //   updatePropertyDto: UpdatePropertyDTO,
-  // ): Promise<Property> {
-  //   await this.propertyRepository.update(guid, updatePropertyDto);
-  //   return this.findOne(guid);
-  // }
+      if (!property) {
+        throw new Error(`Property with ID ${id} not found`);
+      }
 
-  async remove(guid: string): Promise<void> {
-    await this.propertyRepository.delete(guid);
+      // Process images associated with the property
+      if (property.images && property.images.length > 0) {
+        await this.handlePropertyImages(manager, id, property.images);
+      }
+
+      // Remove the property
+      await manager.delete(Property, { id });
+    });
+  }
+
+
+  // Helper functions
+
+
+  async handlePropertyImages(manager, propertyId: string, images: PropertyImage[]): Promise<void> {
+    for (const image of images) {
+      if (!image.url) {
+        console.warn(`Image URL is undefined for image record: ${JSON.stringify(image)}`);
+        continue;
+      }
+
+      const isUsedByOtherProperties = await this.isImageUsedByOtherProperties(manager, image.url, propertyId);
+
+      if (!isUsedByOtherProperties) {
+        await this.deleteImageFile(image.url);
+      }
+    }
+
+    // Remove image records from the database
+    await manager.delete(PropertyImage, { property: { id: propertyId } });
+  }
+
+  async isImageUsedByOtherProperties(manager, url: string, propertyId: string): Promise<boolean> {
+    const count = await manager
+      .createQueryBuilder(PropertyImage, 'propertyImage')
+      .where('propertyImage.url = :url', { url })
+      .andWhere('propertyImage.propertyId != :id', { id: propertyId })
+      .getCount();
+
+    return count > 0;
+  }
+
+  async deleteImageFile(url: string): Promise<void> {
+    const fileName = url.split('/uploads/')[1];
+
+    if (!fileName) {
+      console.warn(`Invalid image URL format: ${url}`);
+      return;
+    }
+
+    const filePath = join(process.cwd(), 'uploads', fileName);
+
+    try {
+      await unlink(filePath);
+      console.log(`Successfully deleted file: ${filePath}`);
+    } catch (error) {
+      console.error(`Failed to delete file: ${filePath}`, error);
+    }
   }
 
   // async findNearby(
