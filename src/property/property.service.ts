@@ -1,27 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
-import { PropertyImage } from '../property-image/property-image.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { join } from 'path';
-import { unlink } from 'fs/promises';
 import { DataSource } from 'typeorm';
+import { PropertyRepository } from '@src/property/property.repository';
+import { PropertyImageRepository } from '@src/property-image/property-image.repository';
 
 @Injectable()
 export class PropertyService {
   constructor(
-    @InjectRepository(Property)
-    private propertyRepository: Repository<Property>,
-    @InjectRepository(PropertyImage)
-    private propertyImageRepository: Repository<PropertyImage>,
+    private readonly propertyRepository: PropertyRepository, // No @InjectRepository here
+    private readonly propertyImageRepository: PropertyImageRepository, // Direct injection
     private readonly dataSource: DataSource,
   ) {}
 
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
+
+    console.log('propertyImageRepository:', this.propertyImageRepository);
     const { images, ...propertyData } = createPropertyDto;
 
     // Create the property
@@ -46,36 +44,10 @@ export class PropertyService {
       where: { id: savedProperty.id },
       relations: ['images'], // Ensure the images are loaded
     });
-
   }
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
-    const queryBuilder = this.propertyRepository.createQueryBuilder('property');
-
-    // Join the images relation
-    queryBuilder.leftJoinAndSelect('property.images', 'images');
-
-    // Apply search
-    if (options.searchField && options.searchValue) {
-      queryBuilder.andWhere(`property.${options.searchField} ILIKE :searchValue`, {
-        searchValue: `%${options.searchValue}%`,
-      });
-    }
-
-    // Apply filters
-    if (options.status) {
-      queryBuilder.andWhere('property.status = :status', { status: options.status });
-    }
-
-    // Apply pagination
-    queryBuilder.skip((options.page - 1) * options.limit).take(options.limit);
-
-    // Apply sorting
-    queryBuilder.orderBy(`property.${options.sortBy}`, options.order as 'ASC' | 'DESC');
-
-    // Fetch results
-    const totalItems = await queryBuilder.getCount();
-    const items = await queryBuilder.getMany();
+    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(options);
 
     return new Pagination<Property>(items, {
       totalItems,
@@ -87,10 +59,16 @@ export class PropertyService {
   }
 
   async findOne(id: string): Promise<Property> {
-    return this.propertyRepository.findOne({
+    const property = await this.propertyRepository.findOne({
       where: { id },
       relations: ['images'], // Eager load the images relation
     });
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return property;
   }
 
   async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
@@ -162,7 +140,6 @@ export class PropertyService {
 
   async remove(id: string): Promise<void> {
     await this.dataSource.transaction(async (manager) => {
-      // Fetch the property with its associated images
       const property = await manager
         .createQueryBuilder(Property, 'property')
         .leftJoinAndSelect('property.images', 'images')
@@ -174,64 +151,34 @@ export class PropertyService {
         throw new Error(`Property with ID ${id} not found`);
       }
 
-      // Process images associated with the property
+      console.log(`Removing property with ID: ${id}`);
+
       if (property.images && property.images.length > 0) {
-        await this.handlePropertyImages(manager, id, property.images);
+        console.log(`Found ${property.images.length} associated images for property ID: ${id}`);
+        await this.propertyImageRepository.handlePropertyImages(manager, id, property.images);
+      } else {
+        console.log(`No images associated with property ID: ${id}`);
       }
 
-      // Remove the property
       await manager.delete(Property, { id });
+      console.log(`Property with ID ${id} successfully removed.`);
     });
   }
 
+  async softDelete(id: string): Promise<void> {
+    await this.dataSource.transaction(async (manager) => {
+      const property = await manager.findOne(Property, {
+        where: { id },
+        relations: ['images'],
+        lock: { mode: 'pessimistic_write' },
+      });
 
-  // Helper functions
-
-
-  async handlePropertyImages(manager, propertyId: string, images: PropertyImage[]): Promise<void> {
-    for (const image of images) {
-      if (!image.url) {
-        console.warn(`Image URL is undefined for image record: ${JSON.stringify(image)}`);
-        continue;
+      if (!property) {
+        throw new Error(`Property with ID ${id} not found`);
       }
 
-      const isUsedByOtherProperties = await this.isImageUsedByOtherProperties(manager, image.url, propertyId);
-
-      if (!isUsedByOtherProperties) {
-        await this.deleteImageFile(image.url);
-      }
-    }
-
-    // Remove image records from the database
-    await manager.delete(PropertyImage, { property: { id: propertyId } });
-  }
-
-  async isImageUsedByOtherProperties(manager, url: string, propertyId: string): Promise<boolean> {
-    const count = await manager
-      .createQueryBuilder(PropertyImage, 'propertyImage')
-      .where('propertyImage.url = :url', { url })
-      .andWhere('propertyImage.propertyId != :id', { id: propertyId })
-      .getCount();
-
-    return count > 0;
-  }
-
-  async deleteImageFile(url: string): Promise<void> {
-    const fileName = url.split('/uploads/')[1];
-
-    if (!fileName) {
-      console.warn(`Invalid image URL format: ${url}`);
-      return;
-    }
-
-    const filePath = join(process.cwd(), 'uploads', fileName);
-
-    try {
-      await unlink(filePath);
-      console.log(`Successfully deleted file: ${filePath}`);
-    } catch (error) {
-      console.error(`Failed to delete file: ${filePath}`, error);
-    }
+      await this.propertyRepository.softDeleteProperty(id);
+    });
   }
 
   // async findNearby(

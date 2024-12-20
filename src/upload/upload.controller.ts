@@ -1,13 +1,16 @@
 import {
-  Controller, OnModuleInit,
+  Controller,
+  OnModuleInit,
   Post,
   UploadedFiles,
   UseInterceptors,
+  Body, BadRequestException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Public } from '@src/auth/decorators/public.decorator';
+import * as multer from 'multer';
 
 @Controller('upload')
 export class UploadController implements OnModuleInit {
@@ -18,15 +21,16 @@ export class UploadController implements OnModuleInit {
   @Public()
   @Post()
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files', 20, {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, callback) => {
-          console.log('FILE:::', file);
-          console.log('REQ:::', req);
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const propertyCode =
+            req.query.propertyCode || req.body.propertyCode || 'UNKNOWN';
+          const safePropertyCode = propertyCode.replace(/[^a-zA-Z0-9_-]/g, '');
+          const timestamp = Date.now();
           const ext = extname(file.originalname);
-          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+          callback(null, `${safePropertyCode}-${timestamp}${ext}`);
         },
       }),
       fileFilter: (req, file, callback) => {
@@ -38,19 +42,14 @@ export class UploadController implements OnModuleInit {
       },
     }),
   )
-  uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
-    // const urls = files.map((file) => `http://localhost:3000/uploads/${file.filename}`);
-    // return { urls };
-
+  async uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
     if (!files || files.length === 0) {
-      return { message: 'No files uploaded' };
+      throw new BadRequestException('No files uploaded');
     }
-
-    // Log all uploaded files
-    files.forEach(file => console.log(`Uploaded file: ${file.originalname}`));
-
-    // Return the URLs of uploaded files
-    const fileUrls = files.map(file => `/uploads/${file.filename}`);
-    return { fileUrls };
+    return files.map((file) => ({
+      originalName: file.originalname,
+      savedAs: file.filename,
+      url: `/uploads/${file.filename}`,
+    }));
   }
 }

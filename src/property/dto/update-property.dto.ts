@@ -69,8 +69,7 @@ export class UpdatePropertyDTO {
   @MaxLength(500, { message: 'Comment must not exceed 500 characters' })
   comment?: string;
 
-  @IsBoolean({ message: 'Elevator must be a boolean' })
-  @IsNotEmpty({ message: 'Elevator field is required' })
+  @IsOptional()
   elevator: boolean;
 
   // Optional field for the address
