@@ -11,10 +11,10 @@ export class PropertyImageRepository extends Repository<PropertyImage> {
   }
 
   async deleteImagesByPropertyId(propertyId: string): Promise<void> {
-    await this.createQueryBuilder('propertyImage')
+    await this.createQueryBuilder('propertyImage') // Remove the alias 'propertyImage'
       .delete()
-      .from(PropertyImage) // Ensure correct table reference
-      .where('propertyImage.propertyId = :propertyId', { propertyId }) // Match column name
+      .from(PropertyImage) // Reference the entity directly, not the alias
+      .where('propertyId = :propertyId', { propertyId }) // No alias in 'propertyId'
       .execute();
   }
 
@@ -26,49 +26,32 @@ export class PropertyImageRepository extends Repository<PropertyImage> {
     return count > 0;
   }
 
-  async handlePropertyImages(manager, propertyId: string, images: PropertyImage[]): Promise<void> {
-    for (const image of images) {
+  async handlePropertyImagesParallel(manager, propertyId: string, images: PropertyImage[]): Promise<void> {
+    const deleteFilePromises = images.map(async (image) => {
       if (!image.url) {
         console.warn(`Image URL is undefined for image record: ${JSON.stringify(image)}`);
-        continue;
+        return; // Skip this image
       }
 
       // Check if the image is used by other properties
       const isUsedByOtherProperties = await this.isImageUsedByOtherProperties(image.url, propertyId);
-
       if (!isUsedByOtherProperties) {
         // Delete the image file if it's not used elsewhere
         await this.deleteImageFile(image.url);
       }
-    }
+    });
 
-    // Delete all image records associated with the property
+    // Process all deletion promises in parallel
+    await Promise.all(deleteFilePromises);
+
+    // Delete all image records associated with the property in one query
     await this.deleteImagesByPropertyId(propertyId);
   }
 
-  // async deleteImageFile(url: string): Promise<void> {
-  //   const fileName = url.split('/uploads/')[1];
-  //
-  //   if (!fileName) {
-  //     console.warn(`Invalid image URL format: ${url}`);
-  //     return;
-  //   }
-  //
-  //   const filePath = join(process.cwd(), 'uploads', fileName);
-  //
-  //   try {
-  //     await unlink(filePath);
-  //     console.log(`Successfully deleted file: ${filePath}`);
-  //   } catch (error) {
-  //     console.error(`Failed to delete file: ${filePath}`, error);
-  //   }
-  // }
-
   async deleteImageFile(filePath: string): Promise<void> {
-    console.log('filePath:::', filePath)
-    // const fullPath = process.env.BASE_URL + filePath;
-    // console.log('fullPath:::', fullPath)      // Use base path from config
-    const basePath = process.env.FILE_UPLOAD_PATH;
+    console.log('filePath:::', filePath);
+
+    const basePath = process.env.FILE_UPLOAD_PATH || '/var/www/RealEstatesAPI-NestJS/uploads'; // Default fallback
     const fullPath = join(basePath, filePath);
 
     try {
@@ -85,4 +68,5 @@ export class PropertyImageRepository extends Repository<PropertyImage> {
       }
     }
   }
+
 }

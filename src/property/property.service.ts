@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
@@ -138,31 +137,67 @@ export class PropertyService {
     });
   }
 
+  // async remove(id: string): Promise<void> {
+  //   await this.dataSource.transaction(async (manager) => {
+  //     const property = await manager
+  //       .createQueryBuilder(Property, 'property')
+  //       .leftJoinAndSelect('property.images', 'images')
+  //       .setLock('pessimistic_write', undefined, ['property']) // Lock only the "property"
+  //       .where('property.id = :id', { id })
+  //       .getOne();
+  //
+  //     if (!property) {
+  //       throw new Error(`Property with ID ${id} not found`);
+  //     }
+  //
+  //     console.log(`Removing property with ID: ${id}`);
+  //
+  //     if (property.images && property.images.length > 0) {
+  //       console.log(`Found ${property.images.length} associated images for property ID: ${id}`);
+  //       await this.propertyImageRepository.handlePropertyImages(manager, id, property.images);
+  //     } else {
+  //       console.log(`No images associated with property ID: ${id}`);
+  //     }
+  //
+  //     await manager.delete(Property, { id });
+  //     console.log(`Property with ID ${id} successfully removed.`);
+  //   });
+  // }
+
   async remove(id: string): Promise<void> {
-    await this.dataSource.transaction(async (manager) => {
-      const property = await manager
-        .createQueryBuilder(Property, 'property')
-        .leftJoinAndSelect('property.images', 'images')
-        .setLock('pessimistic_write', undefined, ['property']) // Lock only the "property"
-        .where('property.id = :id', { id })
-        .getOne();
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        // Fetch the property with associated images
+        const property = await manager
+          .createQueryBuilder(Property, 'property')
+          .leftJoinAndSelect('property.images', 'images')
+          .setLock('pessimistic_write', undefined, ['property']) // Lock the property to prevent concurrent modifications
+          .where('property.id = :id', { id })
+          .getOne();
 
-      if (!property) {
-        throw new Error(`Property with ID ${id} not found`);
-      }
+        if (!property) {
+          throw new NotFoundException(`Property with ID ${id} not found`);
+        }
 
-      console.log(`Removing property with ID: ${id}`);
+        console.log(`Removing property with ID: ${id}`);
 
-      if (property.images && property.images.length > 0) {
-        console.log(`Found ${property.images.length} associated images for property ID: ${id}`);
-        await this.propertyImageRepository.handlePropertyImages(manager, id, property.images);
-      } else {
-        console.log(`No images associated with property ID: ${id}`);
-      }
+        if (property.images && property.images.length > 0) {
+          console.log(`Found ${property.images.length} associated images for property ID: ${id}`);
 
-      await manager.delete(Property, { id });
-      console.log(`Property with ID ${id} successfully removed.`);
-    });
+          // Handle property images with optimized parallel processing
+          await this.propertyImageRepository.handlePropertyImagesParallel(manager, id, property.images);
+        } else {
+          console.log(`No images associated with property ID: ${id}`);
+        }
+
+        // Delete the property itself
+        await manager.delete(Property, { id });
+        console.log(`Property with ID ${id} successfully removed.`);
+      });
+    } catch (error) {
+      console.error(`Failed to remove property with ID ${id}:`, error);
+      throw error; // Rethrow to propagate the error up the call chain
+    }
   }
 
   async softDelete(id: string): Promise<void> {
