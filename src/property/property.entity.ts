@@ -22,11 +22,12 @@ export enum PropertyStatus {
 }
 
 @Entity('properties')
+@Unique(['code'])
 export class Property {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   code: string;
 
   @Column({ type: 'text', nullable: true })

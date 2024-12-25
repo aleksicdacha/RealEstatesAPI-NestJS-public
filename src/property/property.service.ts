@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
@@ -17,12 +17,16 @@ export class PropertyService {
   ) {}
 
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
+    const { code, images, ...propertyData } = createPropertyDto;
 
-    console.log('propertyImageRepository:', this.propertyImageRepository);
-    const { images, ...propertyData } = createPropertyDto;
+    // Check if the code already exists
+    const existingProperty = await this.propertyRepository.findOne({ where: { code } });
+    if (existingProperty) {
+      throw new ConflictException(`Property with code "${code}" already exists.`);
+    }
 
     // Create the property
-    const property = this.propertyRepository.create(propertyData);
+    const property = this.propertyRepository.create({ code, ...propertyData });
     const savedProperty = await this.propertyRepository.save(property);
 
     // Save the images and associate them with the property
@@ -45,46 +49,25 @@ export class PropertyService {
     });
   }
 
-  async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
-    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(options);
+  async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
+    const { code, images, ...propertyData } = updatePropertyDto;
 
-    return new Pagination<Property>(items, {
-      totalItems,
-      itemCount: items.length,
-      itemsPerPage: options.limit,
-      totalPages: Math.ceil(totalItems / options.limit),
-      currentPage: options.page,
-    });
-  }
-
-  async findOne(id: string): Promise<Property> {
-    const property = await this.propertyRepository.findOne({
-      where: { id },
-      relations: ['images'], // Eager load the images relation
-    });
-
+    // Fetch the property to update
+    const property = await this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
     if (!property) {
-      throw new NotFoundException(`Property with ID ${id} not found`);
+      throw new NotFoundException(`Property with id "${id}" not found.`);
     }
 
-    return property;
-  }
-
-  async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
-    const { images, ...propertyData } = updatePropertyDto;
+    // Check if the code is being updated and if it already exists
+    if (code && code !== property.code) {
+      const existingProperty = await this.propertyRepository.findOne({ where: { code } });
+      if (existingProperty) {
+        throw new ConflictException(`Property with code "${code}" already exists.`);
+      }
+    }
 
     // Update the property fields
-    await this.propertyRepository.update(id, propertyData);
-
-    // Fetch the property including its current images
-    const property = await this.propertyRepository.findOne({
-      where: { id },
-      relations: ['images'],
-    });
-
-    if (!property) {
-      throw new Error(`Property with id ${id} not found`);
-    }
+    await this.propertyRepository.update(id, { code, ...propertyData });
 
     if (images) {
       // Existing image IDs from the database
@@ -137,32 +120,32 @@ export class PropertyService {
     });
   }
 
-  // async remove(id: string): Promise<void> {
-  //   await this.dataSource.transaction(async (manager) => {
-  //     const property = await manager
-  //       .createQueryBuilder(Property, 'property')
-  //       .leftJoinAndSelect('property.images', 'images')
-  //       .setLock('pessimistic_write', undefined, ['property']) // Lock only the "property"
-  //       .where('property.id = :id', { id })
-  //       .getOne();
-  //
-  //     if (!property) {
-  //       throw new Error(`Property with ID ${id} not found`);
-  //     }
-  //
-  //     console.log(`Removing property with ID: ${id}`);
-  //
-  //     if (property.images && property.images.length > 0) {
-  //       console.log(`Found ${property.images.length} associated images for property ID: ${id}`);
-  //       await this.propertyImageRepository.handlePropertyImages(manager, id, property.images);
-  //     } else {
-  //       console.log(`No images associated with property ID: ${id}`);
-  //     }
-  //
-  //     await manager.delete(Property, { id });
-  //     console.log(`Property with ID ${id} successfully removed.`);
-  //   });
-  // }
+
+  async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
+    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(options);
+
+    return new Pagination<Property>(items, {
+      totalItems,
+      itemCount: items.length,
+      itemsPerPage: options.limit,
+      totalPages: Math.ceil(totalItems / options.limit),
+      currentPage: options.page,
+    });
+  }
+
+  async findOne(id: string): Promise<Property> {
+    const property = await this.propertyRepository.findOne({
+      where: { id },
+      relations: ['images'], // Eager load the images relation
+    });
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return property;
+  }
+
 
   async remove(id: string): Promise<void> {
     try {

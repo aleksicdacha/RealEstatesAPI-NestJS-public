@@ -5,61 +5,53 @@ import {
   IsNumber,
   MinLength,
   MaxLength,
-  IsBoolean,
-  IsNotEmpty, IsArray, ValidateNested,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { PropertyType, PropertyStatus } from '../property.entity';
 import { Type } from 'class-transformer';
-import { UpdatePropertyImageDto } from '@src/property-image/dto/update-propertyImage.dto'; // Enum for property type
+import { UpdatePropertyImageDto } from '@src/property-image/dto/update-propertyImage.dto';
+import { IsImmutable } from '@src/common/validators/is-immutable.validator';
 
 export class UpdatePropertyDTO {
-  // Optional field to update the name
-  @IsOptional()  // Makes this field optional when updating
+  @IsImmutable({ message: 'Code cannot be updated once created.' })
+  @IsOptional()
   @IsString()
   code?: string;
 
-  // Optional field to update the name
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsString()
   name?: string;
 
-  // Optional field to update the description
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsString()
   description?: string;
 
-  // Optional field for the property type
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsEnum(PropertyType)
   propertyType?: PropertyType;
 
-  // Optional field for the property type
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsEnum(PropertyStatus)
   status?: PropertyStatus;
 
-  // Optional field for the property price (can be updated)
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsNumber()
   price?: number;
 
-  // Optional field for the property salePrice (can be updated)
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsNumber()
   salePrice?: number;
 
-  // Optional field for the property area (can be updated)
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsNumber()
   area?: number;
 
-  // Optional field for latitude
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsNumber()
   lat?: number;
 
-  // Optional field for longitude
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsNumber()
   lon?: number;
 
@@ -70,10 +62,9 @@ export class UpdatePropertyDTO {
   comment?: string;
 
   @IsOptional()
-  elevator: boolean;
+  elevator?: boolean;
 
-  // Optional field for the address
-  @IsOptional()  // Makes this field optional when updating
+  @IsOptional()
   @IsString()
   address?: string;
 
