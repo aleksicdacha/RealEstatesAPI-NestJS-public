@@ -4,22 +4,14 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
-  UpdateDateColumn, Unique,
+  UpdateDateColumn, Unique, OneToOne,
 } from 'typeorm';
-import { PropertyImage } from '../property-image/property-image.entity';
+import { PropertyImage } from '@src/entities/property-image/property-image.entity';
 import { IsPositive } from 'class-validator';
-
-export enum PropertyType {
-  Apartment = 'Apartment',
-  House = 'House',
-  Office = 'Office',
-}
-
-export enum PropertyStatus {
-  Active = 'active',
-  Inactive = 'inactive',
-  Deleted = 'deleted',
-}
+import { Client } from '@src/entities/client/client.entity';
+import { HeatingType } from '@src/entities/property/enums/heating.enum';
+import { PropertyType } from '@src/entities/property/enums/property-type.enum';
+import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
 
 @Entity('properties')
 @Unique(['code'])
@@ -73,6 +65,21 @@ export class Property {
   @Column({ type: 'boolean', nullable: false })
   elevator: boolean;
 
+  @Column({ type: 'jsonb', nullable: true })
+  additionalEquipment: string[];
+
+  @Column({ type: 'int', nullable: true })
+  constructionYear?: number;
+
+  @Column({ type: 'int', nullable: true })
+  bathrooms?: number;
+
+  @Column({ type: 'int', nullable: true })
+  floor?: number;
+
+  @Column({ type: 'enum', enum: HeatingType, nullable: true })
+  heating?: HeatingType;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -81,4 +88,8 @@ export class Property {
 
   @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true, eager: true })
   images: PropertyImage[];
+
+  // Optional: Bi-directional relation with Client
+  @OneToOne(() => Client, (client) => client.property, { nullable: true })
+  client: Client;
 }

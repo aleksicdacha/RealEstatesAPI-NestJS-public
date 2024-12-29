@@ -5,8 +5,8 @@ import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { DataSource } from 'typeorm';
-import { PropertyRepository } from '@src/property/property.repository';
-import { PropertyImageRepository } from '@src/property-image/property-image.repository';
+import { PropertyRepository } from '@src/entities/property/property.repository';
+import { PropertyImageRepository } from '@src/entities/property-image/property-image.repository';
 
 @Injectable()
 export class PropertyService {
@@ -50,7 +50,7 @@ export class PropertyService {
   }
 
   async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
-    const { code, images, ...propertyData } = updatePropertyDto;
+    const { code, images, additionalEquipment, ...propertyData } = updatePropertyDto;
 
     // Fetch the property to update
     const property = await this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
@@ -66,8 +66,15 @@ export class PropertyService {
       }
     }
 
+    // Serialize additional_equipment if provided
+    const updatedData = {
+      ...propertyData,
+      code,
+      additionalEquipment: additionalEquipment ?? null,
+    };
+
     // Update the property fields
-    await this.propertyRepository.update(id, { code, ...propertyData });
+    await this.propertyRepository.update(id, updatedData);
 
     if (images) {
       // Existing image IDs from the database
@@ -102,24 +109,11 @@ export class PropertyService {
         );
         await this.propertyImageRepository.save(propertyImages);
       }
-
-      // Delete images that are not in the update payload
-      const updatedImageIds = imagesToUpdate.map((img) => img.id);
-      const imagesToDelete = property.images.filter(
-        (img) => !updatedImageIds.includes(img.id),
-      );
-      if (imagesToDelete.length > 0) {
-        await this.propertyImageRepository.remove(imagesToDelete);
-      }
     }
 
-    // Fetch and return the updated property
-    return await this.propertyRepository.findOne({
-      where: { id },
-      relations: ['images'],
-    });
+    // Return the updated property
+    return this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
   }
-
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
     const [items, totalItems] = await this.propertyRepository.findFilteredProperties(options);
@@ -136,14 +130,35 @@ export class PropertyService {
   async findOne(id: string): Promise<Property> {
     const property = await this.propertyRepository.findOne({
       where: { id },
-      relations: ['images'], // Eager load the images relation
+      relations: ['client', 'images'], // Eager load the images relation
     });
 
     if (!property) {
       throw new NotFoundException(`Property with ID ${id} not found`);
     }
 
-    return property;
+    // Handle the case where client is null
+    if (!property.client) {
+      console.warn(`Property with id "${id}" has no associated client.`);
+    } else {
+      console.log('Client ID:', property.client.id); // Access client ID safely
+    }
+
+    return {
+      ...property,
+      client: property.client ? {
+        id: property.client.id,
+        name: property.client.name,
+        address: property.client.address,
+        phone: property.client.phone,
+        email: property.client.email,
+        transactionType: property.client.transactionType,
+        paymentType: property.client.paymentType,
+        comment: property.client.comment,
+        status: property.client.status,
+        moneyAmount: property.client.moneyAmount,
+      } : null,
+    };
   }
 
 

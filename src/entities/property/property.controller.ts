@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards, UseInterceptors, UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { FilterPropertyDto } from './dto/filter-property.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('properties')
@@ -23,7 +25,6 @@ export class PropertyController {
     private readonly propertyService: PropertyService,
   ) {}
 
-  // This is the route to handle property creation with file uploads
   @Post()
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'files', maxCount: 10 }, // "files" is the field name for uploading multiple images

@@ -9,15 +9,15 @@ import {
   Delete,
   Query
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@src/auth/guards/roles.guard';
+import { Roles } from '@src/auth/decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FilterPropertyDto } from '@src/property/dto/filter-property.dto';
+import { FilterPropertyDto } from '@src/entities/property/dto/filter-property.dto';
 
 @Controller('users')
 export class UserController {

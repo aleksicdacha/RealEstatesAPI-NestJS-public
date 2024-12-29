@@ -1,6 +1,7 @@
-import { User } from '@src/user/user.entity';
-import { Property } from '@src/property/property.entity';
-import { PropertyImage } from '@src/property-image/property-image.entity';
+import { User } from '@src/entities/user/user.entity';
+import { Property } from '@src/entities/property/property.entity';
+import { PropertyImage } from '@src/entities/property-image/property-image.entity';
+import { Client } from '@src/entities/client/client.entity';
 
 const { DataSource } = require('typeorm');
 export const AppDataSource = new DataSource({
@@ -12,6 +13,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'estates',
   synchronize: true,
   logging: true,
-  entities: [User, Property, PropertyImage],
+  entities: [User, Property, PropertyImage, Client],
   migrations: ['src/migrations/*.ts'],
 });

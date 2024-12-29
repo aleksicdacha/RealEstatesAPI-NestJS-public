@@ -6,8 +6,8 @@ import {
   Max,
   MinLength, IsInt,
 } from 'class-validator';
-import { VALID_SEARCH_FIELDS } from '../../common/config/constants';
-import { IsValidSearchField } from '../../common/validators/search-field.validator';
+import { VALID_SEARCH_FIELDS } from '@src/common/config/constants';
+import { IsValidSearchField } from '@src/common/validators/search-field.validator';
 import { Type } from 'class-transformer';
 
 export class FiltersDto {

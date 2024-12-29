@@ -3,10 +3,10 @@ import { PropertyService } from './property.service';
 import { PropertyController } from './property.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Property } from './property.entity';
-import { PropertyImage } from '../property-image/property-image.entity';
-import { UploadModule } from '../upload/upload.module';
-import { PropertyRepository } from '@src/property/property.repository';
-import { PropertyImageRepository } from '@src/property-image/property-image.repository';
+import { PropertyImage } from '@src/entities/property-image/property-image.entity';
+import { UploadModule } from '@src/entities/upload/upload.module';
+import { PropertyRepository } from '@src/entities/property/property.repository';
+import { PropertyImageRepository } from '@src/entities/property-image/property-image.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Property, PropertyImage]), UploadModule],

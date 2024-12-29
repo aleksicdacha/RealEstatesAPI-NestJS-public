@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { User } from '../src/user/user.entity';
+import { User } from '@src/entities/user/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: './.env' });

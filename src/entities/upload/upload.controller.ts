@@ -4,13 +4,12 @@ import {
   Post,
   UploadedFiles,
   UseInterceptors,
-  Body, BadRequestException,
+  BadRequestException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Public } from '@src/auth/decorators/public.decorator';
-import * as multer from 'multer';
 
 @Controller('upload')
 export class UploadController implements OnModuleInit {

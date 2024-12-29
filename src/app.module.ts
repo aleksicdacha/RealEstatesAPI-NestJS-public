@@ -3,10 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from './common/config/config.module';
 import { ConfigService } from './common/config/config.service';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { PropertyModule } from './property/property.module';
-import { PropertyImageModule } from './property-image/property-image.module';
-import { UploadModule } from '@src/upload/upload.module';
+import { UserModule } from '@src/entities/user/user.module';
+import { PropertyModule } from '@src/entities/property/property.module';
+import { PropertyImageModule } from '@src/entities/property-image/property-image.module';
+import { UploadModule } from '@src/entities/upload/upload.module';
+import { ClientModule } from '@src/entities/client/client.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UploadModule } from '@src/upload/upload.module';
     PropertyModule,
     PropertyImageModule,
     UploadModule,
+    ClientModule
   ],
 })
 export class AppModule {}

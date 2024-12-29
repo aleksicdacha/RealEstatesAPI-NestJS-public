@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Property, PropertyStatus } from './property.entity';
+import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
+import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
 
 @Injectable()
 export class PropertyRepository extends Repository<Property> {
@@ -11,6 +12,7 @@ export class PropertyRepository extends Repository<Property> {
 
   async findFilteredProperties(options: FilterPropertyDto): Promise<[Property[], number]> {
     const queryBuilder = this.createQueryBuilder('property');
+    queryBuilder.leftJoinAndSelect('property.client', 'client');
     queryBuilder.leftJoinAndSelect('property.images', 'images');
 
     if (options.searchField && options.searchValue) {

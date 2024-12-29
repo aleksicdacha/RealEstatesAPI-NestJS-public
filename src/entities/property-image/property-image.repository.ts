@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { PropertyImage } from '@src/property-image/property-image.entity';
+import { PropertyImage } from '@src/entities/property-image/property-image.entity';
 import { access, unlink } from 'fs/promises';
 import { join } from 'path';
 

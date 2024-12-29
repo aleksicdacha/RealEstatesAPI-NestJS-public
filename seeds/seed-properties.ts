@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
-import { Property } from '@src/property/property.entity';
-import { PropertyImage } from '@src/property-image/property-image.entity';
+import { Property } from '@src/entities/property/property.entity';
+import { PropertyImage } from '@src/entities/property-image/property-image.entity';
 import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
 
