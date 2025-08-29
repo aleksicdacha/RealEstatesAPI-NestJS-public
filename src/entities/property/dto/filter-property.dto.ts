@@ -34,6 +34,10 @@ export class FilterPropertyDto {
 
   @IsOptional()
   @IsString()
+  propertyType?: string;
+
+  @IsOptional()
+  @IsString()
   role?: string;
 
   @IsOptional()

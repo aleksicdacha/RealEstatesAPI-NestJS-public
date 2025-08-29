@@ -1,0 +1,457 @@
+{
+  "info": {
+    "name": "Real Estate API",
+    "description": "Complete API collection for Real Estate Management System",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', responseJson.access_token);",
+                  "    console.log('Token saved:', responseJson.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with username and password. Token is automatically saved."
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Get current user profile (requires authentication)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties",
+      "item": [
+        {
+          "name": "Get All Properties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties?page=1&limit=10&sortBy=createdAt&order=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "order",
+                  "value": "DESC"
+                },
+                {
+                  "key": "searchField",
+                  "value": "address",
+                  "disabled": true
+                },
+                {
+                  "key": "searchValue",
+                  "value": "New York",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Active",
+                  "disabled": true
+                },
+                {
+                  "key": "propertyType",
+                  "value": "Apartment",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated list of properties with optional filtering"
+          }
+        },
+        {
+          "name": "Get Property by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{property_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties", "{{property_id}}"]
+            },
+            "description": "Get specific property details by ID"
+          }
+        },
+        {
+          "name": "Create Property",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('property_id', responseJson.id);",
+                  "    console.log('Property created with ID:', responseJson.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROP-{{$timestamp}}\",\n  \"description\": \"Beautiful apartment in downtown\",\n  \"propertyType\": \"Apartment\",\n  \"price\": 250000,\n  \"salePrice\": 230000,\n  \"area\": 120.5,\n  \"address\": \"123 Main Street, New York, NY\",\n  \"lat\": 40.7128,\n  \"lon\": -74.0060,\n  \"bathrooms\": 2,\n  \"floor\": 5,\n  \"elevator\": true,\n  \"constructionYear\": 2020,\n  \"heating\": \"Central\",\n  \"comment\": \"Great location with city view\",\n  \"additionalEquipment\": [\"Balcony\", \"Parking\", \"Air Conditioning\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties"]
+            },
+            "description": "Create a new property. Property ID is automatically saved."
+          }
+        },
+        {
+          "name": "Update Property",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 260000,\n  \"description\": \"Updated: Beautiful apartment in downtown with renovated kitchen\",\n  \"additionalEquipment\": [\"Balcony\", \"Parking\", \"Air Conditioning\", \"Dishwasher\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{property_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties", "{{property_id}}"]
+            },
+            "description": "Update existing property (partial update)"
+          }
+        },
+        {
+          "name": "Delete Property",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{property_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties", "{{property_id}}"]
+            },
+            "description": "Delete a property by ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "Get All Clients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/clients?page=1&limit=10&sortBy=createdAt&order=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "order",
+                  "value": "DESC"
+                },
+                {
+                  "key": "status",
+                  "value": "Active",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated list of clients"
+          }
+        },
+        {
+          "name": "Get Client by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/clients/{{client_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "{{client_id}}"]
+            },
+            "description": "Get specific client details by ID"
+          }
+        },
+        {
+          "name": "Create Client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('client_id', responseJson.id);",
+                  "    console.log('Client created with ID:', responseJson.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1-555-123-4567\",\n  \"address\": \"456 Oak Avenue, New York, NY\",\n  \"status\": \"Active\",\n  \"transactionType\": \"Buy\",\n  \"paymentType\": \"Cash\",\n  \"moneyAmount\": 250000,\n  \"comment\": \"Looking for apartment in downtown area\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            },
+            "description": "Create a new client. Client ID is automatically saved."
+          }
+        },
+        {
+          "name": "Update Client",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1-555-123-9999\",\n  \"moneyAmount\": 280000,\n  \"comment\": \"Updated budget and contact info\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients/{{client_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "{{client_id}}"]
+            },
+            "description": "Update existing client (partial update)"
+          }
+        },
+        {
+          "name": "Delete Client (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/clients/{{client_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "{{client_id}}"]
+            },
+            "description": "Soft delete a client (sets status to Deleted)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get paginated list of users (Admin only)"
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Create a new user (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "File Upload",
+      "item": [
+        {
+          "name": "Upload Single File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/single",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "single"]
+            },
+            "description": "Upload a single image file"
+          }
+        },
+        {
+          "name": "Upload Multiple Files",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/multiple",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "multiple"]
+            },
+            "description": "Upload multiple image files"
+          }
+        }
+      ]
+    }
+  ]
+}

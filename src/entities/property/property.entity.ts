@@ -13,7 +13,7 @@ import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
 
-@Entity('properties')
+@Entity()
 @Unique(['code'])
 export class Property {
   @PrimaryGeneratedColumn('uuid')
@@ -47,8 +47,8 @@ export class Property {
   @IsPositive()
   salePrice: number;
 
-  @Column({ type: 'float' })
-  area: number;
+  @Column({ type: 'float', nullable: true  })
+  area?: number;
 
   @Column()
   address: string;
@@ -62,7 +62,7 @@ export class Property {
   @Column({ type: 'text', nullable: true })
   comment: string;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ type: 'boolean', nullable: true })
   elevator: boolean;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -87,7 +87,7 @@ export class Property {
   updatedAt: Date;
 
   @OneToMany(() => PropertyImage, (image) => image.property, { cascade: true, eager: true })
-  images: PropertyImage[];
+  images?: PropertyImage[];
 
   // Optional: Bi-directional relation with Client
   @OneToOne(() => Client, (client) => client.property, { nullable: true })

@@ -15,7 +15,7 @@ import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
 import { Client } from '@src/entities/client/client.entity';
 
 @Controller('clients')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class ClientController {
   constructor(
     private readonly clientService: ClientService,

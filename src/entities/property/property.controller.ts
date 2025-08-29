@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFiles, Put,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -19,7 +19,7 @@ import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('properties')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class PropertyController {
   constructor(
     private readonly propertyService: PropertyService,
@@ -46,7 +46,15 @@ export class PropertyController {
     return this.propertyService.findOne(guid);
   }
 
-  @Patch(':guid')
+  // @Patch(':guid')
+  // update(
+  //   @Param('guid') guid: string,
+  //   @Body() updatePropertyDto: UpdatePropertyDTO,
+  // ) {
+  //   return this.propertyService.update(guid, updatePropertyDto);
+  // }
+
+  @Put(':guid')
   update(
     @Param('guid') guid: string,
     @Body() updatePropertyDto: UpdatePropertyDTO,

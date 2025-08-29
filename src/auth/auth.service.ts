@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@src/entities/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
@@ -9,7 +10,8 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(authCredentialsDto: AuthCredentialsDto) {
@@ -20,22 +22,23 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    const payload: JwtPayload = { username: user.username, role: user.role, sub:user.id }; //TODO:: CheckTHIS
+    const payload: JwtPayload = { username: user.username, role: user.role, sub: user.id };
 
     console.log('Payload:', payload);
-    // this.jwtService.sign(payload);
 
     const accessToken = this.jwtService.sign(payload);
-    //
-    // return { accessToken };
-
     const tokens = await this.issueTokens(user.id, user.username);
     await this.userService.updateRefreshToken(user.id, tokens.refreshToken);
 
-    console.log('Tokens:', tokens);
-
-    // return tokens;
-    return { accessToken, refreshToken: tokens.refreshToken };
+    return { 
+      accessToken, 
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role
+      }
+    };
   }
 
   async logout(userId: number) {
@@ -54,7 +57,7 @@ export class AuthService {
 
   async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
     try {
-      const payload = this.jwtService.verify(refreshToken, { secret: process.env.JWT_REFRESH_SECRET });
+      const payload = this.jwtService.verify(refreshToken);
       const user = await this.userService.findOne(payload.sub);
 
       if (!user || !(await this.userService.validateRefreshToken(user.id, refreshToken))) {
@@ -68,7 +71,7 @@ export class AuthService {
 
       const newPayload: JwtPayload = { username: user.username, role: user.role, sub: user.id };
 
-      const newAccessToken = this.jwtService.sign(newPayload, { expiresIn: process.env.JWT_EXPIRES_IN });
+      const newAccessToken = this.jwtService.sign(newPayload);
 
       return { accessToken: newAccessToken };
     } catch (error) {
@@ -98,15 +101,13 @@ export class AuthService {
 
   private async issueTokens(userId: number, username: string) {
     const payload = { sub: userId, username };
-    const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
-
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-    });
+    
+    // Use the global JWT configuration without overrides
+    const accessToken = this.jwtService.sign(payload);
+    
+    // For refresh token, we'll use a longer expiration but same secret for now
+    // In production, you'd want separate secrets
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
 
     return { accessToken, refreshToken };
   }

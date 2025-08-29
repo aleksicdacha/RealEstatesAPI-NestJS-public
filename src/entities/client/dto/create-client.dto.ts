@@ -46,7 +46,7 @@ export class CreateClientDTO {
 
   @IsOptional()
   @IsNumber()
-  moneyAmount?: number;
+  moneyAmount?: number | null;
 
   @IsOptional()
   @IsUUID()

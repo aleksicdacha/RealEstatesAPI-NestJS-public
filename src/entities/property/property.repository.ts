@@ -25,6 +25,10 @@ export class PropertyRepository extends Repository<Property> {
       queryBuilder.andWhere('property.status = :status', { status: options.status });
     }
 
+    if (options.propertyType) {
+      queryBuilder.andWhere('property.propertyType = :propertyType', { propertyType: options.propertyType });
+    }
+
     queryBuilder.skip((options.page - 1) * options.limit).take(options.limit);
     queryBuilder.orderBy(`property.${options.sortBy}`, options.order as 'ASC' | 'DESC');
 

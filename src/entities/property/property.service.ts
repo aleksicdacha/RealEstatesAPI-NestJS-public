@@ -26,27 +26,31 @@ export class PropertyService {
     }
 
     // Create the property
-    const property = this.propertyRepository.create({ code, ...propertyData });
-    const savedProperty = await this.propertyRepository.save(property);
+    try {
+      const property = this.propertyRepository.create({ code, ...propertyData });
+      const savedProperty = await this.propertyRepository.save(property);
 
-    // Save the images and associate them with the property
-    if (images && images.length > 0) {
-      const propertyImages = images.map((imageUrl, index) =>
-        this.propertyImageRepository.create({
-          url: imageUrl, // Use the string directly as the URL
-          isFavorite: index === 0, // The first image isFavorite: true, others false
-          order: index + 1, // Set order starting from 1
-          property: savedProperty, // Associate with the property
-        }),
-      );
-      await this.propertyImageRepository.save(propertyImages);
+      // Save the images and associate them with the property
+      if (images && images.length > 0) {
+        const propertyImages = images.map((imageUrl, index) =>
+          this.propertyImageRepository.create({
+            url: imageUrl, // Use the string directly as the URL
+            isFavorite: index === 0, // The first image isFavorite: true, others false
+            order: index + 1, // Set order starting from 1
+            property: savedProperty, // Associate with the property
+          }),
+        );
+        await this.propertyImageRepository.save(propertyImages);
+      }
+
+      // Fetch the property again, including the images
+      return await this.propertyRepository.findOne({
+        where: { id: savedProperty.id },
+        relations: ['images'], // Ensure the images are loaded
+      });
+    } catch (e) {
+      console.log('error', e)
     }
-
-    // Fetch the property again, including the images
-    return await this.propertyRepository.findOne({
-      where: { id: savedProperty.id },
-      relations: ['images'], // Ensure the images are loaded
-    });
   }
 
   async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
@@ -116,14 +120,23 @@ export class PropertyService {
   }
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
-    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(options);
+    // Set default values for pagination
+    const paginationOptions = {
+      ...options,
+      page: options.page || 1,
+      limit: options.limit || 10,
+      sortBy: options.sortBy || 'createdAt',
+      order: (options.order || 'DESC') as 'ASC' | 'DESC'
+    };
+
+    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
 
     return new Pagination<Property>(items, {
       totalItems,
       itemCount: items.length,
-      itemsPerPage: options.limit,
-      totalPages: Math.ceil(totalItems / options.limit),
-      currentPage: options.page,
+      itemsPerPage: paginationOptions.limit,
+      totalPages: Math.ceil(totalItems / paginationOptions.limit),
+      currentPage: paginationOptions.page,
     });
   }
 
@@ -193,6 +206,7 @@ export class PropertyService {
         console.log(`Property with ID ${id} successfully removed.`);
       });
     } catch (error) {
+      console.log(error);
       console.error(`Failed to remove property with ID ${id}:`, error);
       throw error; // Rethrow to propagate the error up the call chain
     }
