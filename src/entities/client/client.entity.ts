@@ -44,13 +44,13 @@ export class Client {
   paymentType: PaymentType;
 
   @Column({ type: 'text', nullable: true })
-  comment: string;
+  comment: string|null;
 
   @Column({ type: 'decimal', precision: 10, scale: 0, nullable: true })
   @IsPositive()
   moneyAmount: number;
 
-  @OneToOne(() => Property, { cascade: true, eager: true }) // `eager` ensures it is loaded automatically
+  @OneToOne(() => Property, { onDelete: 'SET NULL', cascade: true, eager: true }) // `eager` ensures it is loaded automatically
   @JoinColumn() // This is required on the owning side to indicate the foreign key
   property?: Property;
 }

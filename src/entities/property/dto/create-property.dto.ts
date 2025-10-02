@@ -20,6 +20,9 @@ import { PropertyStatus } from '@src/entities/property/enums/property-status.enu
 
 export class CreatePropertyDto {
   @IsString()
+  id: string;
+
+  @IsString()
   @MinLength(3, { message: 'Code must be at least 3 characters long.' })
   @MaxLength(20, { message: 'Code must not exceed 20 characters.' })
   code: string;
@@ -37,6 +40,7 @@ export class CreatePropertyDto {
   @IsEnum(PropertyType, { message: 'Invalid property type.' })
   propertyType: PropertyType;
 
+  @IsOptional()
   @IsEnum(PropertyStatus, { message: 'Invalid property status.' })
   status: PropertyStatus;
 
@@ -57,13 +61,14 @@ export class CreatePropertyDto {
   @Max(1_000_000_000, { message: 'Sale price cannot exceed 1 billion.' })
   salePrice?: number;
 
+  @IsOptional()
   @IsNumber(
     { allowInfinity: false, allowNaN: false },
     { message: 'Area must be a valid number.' },
   )
   @Min(1, { message: 'Area must be at least 1 square meter.' })
   @Max(100_000, { message: 'Area cannot exceed 100,000 square meters.' })
-  area: number;
+  area?: number;
 
   @IsOptional()
   @IsNumber(
@@ -85,9 +90,9 @@ export class CreatePropertyDto {
 
   @IsOptional()
   @IsString({ message: 'Comment must be a string.' })
-  @MinLength(10, { message: 'Comment must be at least 10 characters long.' })
   @MaxLength(500, { message: 'Comment must not exceed 500 characters.' })
   comment?: string;
+
 
   @IsOptional()
   @IsBoolean({ message: 'Elevator must be a boolean value.' })
@@ -124,9 +129,10 @@ export class CreatePropertyDto {
   @IsEnum(HeatingType, { message: 'Invalid heating type.' })
   heating?: HeatingType;
 
+  @IsOptional()
   @IsArray({ message: 'Images must be an array of URLs.' })
   @ValidateNested({ each: true })
   @Type(() => String)
   @IsUrl({}, { each: true, message: 'Each image must be a valid URL.' })
-  images: string[]; // Array of image URLs
+  images?: string[]; // Array of image URLs
 }
