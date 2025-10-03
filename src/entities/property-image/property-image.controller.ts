@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Param, Get, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Patch, Delete, ValidationPipe, UsePipes } from '@nestjs/common';
 import { PropertyImageService } from './property-image.service';
 import { CreatePropertyImageDto } from './dto/create-propertyImage.dto';
 import { UpdatePropertyImageDto } from './dto/update-propertyImage.dto';
+import { ReorderPropertyImageDto } from './dto/reorder-propertyImage.dto';
 
 @Controller('properties/:propertyId/images')
 export class PropertyImageController {
@@ -18,6 +19,15 @@ export class PropertyImageController {
   @Get()
   findAllByProperty(@Param('propertyId') propertyId: string) {
     return this.propertyImageService.findAllByProperty(propertyId);
+  }
+
+  @Patch('reorder')
+  @UsePipes(new ValidationPipe({ transform: false, whitelist: false }))
+  updateOrder(
+    @Param('propertyId') propertyId: string,
+    @Body() orderData: { id: string; order: number }[],
+  ) {
+    return this.propertyImageService.updateImageOrder(propertyId, orderData);
   }
 
   @Patch(':id')
