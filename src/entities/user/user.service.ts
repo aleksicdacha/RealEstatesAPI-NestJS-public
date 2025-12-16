@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { User } from './user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserQueryDto } from './dto/user-query.dto';
@@ -133,6 +134,58 @@ export class UserService {
 
   async updateLastLogoutTime(userId: number): Promise<void> {
     await this.userRepository.update(userId, { lastLogoutTime: new Date() });
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  async createPasswordResetToken(userId: number): Promise<string> {
+    // Generate a secure random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Hash the token before storing
+    const hashedToken = await bcrypt.hash(resetToken, 10);
+    
+    // Token expires in 1 hour
+    const resetPasswordExpires = new Date(Date.now() + 3600000);
+    
+    await this.userRepository.update(userId, {
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires,
+    });
+    
+    return resetToken; // Return the plain token to send via email
+  }
+
+  async findByResetToken(token: string): Promise<User | null> {
+    // Find all users with non-expired reset tokens
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.resetPasswordToken IS NOT NULL')
+      .andWhere('user.resetPasswordExpires > :now', { now: new Date() })
+      .getMany();
+    
+    // Check each user's hashed token against the provided token
+    for (const user of users) {
+      const isValid = await bcrypt.compare(token, user.resetPasswordToken);
+      if (isValid) {
+        return user;
+      }
+    }
+    
+    return null;
+  }
+
+  async resetPassword(userId: number, newPassword: string): Promise<void> {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    await this.userRepository.update(userId, {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    });
   }
 
 }

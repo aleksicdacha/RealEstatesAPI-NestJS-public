@@ -11,6 +11,9 @@ export class User {
   @Index('username_search_index')
   username: string;
 
+  @Column({ unique: true, nullable: true })
+  email: string | null;
+
   @Exclude()
   @Column()
   password: string;
@@ -28,4 +31,12 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   lastLogoutTime: Date | null;
+
+  @Exclude()
+  @Column({ nullable: true })
+  resetPasswordToken: string | null;
+
+  @Exclude()
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date | null;
 }
