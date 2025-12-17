@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { User } from './user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
@@ -48,15 +48,30 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+    try {
+      console.log('[UserService] Creating user:', createUserDto);
+      console.log('[UserService] About to generate salt...');
+      const salt = await bcrypt.genSalt();
+      console.log('[UserService] Salt generated successfully');
+      console.log('[UserService] About to hash password...');
+      const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+      console.log('[UserService] Password hashed successfully');
 
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
+      console.log('[UserService] About to create user entity...');
+      const user = this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+      });
+      console.log('[UserService] User entity created:', user);
 
-    return this.userRepository.save(user);
+      console.log('[UserService] About to save user to database...');
+      const savedUser = await this.userRepository.save(user);
+      console.log('[UserService] User saved to database successfully:', savedUser);
+      return savedUser;
+    } catch (error) {
+      console.error('[UserService] Error creating user:', error);
+      throw error;
+    }
   }
 
   async updateUser(id: number, updateData: Partial<User>): Promise<User> {
