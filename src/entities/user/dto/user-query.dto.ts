@@ -9,6 +9,7 @@ import {
 import { VALID_SEARCH_FIELDS } from '@src/common/config/constants';
 import { IsValidSearchField } from '@src/common/validators/search-field.validator';
 import { Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class FiltersDto {
   @IsOptional()
@@ -23,11 +24,11 @@ export class FiltersDto {
 export class UserQueryDto {
   @IsOptional()
   @IsString()
-  @MinLength(3, { message: 'searchValue must be at least 3 characters long' })
+  @MinLength(3, { message: i18nValidationMessage('validation.search.minLength', { min: 3 }) })
   searchValue?: string;
 
   @IsOptional()
-  @IsValidSearchField(VALID_SEARCH_FIELDS, { message: 'Invalid search field provided' })
+  @IsValidSearchField(VALID_SEARCH_FIELDS, { message: i18nValidationMessage('validation.search.invalidField') })
   searchField?: string;
 
   @IsOptional()
@@ -43,14 +44,14 @@ export class UserQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  @Min(1, { message: 'page must be a positive number' })
+  @Min(1, { message: i18nValidationMessage('validation.pagination.pagePositive') })
   page?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  @Min(1, { message: 'limit must be a positive number' })
-  @Max(100, { message: 'limit must not be greater than 100' })
+  @Min(1, { message: i18nValidationMessage('validation.pagination.limitPositive') })
+  @Max(100, { message: i18nValidationMessage('validation.pagination.limitMax', { max: 100 }) })
   limit?: number;
 
   @IsOptional()

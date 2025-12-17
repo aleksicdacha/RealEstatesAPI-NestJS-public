@@ -25,6 +25,16 @@
       "key": "access_token",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "property_guid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_guid",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -68,16 +78,244 @@
           }
         },
         {
-          "name": "Get Profile",
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout current user (requires authentication)"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "forgot-password"]
+            },
+            "description": "Request password reset email"
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset-token-here\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "Reset password with token from email"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"your-refresh-token-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh-token"]
+            },
+            "description": "Get new access token using refresh token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties",
+      "item": [
+        {
+          "name": "Get All Properties",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/auth/profile",
+              "raw": "{{baseUrl}}/properties?page=1&limit=10&sortBy=createdAt&order=DESC",
               "host": ["{{baseUrl}}"],
-              "path": ["auth", "profile"]
+              "path": ["properties"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "order",
+                  "value": "DESC"
+                },
+                {
+                  "key": "searchField",
+                  "value": "address",
+                  "disabled": true
+                },
+                {
+                  "key": "searchValue",
+                  "value": "New York",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Active",
+                  "disabled": true
+                },
+                {
+                  "key": "propertyType",
+                  "value": "Apartment",
+                  "disabled": true
+                }
+              ]
             },
-            "description": "Get current user profile (requires authentication)"
+            "description": "Get paginated list of properties with optional filtering"
+          }
+        },
+        {
+          "name": "Get Property by GUID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{property_guid}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties", "{{property_guid}}"]
+            },
+            "description": "Get specific property details by GUID"
+          }
+        },
+        {
+          "name": "Create Property",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('property_guid', responseJson.guid);",
+                  "    console.log('Property created with GUID:', responseJson.guid);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROP-{{$timestamp}}\",\n  \"description\": \"Beautiful apartment in downtown\",\n  \"propertyType\": \"Apartment\",\n  \"price\": 250000,\n  \"salePrice\": 230000,\n  \"area\": 120.5,\n  \"address\": \"123 Main Street, New York, NY\",\n  \"lat\": 40.7128,\n  \"lon\": -74.0060,\n  \"bathrooms\": 2,\n  \"floor\": 5,\n  \"elevator\": true,\n  \"constructionYear\": 2020,\n  \"heating\": \"Central\",\n  \"comment\": \"Great location with city view\",\n  \"additionalEquipment\": [\"Balcony\", \"Parking\", \"Air Conditioning\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties"]
+            },
+            "description": "Create a new property. Property GUID is automatically saved."
+          }
+        },
+        {
+          "name": "Update Property",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROP-UPDATED\",\n  \"description\": \"Updated: Beautiful apartment in downtown with renovated kitchen\",\n  \"propertyType\": \"Apartment\",\n  \"price\": 260000,\n  \"salePrice\": 240000,\n  \"area\": 120.5,\n  \"address\": \"123 Main Street, New York, NY\",\n  \"lat\": 40.7128,\n  \"lon\": -74.0060,\n  \"bathrooms\": 2,\n  \"floor\": 5,\n  \"elevator\": true,\n  \"constructionYear\": 2020,\n  \"heating\": \"Central\",\n  \"comment\": \"Great location with city view and renovated kitchen\",\n  \"additionalEquipment\": [\"Balcony\", \"Parking\", \"Air Conditioning\", \"Dishwasher\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{property_guid}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties", "{{property_guid}}"]
+            },
+            "description": "Update existing property (full update with PUT)"
+          }
+        },
+        {
+          "name": "Delete Property",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/properties/{{property_guid}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["properties", "{{property_guid}}"]
+            },
+            "description": "Delete a property by GUID"
           }
         }
       ]
@@ -262,16 +500,16 @@
           }
         },
         {
-          "name": "Get Client by ID",
+          "name": "Get Client by GUID",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/clients/{{client_id}}",
+              "raw": "{{baseUrl}}/clients/{{client_guid}}",
               "host": ["{{baseUrl}}"],
-              "path": ["clients", "{{client_id}}"]
+              "path": ["clients", "{{client_guid}}"]
             },
-            "description": "Get specific client details by ID"
+            "description": "Get specific client details by GUID"
           }
         },
         {
@@ -283,8 +521,8 @@
                 "exec": [
                   "if (pm.response.code === 201) {",
                   "    const responseJson = pm.response.json();",
-                  "    pm.collectionVariables.set('client_id', responseJson.id);",
-                  "    console.log('Client created with ID:', responseJson.id);",
+                  "    pm.collectionVariables.set('client_guid', responseJson.guid);",
+                  "    console.log('Client created with GUID:', responseJson.guid);",
                   "}"
                 ]
               }
@@ -307,7 +545,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["clients"]
             },
-            "description": "Create a new client. Client ID is automatically saved."
+            "description": "Create a new client. Client GUID is automatically saved."
           }
         },
         {
@@ -325,9 +563,9 @@
               "raw": "{\n  \"phone\": \"+1-555-123-9999\",\n  \"moneyAmount\": 280000,\n  \"comment\": \"Updated budget and contact info\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/clients/{{client_id}}",
+              "raw": "{{baseUrl}}/clients/{{client_guid}}",
               "host": ["{{baseUrl}}"],
-              "path": ["clients", "{{client_id}}"]
+              "path": ["clients", "{{client_guid}}"]
             },
             "description": "Update existing client (partial update)"
           }
@@ -338,9 +576,9 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/clients/{{client_id}}",
+              "raw": "{{baseUrl}}/clients/{{client_guid}}",
               "host": ["{{baseUrl}}"],
-              "path": ["clients", "{{client_id}}"]
+              "path": ["clients", "{{client_guid}}"]
             },
             "description": "Soft delete a client (sets status to Deleted)"
           }
@@ -401,30 +639,7 @@
       "name": "File Upload",
       "item": [
         {
-          "name": "Upload Single File",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "file",
-                  "type": "file",
-                  "src": []
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/upload/single",
-              "host": ["{{baseUrl}}"],
-              "path": ["upload", "single"]
-            },
-            "description": "Upload a single image file"
-          }
-        },
-        {
-          "name": "Upload Multiple Files",
+          "name": "Upload Property Images",
           "request": {
             "method": "POST",
             "header": [],
@@ -434,21 +649,30 @@
                 {
                   "key": "files",
                   "type": "file",
-                  "src": []
+                  "src": [],
+                  "description": "Select one or more image files"
                 },
                 {
-                  "key": "files",
-                  "type": "file",
-                  "src": []
+                  "key": "propertyCode",
+                  "value": "PROP-001",
+                  "type": "text",
+                  "description": "Property code for organizing uploads"
                 }
               ]
             },
             "url": {
-              "raw": "{{baseUrl}}/upload/multiple",
+              "raw": "{{baseUrl}}/upload?propertyCode=PROP-001",
               "host": ["{{baseUrl}}"],
-              "path": ["upload", "multiple"]
+              "path": ["upload"],
+              "query": [
+                {
+                  "key": "propertyCode",
+                  "value": "PROP-001",
+                  "description": "Property code (can also be in form data)"
+                }
+              ]
             },
-            "description": "Upload multiple image files"
+            "description": "Upload one or multiple image files (max 20). Accepts JPEG, PNG. Files are named with propertyCode-timestamp.ext"
           }
         }
       ]

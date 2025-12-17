@@ -8,6 +8,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly i18n: I18nService,
   ) {}
 
   async login(authCredentialsDto: AuthCredentialsDto) {
@@ -118,36 +120,38 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
     const { email } = forgotPasswordDto;
+    const lang = I18nContext.current()?.lang || 'en';
     
     const user = await this.userService.findByEmail(email);
     
     // Always return success message to prevent email enumeration
     if (!user) {
-      return { message: 'If an account exists with that email, a password reset link has been sent.' };
+      return { message: this.i18n.t('errors.auth.passwordResetSent', { lang }) };
     }
     
     // Generate and store reset token
     const resetToken = await this.userService.createPasswordResetToken(user.id);
     
     // Send email with reset link
-    await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+    await this.emailService.sendPasswordResetEmail(user.email, resetToken, lang);
     
-    return { message: 'If an account exists with that email, a password reset link has been sent.' };
+    return { message: this.i18n.t('errors.auth.passwordResetSent', { lang }) };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
     const { token, password } = resetPasswordDto;
+    const lang = I18nContext.current()?.lang || 'en';
     
     // Find user by valid reset token
     const user = await this.userService.findByResetToken(token);
     
     if (!user) {
-      throw new BadRequestException('Invalid or expired reset token');
+      throw new BadRequestException(this.i18n.t('errors.auth.invalidToken', { lang }));
     }
     
     // Reset the password
     await this.userService.resetPassword(user.id, password);
     
-    return { message: 'Password has been reset successfully' };
+    return { message: this.i18n.t('errors.auth.passwordResetSuccess', { lang }) };
   }
 }

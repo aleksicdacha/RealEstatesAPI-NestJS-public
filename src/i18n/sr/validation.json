@@ -1,0 +1,64 @@
+{
+  "email": {
+    "required": "Email je obavezan",
+    "invalid": "Email mora biti validna email adresa"
+  },
+  "password": {
+    "required": "Lozinka je obavezna",
+    "minLength": "Lozinka mora imati najmanje {min} karaktera",
+    "maxLength": "Lozinka ne sme imati više od {max} karaktera"
+  },
+  "username": {
+    "required": "Korisničko ime je obavezno",
+    "minLength": "Korisničko ime mora imati najmanje {min} karaktera",
+    "maxLength": "Korisničko ime ne sme imati više od {max} karaktera"
+  },
+  "role": {
+    "required": "Uloga je obavezna",
+    "invalid": "Uloga mora biti jedna od: {roles}"
+  },
+  "pagination": {
+    "pagePositive": "Stranica mora biti pozitivan broj",
+    "limitPositive": "Limit mora biti pozitivan broj",
+    "limitMax": "Limit ne sme biti veći od {max}",
+    "orderInvalid": "Redosled mora biti ASC ili DESC"
+  },
+  "search": {
+    "minLength": "Pojam pretrage mora imati najmanje {min} karaktera",
+    "invalidField": "Nevalidno polje za pretragu"
+  },
+  "property": {
+    "codeRequired": "Šifra nekretnine je obavezna",
+    "typeRequired": "Tip nekretnine je obavezan",
+    "typeInvalid": "Tip nekretnine mora biti jedna od validnih vrednosti",
+    "addressRequired": "Adresa je obavezna",
+    "cityRequired": "Grad je obavezan",
+    "priceRequired": "Cena je obavezna",
+    "pricePositive": "Cena mora biti pozitivan broj",
+    "sizeRequired": "Površina je obavezna",
+    "sizePositive": "Površina mora biti pozitivan broj",
+    "roomsPositive": "Broj soba mora biti pozitivan broj",
+    "floorNumber": "Sprat mora biti broj",
+    "totalFloorsPositive": "Ukupan broj spratova mora biti pozitivan broj",
+    "heatingInvalid": "Tip grejanja mora biti jedna od validnih vrednosti",
+    "elevatorBoolean": "Lift mora biti da ili ne",
+    "statusInvalid": "Status mora biti jedna od vrednosti: DOSTUPNO, REZERVISANO, PRODATO, IZNAJMLJENO"
+  },
+  "client": {
+    "firstNameRequired": "Ime je obavezno",
+    "lastNameRequired": "Prezime je obavezno",
+    "emailInvalid": "Email mora biti validna email adresa",
+    "phoneInvalid": "Broj telefona je neispravan",
+    "statusInvalid": "Status mora biti jedna od vrednosti: aktivan, neaktivan, obrisan",
+    "paymentTypeInvalid": "Tip plaćanja mora biti jedna od vrednosti: gotovina, kredit, kombinovano",
+    "transactionTypeInvalid": "Tip transakcije mora biti jedna od vrednosti: prodavac, iznajmljuje, izdaje"
+  },
+  "file": {
+    "required": "Fajl je obavezan",
+    "tooLarge": "Veličina fajla ne sme biti veća od {max}MB",
+    "invalidType": "Tip fajla mora biti jedan od: {types}"
+  },
+  "token": {
+    "required": "Token je obavezan"
+  }
+}

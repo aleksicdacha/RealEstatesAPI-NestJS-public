@@ -1,15 +1,16 @@
 import { IsIn, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class PaginationQueryDto {
   @IsNumber()
-  @Min(1, { message: 'page must be a positive number' })
+  @Min(1, { message: i18nValidationMessage('validation.pagination.pagePositive') })
   @Transform(({ value }) => Number(value)) // Transform to number
   readonly page: number;
 
   @IsNumber()
-  @Min(1, { message: 'limit must be a positive number' })
-  @Max(100, { message: 'limit must not be greater than 100' })
+  @Min(1, { message: i18nValidationMessage('validation.pagination.limitPositive') })
+  @Max(100, { message: i18nValidationMessage('validation.pagination.limitMax', { max: 100 }) })
   @Transform(({ value }) => Number(value)) // Transform to number
   readonly limit: number;
 
@@ -23,7 +24,7 @@ export class PaginationQueryDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['ASC', 'DESC'], { message: 'order must be ASC or DESC' })
+  @IsIn(['ASC', 'DESC'], { message: i18nValidationMessage('validation.pagination.orderInvalid') })
   readonly order?: 'ASC' | 'DESC';
 
   @IsOptional()

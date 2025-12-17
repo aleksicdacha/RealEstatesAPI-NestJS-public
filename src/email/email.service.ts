@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly i18n: I18nService,
+  ) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('MAIL_HOST', 'smtp.gmail.com'),
       port: this.configService.get<number>('MAIL_PORT', 587),
@@ -18,20 +22,20 @@ export class EmailService {
     });
   }
 
-  async sendPasswordResetEmail(to: string, resetToken: string): Promise<void> {
+  async sendPasswordResetEmail(to: string, resetToken: string, lang: string = 'en'): Promise<void> {
     const resetUrl = `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:3001')}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
       from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
       to,
-      subject: 'Password Reset Request - Real Estate Admin',
-      html: this.getPasswordResetTemplate(resetUrl),
+      subject: this.i18n.t('email.passwordReset.subject', { lang }),
+      html: this.getPasswordResetTemplate(resetUrl, lang),
     };
 
     await this.transporter.sendMail(mailOptions);
   }
 
-  private getPasswordResetTemplate(resetUrl: string): string {
+  private getPasswordResetTemplate(resetUrl: string, lang: string = 'en'): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -114,34 +118,31 @@ export class EmailService {
             <div class="logo">🏡 Real Estate Admin</div>
           </div>
           
-          <h1 class="title">Password Reset Request</h1>
+          <h1 class="title">${this.i18n.t('email.passwordReset.subject', { lang })}</h1>
           
           <div class="content">
-            <p>Hello,</p>
-            <p>We received a request to reset your password for your Real Estate Admin account.</p>
-            <p>Click the button below to reset your password:</p>
+            <p>${this.i18n.t('email.passwordReset.greeting', { lang })},</p>
+            <p>${this.i18n.t('email.passwordReset.message', { lang })}</p>
           </div>
           
           <div style="text-align: center;">
-            <a href="${resetUrl}" class="button">Reset Password</a>
+            <a href="${resetUrl}" class="button">${this.i18n.t('email.passwordReset.button', { lang })}</a>
           </div>
           
           <div class="warning">
-            <strong>⚠️ Security Notice:</strong>
+            <strong>⚠️ ${this.i18n.t('email.passwordReset.security', { lang })}</strong>
             <ul style="margin: 10px 0; padding-left: 20px;">
-              <li>This link will expire in <strong>1 hour</strong></li>
-              <li>If you didn't request this reset, please ignore this email</li>
-              <li>Never share this link with anyone</li>
+              <li>${this.i18n.t('email.passwordReset.expiry', { lang })}</li>
+              <li>${this.i18n.t('email.passwordReset.ignore', { lang })}</li>
             </ul>
           </div>
           
           <div class="content">
-            <p>If the button doesn't work, copy and paste this link into your browser:</p>
             <p class="link">${resetUrl}</p>
           </div>
           
           <div class="footer">
-            <p>This is an automated message, please do not reply.</p>
+            <p>${this.i18n.t('email.passwordReset.footer', { lang })}</p>
             <p>&copy; ${new Date().getFullYear()} Real Estate Admin. All rights reserved.</p>
           </div>
         </div>

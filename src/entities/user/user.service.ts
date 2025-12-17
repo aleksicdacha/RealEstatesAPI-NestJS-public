@@ -8,12 +8,14 @@ import { User } from './user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserQueryDto } from './dto/user-query.dto';
 import { QueryBuilderHelper } from '@src/common/query-builder.helper';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
+    private readonly i18n: I18nService,
   ) {}
 
   async findAll(options: UserQueryDto, filters?: { [key: string]: any }): Promise<Pagination<User>> {
@@ -38,7 +40,9 @@ export class UserService {
   async findOne(id: number) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(
+        this.i18n.t('errors.user.notFound', { lang: I18nContext.current().lang })
+      );
     }
     return user;
   }
@@ -59,7 +63,9 @@ export class UserService {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(
+        this.i18n.t('errors.user.notFound', { lang: I18nContext.current().lang })
+      );
     }
 
     if (updateData.password) {
@@ -76,7 +82,9 @@ export class UserService {
     const result = await this.userRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(
+        this.i18n.t('errors.user.notFound', { lang: I18nContext.current().lang })
+      );
     }
 
     return { message: `User with ID ${id} deleted successfully` };

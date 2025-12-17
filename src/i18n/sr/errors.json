@@ -1,0 +1,39 @@
+{
+  "user": {
+    "notFound": "Korisnik nije pronađen",
+    "alreadyExists": "Korisnik sa korisničkim imenom {username} već postoji",
+    "emailExists": "Korisnik sa email adresom {email} već postoji",
+    "invalidCredentials": "Neispravni pristupni podaci",
+    "unauthorized": "Neautorizovan pristup",
+    "forbidden": "Pristup zabranjen"
+  },
+  "property": {
+    "notFound": "Nekretnina sa ID {id} nije pronađena",
+    "codeExists": "Nekretnina sa šifrom {code} već postoji",
+    "imageNotFound": "Slika nekretnine nije pronađena"
+  },
+  "client": {
+    "notFound": "Klijent sa ID {id} nije pronađen",
+    "emailExists": "Klijent sa email adresom {email} već postoji",
+    "phoneExists": "Klijent sa telefonom {phone} već postoji"
+  },
+  "file": {
+    "uploadFailed": "Otpremanje fajla nije uspelo",
+    "notFound": "Fajl nije pronađen",
+    "noFiles": "Nije otpremljen nijedan fajl"
+  },
+  "auth": {
+    "invalidToken": "Neispravan ili istekao token",
+    "tokenExpired": "Token je istekao",
+    "passwordResetSent": "Ako nalog sa ovom email adresom postoji, link za resetovanje lozinke je poslat",
+    "passwordResetSuccess": "Lozinka je uspešno resetovana",
+    "logoutSuccess": "Uspešno ste se odjavili",
+    "registrationSuccess": "Korisnik je uspešno registrovan"
+  },
+  "general": {
+    "badRequest": "Neispravan zahtev",
+    "internalError": "Interna greška servera",
+    "notFound": "Resurs nije pronađen",
+    "conflict": "Konflikt resursa"
+  }
+}

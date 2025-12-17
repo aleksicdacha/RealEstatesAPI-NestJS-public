@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { I18nModule, AcceptLanguageResolver, QueryResolver, HeaderResolver } from 'nestjs-i18n';
+import * as path from 'path';
 
 // Feature modules
 import { AuthModule } from './auth/auth.module';
@@ -48,6 +50,20 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
         retryAttempts: 3,
         retryDelay: 5000,
       }),
+    }),
+
+    // Internationalization
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(process.cwd(), 'src', 'i18n'),
+        watch: true,
+      },
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+        new HeaderResolver(['x-lang']),
+      ],
     }),
 
     // Rate limiting
