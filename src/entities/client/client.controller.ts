@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDTO} from './dto/create-client.dto';
 import { UpdateClientDTO } from './dto/update-client.dto';
+import { FilterClientDto } from './dto/filter-client.dto';
 import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
 import { Client } from '@src/entities/client/client.entity';
 
@@ -27,8 +29,8 @@ export class ClientController {
   }
 
   @Get()
-  async findAll() {
-    return this.clientService.findAll();
+  async findAll(@Query() filterDto: FilterClientDto) {
+    return this.clientService.findAll(filterDto);
   }
 
   @Get(':guid')

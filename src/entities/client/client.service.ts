@@ -1,10 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClientDTO } from './dto/create-client.dto';
 import { UpdateClientDTO } from './dto/update-client.dto';
+import { FilterClientDto } from './dto/filter-client.dto';
 import { Client } from './client.entity';
 import { ClientRepository } from './client.repository';
 import { PropertyRepository } from '@src/entities/property/property.repository';
 import { Property } from '@src/entities/property/property.entity';
+import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class ClientService {
@@ -66,8 +68,22 @@ export class ClientService {
     return await this.clientRepository.findOne({ where: { id }, relations: ['property'] });
   }
 
-  async findAll(): Promise<Client[]> {
-    return await this.clientRepository.find({ relations: ['property'] });
+  async findAll(filterDto?: FilterClientDto): Promise<Client[]> {
+    const where: any = {};
+
+    // Filter by hasProperty if specified
+    if (filterDto?.hasProperty !== undefined) {
+      if (filterDto.hasProperty === false) {
+        where.property = IsNull();
+      } else {
+        where.property = Not(IsNull());
+      }
+    }
+
+    return await this.clientRepository.find({ 
+      where,
+      relations: ['property'] 
+    });
   }
 
   async findOne(id: string): Promise<Client> {
