@@ -53,6 +53,9 @@ export class Property {
   @Column()
   address: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  neighborhood?: string; // District/area name (e.g., "Duvanjište", "Centar")
+
   @Column({ type: 'float', nullable: true })
   lat: number;
 

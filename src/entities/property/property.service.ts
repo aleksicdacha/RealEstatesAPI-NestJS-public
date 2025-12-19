@@ -3,8 +3,9 @@ import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
+import { PropertyStatsQueryDto, PropertyStatsDto } from './dto/property-stats.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { DataSource } from 'typeorm';
+import { DataSource, Between } from 'typeorm';
 import { PropertyRepository } from '@src/entities/property/property.repository';
 import { PropertyImageRepository } from '@src/entities/property-image/property-image.repository';
 
@@ -247,4 +248,38 @@ export class PropertyService {
   //   ORDER BY distance;
   // `);
   // }
+
+  async getAveragePriceByType(query: PropertyStatsQueryDto): Promise<PropertyStatsDto[]> {
+    const queryBuilder = this.propertyRepository.createQueryBuilder('property');
+
+    // Apply date filters if provided
+    if (query.startDate && query.endDate) {
+      queryBuilder.where('property.createdAt BETWEEN :startDate AND :endDate', {
+        startDate: query.startDate,
+        endDate: query.endDate,
+      });
+    } else if (query.startDate) {
+      queryBuilder.where('property.createdAt >= :startDate', {
+        startDate: query.startDate,
+      });
+    } else if (query.endDate) {
+      queryBuilder.where('property.createdAt <= :endDate', {
+        endDate: query.endDate,
+      });
+    }
+
+    // Group by property type and calculate average price
+    const results = await queryBuilder
+      .select('property.propertyType', 'propertyType')
+      .addSelect('AVG(property.price)', 'averagePrice')
+      .addSelect('COUNT(property.id)', 'count')
+      .groupBy('property.propertyType')
+      .getRawMany();
+
+    return results.map(result => ({
+      propertyType: result.propertyType,
+      averagePrice: parseFloat(result.averagePrice),
+      count: parseInt(result.count),
+    }));
+  }
 }

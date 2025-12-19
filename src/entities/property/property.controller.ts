@@ -15,6 +15,7 @@ import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { FilterPropertyDto } from './dto/filter-property.dto';
+import { PropertyStatsQueryDto } from './dto/property-stats.dto';
 import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
@@ -34,6 +35,11 @@ export class PropertyController {
     @Body() createPropertyDto: CreatePropertyDto,
     @UploadedFiles() files: Express.Multer.File[]) {
     return await this.propertyService.create(createPropertyDto);
+  }
+
+  @Get('stats/average-price-by-type')
+  async getAveragePriceByType(@Query() query: PropertyStatsQueryDto) {
+    return this.propertyService.getAveragePriceByType(query);
   }
 
   @Get()

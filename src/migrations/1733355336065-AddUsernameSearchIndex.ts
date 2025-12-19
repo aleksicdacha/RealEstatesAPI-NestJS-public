@@ -4,7 +4,7 @@ export class AddUsernameSearchIndex1733355336065 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-          `CREATE INDEX username_search_index ON "user" ("username")`
+          `CREATE INDEX IF NOT EXISTS username_search_index ON "user" ("username")`
         );
     }
 

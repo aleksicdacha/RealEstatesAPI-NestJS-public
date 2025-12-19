@@ -111,6 +111,11 @@ export class UpdatePropertyDTO {
   address?: string;
 
   @IsOptional()
+  @IsString({ message: 'Neighborhood must be a string.' })
+  @MaxLength(255, { message: 'Neighborhood must not exceed 255 characters.' })
+  neighborhood?: string;
+
+  @IsOptional()
   @IsInt({ message: 'Construction year must be an integer.' })
   @Min(1900, { message: 'Construction year must be no earlier than 1900.' })
   @Max(new Date().getFullYear(), {
