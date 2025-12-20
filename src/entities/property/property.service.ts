@@ -284,6 +284,23 @@ export class PropertyService {
   }
 
   async getFilterOptions() {
+    // Helper function to convert Cyrillic to Latin
+    const cyrillicToLatin = (text: string): string => {
+      const cyrillicToLatinMap: { [key: string]: string } = {
+        'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v',
+        'Г': 'G', 'г': 'g', 'Д': 'D', 'д': 'd', 'Ђ': 'Đ', 'ђ': 'đ',
+        'Е': 'E', 'е': 'e', 'Ж': 'Ž', 'ж': 'ž', 'З': 'Z', 'з': 'z',
+        'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j', 'К': 'K', 'к': 'k',
+        'Л': 'L', 'л': 'l', 'Љ': 'Lj', 'љ': 'lj', 'М': 'M', 'м': 'm',
+        'Н': 'N', 'н': 'n', 'Њ': 'Nj', 'њ': 'nj', 'О': 'O', 'о': 'o',
+        'П': 'P', 'п': 'p', 'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's',
+        'Т': 'T', 'т': 't', 'Ћ': 'Ć', 'ћ': 'ć', 'У': 'U', 'у': 'u',
+        'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+        'Ч': 'Č', 'ч': 'č', 'Џ': 'Dž', 'џ': 'dž', 'Ш': 'Š', 'š': 'š'
+      };
+      return text.split('').map(char => cyrillicToLatinMap[char] || char).join('');
+    };
+
     // Extract unique cities from address field (second part: "Street, City, Country")
     const citiesRaw = await this.propertyRepository
       .createQueryBuilder('property')
@@ -298,8 +315,11 @@ export class PropertyService {
         if (parts.length >= 2) {
           // Get the second part (City or "City PostalCode")
           const cityPart = parts[1].trim();
-          // Remove postal code if exists (everything after space)
-          return cityPart.split(' ')[0];
+          // Remove postal code if exists (e.g., "Beograd 11000" -> "Beograd")
+          // Postal codes are typically numeric, so remove trailing numbers
+          const cityName = cityPart.replace(/\s+\d+.*$/, '').trim();
+          // Convert Cyrillic to Latin
+          return cyrillicToLatin(cityName);
         }
         return null;
       })
@@ -319,7 +339,11 @@ export class PropertyService {
     return {
       cities: uniqueCities,
       neighborhoods: neighborhoods
-        .map(n => n.neighborhood?.trim())
+        .map(n => {
+          const trimmed = n.neighborhood?.trim();
+          // Convert Cyrillic to Latin for neighborhoods too
+          return trimmed ? cyrillicToLatin(trimmed) : null;
+        })
         .filter(n => n && n.length > 0),
     };
   }
