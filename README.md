@@ -1,53 +1,328 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏠 Real Estate Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modern, full-stack real estate management application built with **NestJS** (backend) and **Next.js** (frontend) using the latest best practices and technologies.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🏗️ Architecture
 
-## Description
+### Backend (NestJS v11)
+- **Framework**: NestJS 11 with TypeScript
+- **Database**: PostgreSQL with TypeORM
+- **Authentication**: JWT with role-based access control
+- **Validation**: class-validator and class-transformer
+- **Documentation**: Swagger/OpenAPI
+- **Security**: Helmet, CORS, Rate limiting
+- **File Upload**: Multer for image management
+- **Caching**: Redis integration
+- **Testing**: Jest with e2e testing
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Frontend (Next.js v15)
+- **Framework**: Next.js 15 with App Router
+- **UI Library**: PrimeReact with modern components
+- **State Management**: TanStack Query (React Query)
+- **Forms**: React Hook Form with Zod validation
+- **Styling**: Tailwind CSS + PrimeFlex
+- **Type Safety**: Full TypeScript integration
 
-## Project setup
+## 🚀 Features
+
+### Property Management
+- ✅ CRUD operations for properties
+- ✅ Advanced search and filtering
+- ✅ Image upload and management
+- ✅ Geolocation support
+- ✅ Status tracking
+- ✅ Bulk operations
+
+### Client Management
+- ✅ Client profiles and contact information
+- ✅ Transaction type tracking
+- ✅ Client-property relationships
+- ✅ Communication history
+
+### User Management
+- ✅ Role-based access control (Admin/User)
+- ✅ User profiles and permissions
+- ✅ Authentication and authorization
+
+### Modern Features
+- ✅ Real-time updates
+- ✅ Responsive design
+- ✅ Dark/Light theme support
+- ✅ Data export capabilities
+- ✅ Audit logging
+- ✅ Performance optimizations
+
+## 📋 Prerequisites
+
+- **Node.js** 18+ and npm 8+
+- **PostgreSQL** 12+
+- **Redis** (optional, for caching)
+
+## 🛠️ Quick Start
+
+### 1. Clone and Setup
 
 ```bash
-$ npm install
+git clone <repository-url>
+cd RealEstatesAPI-NestJS
+
+# Run automated setup
+./setup.sh
 ```
 
-## Compile and run the project
+### 2. Configure Environment
 
-```bash
-# development
-$ npm run start
+Update `.env` file with your configuration:
 
-# watch mode
-$ npm run start:dev
+```env
+# Database Configuration
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=your_password_here
+DB_NAME=estates
+DB_SYNC=true
 
-# production mode
-$ npm run start:prod
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here_min_32_chars
+JWT_EXPIRES_IN=7d
+
+# Application Configuration
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:3001,http://localhost:3000
 ```
 
-## Run tests
+### 3. Database Setup
 
 ```bash
+# Run migrations
+npm run migration:run
+
+# Seed initial data
+npm run seed:all
+```
+
+### 4. Start Application
+
+```bash
+# Start both backend and frontend
+./start.sh
+
+# Or start individually:
+npm run start:dev          # Backend only
+cd admin-frontend && npm run dev  # Frontend only
+```
+
+## � Postman Integration
+
+This project is **Postman-ready** with complete API collections and automated testing.
+
+### Quick Start with Postman:
+1. **Import the collection**: `postman/Real-Estate-API.postman_collection.json`
+2. **Import the environment**: `postman/Real-Estate-Development.postman_environment.json`
+3. **Start the API**: `npm run start:dev`
+4. **Login**: Use the Authentication > Login request (token auto-saves)
+5. **Test away**: All endpoints are ready with sample data
+
+📚 **Detailed Guide**: See `postman/README.md` for complete testing workflows.
+
+## �🔗 Application URLs
+
+- **Backend API**: http://localhost:3000
+- **Frontend Admin**: http://localhost:3001  
+- **API Base URL**: http://localhost:3000/v1
+- **Uploads**: http://localhost:3000/uploads
+
+## 📦 Available Scripts
+
+### Backend Scripts
+```bash
+npm run start:dev          # Start in development mode
+npm run start:prod         # Start in production mode
+npm run build              # Build for production
+npm run test               # Run tests
+npm run test:e2e           # Run e2e tests
+npm run lint               # Lint code
+npm run format             # Format code
+
+# Database scripts
+npm run migration:generate # Generate new migration
+npm run migration:run      # Run migrations
+npm run migration:revert   # Revert last migration
+npm run seed:all          # Seed all data
+npm run db:reset          # Reset database and reseed
+```
+
+### Frontend Scripts
+```bash
+cd admin-frontend
+npm run dev               # Start development server
+npm run build             # Build for production
+npm run start             # Start production server
+npm run lint              # Lint code
+npm run type-check        # Check TypeScript types
+```
+
+## 🐳 Docker Support
+
+### Development with Docker Compose
+
+```bash
+# Start all services (API, Admin, Database, Redis)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Production Deployment
+
+```bash
+# Build production images
+docker-compose -f docker-compose.prod.yml build
+
+# Deploy
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## 📁 Project Structure
+
+```
+RealEstatesAPI-NestJS/
+├── src/                          # Backend source code
+│   ├── auth/                     # Authentication module
+│   ├── common/                   # Shared utilities and config
+│   ├── entities/                 # Feature modules
+│   │   ├── client/              # Client management
+│   │   ├── property/            # Property management
+│   │   ├── property-image/      # Image management
+│   │   ├── upload/              # File upload handling
+│   │   └── user/                # User management
+│   └── migrations/              # Database migrations
+├── admin-frontend/              # Frontend application
+│   ├── src/
+│   │   ├── app/                 # Next.js app router
+│   │   ├── components/          # Reusable UI components
+│   │   ├── services/            # API service layer
+│   │   ├── providers/           # React context providers
+│   │   └── lib/                 # Utility functions
+├── seeds/                       # Database seeders
+├── uploads/                     # File storage
+├── docker-compose.yml           # Development containers
+└── README.md                    # This file
+```
+
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /auth/login` - User login
+- `GET /auth/profile` - Get current user profile
+
+### Properties
+- `GET /v1/properties` - List properties with filtering
+- `POST /v1/properties` - Create new property
+- `GET /v1/properties/:id` - Get property details
+- `PATCH /v1/properties/:id` - Update property
+- `DELETE /v1/properties/:id` - Delete property
+
+### Users
+- `GET /v1/users` - List users
+- `POST /v1/users` - Create user
+- `PATCH /v1/users/:id` - Update user
+- `DELETE /v1/users/:id` - Delete user
+
+### File Upload
+- `POST /v1/upload/single` - Upload single file
+- `POST /v1/upload/multiple` - Upload multiple files
+
+Full API documentation available at: http://localhost:3000/api/docs
+
+## 🔒 Security Features
+
+- **JWT Authentication** with refresh token support
+- **Role-based Access Control** (RBAC)
+- **Input validation** with class-validator
+- **SQL injection protection** with TypeORM
+- **XSS protection** with Helmet
+- **CORS configuration** for cross-origin requests
+- **Rate limiting** to prevent abuse
+- **File upload security** with type validation
+
+## 🎨 UI/UX Features
+
+- **Responsive Design** - Works on all devices
+- **Modern UI** - Clean, professional interface
+- **Dark/Light Mode** - Theme switching support
+- **Real-time Updates** - Live data synchronization
+- **Advanced Search** - Powerful filtering options
+- **Drag & Drop** - Intuitive file uploads
+- **Toast Notifications** - User feedback system
+- **Loading States** - Enhanced user experience
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+npm run test                # Unit tests
+npm run test:e2e           # End-to-end tests
+npm run test:cov           # Coverage report
+
+# Frontend tests
+cd admin-frontend
+npm run test               # Component tests
+npm run test:e2e           # E2E tests with Playwright
+```
+
+## 📊 Performance
+
+- **Lazy Loading** - Components and routes
+- **Image Optimization** - Next.js Image component
+- **Database Indexing** - Optimized queries
+- **Caching** - Redis for frequently accessed data
+- **Code Splitting** - Optimized bundle sizes
+- **Tree Shaking** - Unused code elimination
+
+## 🌍 Environment Support
+
+- **Development** - Hot reload, debugging tools
+- **Staging** - Production-like environment
+- **Production** - Optimized performance, security
+
+## 📈 Monitoring & Logging
+
+- **Winston Logger** - Structured logging
+- **Health Checks** - Application monitoring
+- **Error Tracking** - Comprehensive error handling
+- **Performance Metrics** - Response time tracking
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- 📧 Email: support@realestate-app.com
+- 📚 Documentation: [API Docs](http://localhost:3000/api/docs)
+- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+
+---
+
+**Built with ❤️ using modern web technologies**
 # unit tests
 $ npm run test
 

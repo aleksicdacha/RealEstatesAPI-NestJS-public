@@ -1,30 +1,40 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtPayload } from './jwt-payload.interface';
-import { UserService } from '../user/user.service';
+import { ConfigService } from '@nestjs/config';
+import { UserService } from '@src/entities/user/user.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly userService: UserService) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(
+    private userService: UserService,
+    private configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET, // Ensure this matches your .env value
+      secretOrKey: configService.get<string>('jwt.secret'),
     });
   }
 
-  async validate(payload: JwtPayload) {
-    console.log('Payload received by JwtStrategy:', payload); // Debug payload
+  async validate(payload: any) {
 
+    console.log('Payload: ', payload);
     const user = await this.userService.findByUsername(payload.username);
-
     if (!user) {
-      console.error('User not found or invalid token');
-      throw new UnauthorizedException('Invalid token or user not found');
+      throw new UnauthorizedException('Invalid token');
     }
 
-    // Ensure the user's role is included in the returned object
-    return { ...user, role: user.role };
+    // Ensure the user role is extracted correctly from the payload
+    if (!payload.role) {
+      console.error('Role is missing from JWT payload');
+    }
+
+    // Validate against lastLogoutTime
+    if (user.lastLogoutTime && payload.iat * 1000 < user.lastLogoutTime.getTime()) {
+      throw new UnauthorizedException('Token is invalid (revoked)');
+    }
+
+    return { id: user.id, username: payload.username, role: payload.role };
   }
 }

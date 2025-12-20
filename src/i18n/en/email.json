@@ -1,0 +1,19 @@
+{
+  "passwordReset": {
+    "subject": "Password Reset Request",
+    "greeting": "Hello",
+    "message": "You have requested to reset your password. Click the button below to proceed:",
+    "button": "Reset Password",
+    "expiry": "This link will expire in 1 hour.",
+    "ignore": "If you didn't request this, please ignore this email.",
+    "security": "For security reasons, this link can only be used once.",
+    "footer": "Best regards,<br>Real Estate Team"
+  },
+  "welcome": {
+    "subject": "Welcome to Real Estate Platform",
+    "greeting": "Hello {name}",
+    "message": "Welcome to our Real Estate Management Platform!",
+    "info": "Your account has been successfully created.",
+    "footer": "Best regards,<br>Real Estate Team"
+  }
+}
