@@ -282,4 +282,45 @@ export class PropertyService {
       count: parseInt(result.count),
     }));
   }
+
+  async getFilterOptions() {
+    // Extract unique cities from address field (second part: "Street, City, Country")
+    const citiesRaw = await this.propertyRepository
+      .createQueryBuilder('property')
+      .select('property.address', 'address')
+      .where('property.address IS NOT NULL')
+      .getRawMany();
+
+    // Parse cities from address format: "Street, City, Country" or "Street, City PostalCode, Country"
+    const cities = citiesRaw
+      .map(row => {
+        const parts = row.address.split(',');
+        if (parts.length >= 2) {
+          // Get the second part (City or "City PostalCode")
+          const cityPart = parts[1].trim();
+          // Remove postal code if exists (everything after space)
+          return cityPart.split(' ')[0];
+        }
+        return null;
+      })
+      .filter(c => c && c.length > 0);
+
+    // Get unique cities
+    const uniqueCities = [...new Set(cities)].sort();
+
+    // Extract unique neighborhoods
+    const neighborhoods = await this.propertyRepository
+      .createQueryBuilder('property')
+      .select('DISTINCT property.neighborhood', 'neighborhood')
+      .where('property.neighborhood IS NOT NULL')
+      .orderBy('property.neighborhood', 'ASC')
+      .getRawMany();
+
+    return {
+      cities: uniqueCities,
+      neighborhoods: neighborhoods
+        .map(n => n.neighborhood?.trim())
+        .filter(n => n && n.length > 0),
+    };
+  }
 }

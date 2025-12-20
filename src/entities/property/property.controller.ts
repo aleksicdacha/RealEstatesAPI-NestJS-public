@@ -42,6 +42,11 @@ export class PropertyController {
     return this.propertyService.getAveragePriceByType(query);
   }
 
+  @Get('filters/options')
+  async getFilterOptions() {
+    return this.propertyService.getFilterOptions();
+  }
+
   @Get()
   async findAll(@Query() query: FilterPropertyDto) {
     return this.propertyService.findAll(query);

@@ -1,5 +1,5 @@
-import { IsOptional, IsString, IsEnum, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsEnum, Min, IsNumber, IsArray } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class FilterPropertyDto {
   @IsOptional()
@@ -74,4 +74,35 @@ export class FilterPropertyDto {
   @IsOptional()
   @Type(() => Number)
   maxLongitude?: number;
+
+  // Advanced filters
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @IsArray()
+  neighborhoods?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',').map(Number) : value)
+  @IsArray()
+  bathrooms?: number[];
+
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @IsArray()
+  floors?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @IsArray()
+  heating?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @IsArray()
+  features?: string[];
 }
+
