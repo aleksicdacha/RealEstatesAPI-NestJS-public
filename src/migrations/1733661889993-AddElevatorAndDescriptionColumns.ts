@@ -4,11 +4,11 @@ export class AddElevatorAndDescriptionColumns1733661889993 implements MigrationI
     name = 'AddElevatorAndDescriptionColumns1733661889993'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "properties" ADD "elevator" boolean NOT NULL DEFAULT false`);
+        await queryRunner.query(`ALTER TABLE "properties" ADD COLUMN IF NOT EXISTS "elevator" boolean NOT NULL DEFAULT false`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "properties" DROP COLUMN "elevator"`);
+        await queryRunner.query(`ALTER TABLE "properties" DROP COLUMN IF EXISTS "elevator"`);
     }
 
 }

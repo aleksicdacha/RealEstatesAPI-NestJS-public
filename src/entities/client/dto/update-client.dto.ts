@@ -37,18 +37,18 @@ export class UpdateClientDTO {
 
   @IsOptional()
   @IsString()
-  @Matches(/^(\+3816[0-6]|06[0-6])[0-9]{5,8}$/, {
-    message: i18nValidationMessage('validation.client.phoneInvalid'),
-  })
   phone?: string;
 
   @IsString()
   @IsOptional()
-  @MinLength(10)
   @MaxLength(500)
   comment?: string;
 
   @IsOptional()
   @IsNumber()
-  moneyAmount: number;
+  moneyAmount?: number;
+
+  @IsOptional()
+  @IsString()
+  propertyId?: string | null;
 }

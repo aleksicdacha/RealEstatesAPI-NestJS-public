@@ -16,16 +16,17 @@ export class ClientService {
   ) {}
 
   async create(createClientDto: CreateClientDTO): Promise<Client> {
-    const { property: propertyId, ...clientData } = createClientDto;
+    const { property: propertyId, propertyId: propId, ...clientData } = createClientDto;
+    const finalPropertyId = propertyId || propId;
 
     let property: Property | null = null;
 
     // If a property ID is provided, validate and fetch the property
-    if (propertyId) {
-      property = await this.propertyRepository.findOne({ where: { id: propertyId } });
+    if (finalPropertyId) {
+      property = await this.propertyRepository.findOne({ where: { id: finalPropertyId } });
 
       if (!property) {
-        throw new NotFoundException(`Property with ID ${propertyId} not found`);
+        throw new NotFoundException(`Property with ID ${finalPropertyId} not found`);
       }
     }
 
@@ -34,11 +35,18 @@ export class ClientService {
       property, // Directly assign the property entity (not just the ID)
     });
 
-    return this.clientRepository.save(client);
+    const savedClient = await this.clientRepository.save(client);
+    
+    // Populate virtual propertyId field
+    if (savedClient.property) {
+      savedClient.propertyId = savedClient.property.id;
+    }
+    
+    return savedClient;
   }
 
   async update(id: string, updateClientDTO: UpdateClientDTO): Promise<Client> {
-    const { email, phone, ...clientData } = updateClientDTO;
+    const { email, phone, propertyId, ...clientData } = updateClientDTO;
 
     // Find the client to update
     const client = await this.clientRepository.findOne({ where: { id }, relations: ['property'] });
@@ -61,11 +69,35 @@ export class ClientService {
       }
     }
 
+    // Handle propertyId update
+    let property: Property | null = null;
+    if (propertyId !== undefined) {
+      if (propertyId === null) {
+        // Remove property link
+        property = null;
+      } else {
+        // Link to new property
+        property = await this.propertyRepository.findOne({ where: { id: propertyId } });
+        if (!property) {
+          throw new NotFoundException(`Property with ID ${propertyId} not found`);
+        }
+      }
+      client.property = property;
+    }
+
     // Update the client fields
-    await this.clientRepository.update(id, { email, phone, ...clientData });
+    Object.assign(client, { email, phone, ...clientData });
+    await this.clientRepository.save(client);
 
     // Fetch and return the updated client
-    return await this.clientRepository.findOne({ where: { id }, relations: ['property'] });
+    const updatedClient = await this.clientRepository.findOne({ where: { id }, relations: ['property'] });
+    
+    // Populate virtual propertyId field
+    if (updatedClient?.property) {
+      updatedClient.propertyId = updatedClient.property.id;
+    }
+    
+    return updatedClient;
   }
 
   async findAll(filterDto?: FilterClientDto): Promise<Client[]> {
@@ -80,10 +112,19 @@ export class ClientService {
       }
     }
 
-    return await this.clientRepository.find({ 
+    const clients = await this.clientRepository.find({ 
       where,
       relations: ['property'] 
     });
+    
+    // Populate virtual propertyId field for each client
+    clients.forEach(client => {
+      if (client.property) {
+        client.propertyId = client.property.id;
+      }
+    });
+    
+    return clients;
   }
 
   async findOne(id: string): Promise<Client> {
@@ -91,6 +132,12 @@ export class ClientService {
     if (!client) {
       throw new NotFoundException(`Client with ID ${id} not found`);
     }
+    
+    // Populate virtual propertyId field
+    if (client.property) {
+      client.propertyId = client.property.id;
+    }
+    
     return client;
   }
 

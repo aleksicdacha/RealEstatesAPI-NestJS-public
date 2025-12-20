@@ -13,7 +13,7 @@ import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
 
-@Entity()
+@Entity('properties')
 @Unique(['code'])
 export class Property {
   @PrimaryGeneratedColumn('uuid')

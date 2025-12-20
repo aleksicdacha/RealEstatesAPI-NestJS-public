@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 import { Role } from './enums/role.enum';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

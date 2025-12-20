@@ -33,14 +33,11 @@ export class CreateClientDTO {
   email?: string;
 
   @IsString({ message: 'Phone number must be a string.' })
-  @Matches(/^(\+3816[0-6]|06[0-9])[0-9]{5,8}$/, {
-    message: 'Phone number must be a valid Serbian mobile number.',
-  })
-  phone: string;
+  @IsOptional()
+  phone?: string;
 
   @IsString({ message: 'Comment must be a string' })
   @IsOptional()
-  @MinLength(10, { message: 'Comment must be at least 10 characters long' })
   @MaxLength(500, { message: 'Comment must not exceed 500 characters' })
   comment?: string;
 
@@ -51,4 +48,8 @@ export class CreateClientDTO {
   @IsOptional()
   @IsUUID()
   property?: string;
+
+  @IsOptional()
+  @IsUUID()
+  propertyId?: string;
 }
