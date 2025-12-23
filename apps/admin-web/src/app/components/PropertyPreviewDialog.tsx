@@ -63,8 +63,12 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
         if (imagesResponse.ok) {
           const imagesData: PropertyImageData[] = await imagesResponse.json();
           console.log('[PropertyPreview] Images data received:', imagesData);
-          // Sort images by order field
-          const sortedImages = imagesData.sort((a, b) => a.order - b.order);
+          // Sort images: favorite first, then by order field
+          const sortedImages = imagesData.sort((a, b) => {
+            if (a.isFavorite && !b.isFavorite) return -1;
+            if (!a.isFavorite && b.isFavorite) return 1;
+            return a.order - b.order;
+          });
           const imageUrls = sortedImages.map((img) => {
             let imageUrl = img.url;
             

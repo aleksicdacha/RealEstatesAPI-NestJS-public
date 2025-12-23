@@ -29,7 +29,7 @@ async function bootstrap() {
   });
 
   // Static files for image uploads
-  app.useStaticAssets(join(__dirname, '..', '..', 'uploads'), {
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads',
   });
 

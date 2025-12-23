@@ -459,7 +459,12 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
               fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}>
               {/* Image */}
-              {selectedProperty.images && selectedProperty.images.length > 0 && (
+              {selectedProperty.images && selectedProperty.images.length > 0 && (() => {
+                // Find favorite image or use first one
+                console.log('🖼️ Property images:', selectedProperty.images.map(img => ({ url: img.url, isFavorite: img.isFavorite })));
+                const favoriteImage = selectedProperty.images.find(img => img.isFavorite) || selectedProperty.images[0];
+                console.log('⭐ Selected favorite image:', favoriteImage);
+                return (
                 <div style={{ 
                   marginBottom: '12px',
                   position: 'relative',
@@ -467,7 +472,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
                   borderRadius: '4px',
                 }}>
                   <img
-                    src={`http://localhost:3000${selectedProperty.images[0].url.startsWith('/uploads/') ? selectedProperty.images[0].url : '/uploads/' + selectedProperty.images[0].url}`}
+                    src={`http://localhost:3000${favoriteImage.url.startsWith('/uploads/') ? favoriteImage.url : '/uploads/' + favoriteImage.url}`}
                     alt={selectedProperty.code}
                     style={{
                       width: '100%',
@@ -495,7 +500,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
                     {translateStatus(selectedProperty.status)}
                   </div>
                 </div>
-              )}
+              )})()}
               
               {/* Content */}
               <div style={{ cursor: 'pointer' }} onClick={handlePropertyDetailsClick}>
