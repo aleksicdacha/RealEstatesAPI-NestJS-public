@@ -1,0 +1,25 @@
+{
+  "HomePage": {
+    "title": "Find Your Perfect Home",
+    "subtitle": "Thousands of properties in one place",
+    "search": "Search",
+    "forSale": "Sale",
+    "forRent": "Rent"
+  },
+  "Navigation": {
+    "home": "Home",
+    "properties": "Properties",
+    "forSale": "For Sale",
+    "forRent": "For Rent",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "PropertyTypes": {
+    "APARTMENT": "Apartment",
+    "HOUSE": "House",
+    "LAND": "Land",
+    "OFFICE": "Office",
+    "COMMERCIAL": "Commercial",
+    "GARAGE": "Garage"
+  }
+}

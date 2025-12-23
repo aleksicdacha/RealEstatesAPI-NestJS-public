@@ -1,0 +1,330 @@
+/*@tailwind base;*/
+/*@tailwind components;*/
+/*@tailwind utilities;*/
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    --background: #0a0a0a;*/
+/*    --foreground: #ededed;*/
+/*  }*/
+
+/*  .p-menubar {*/
+/*    background: #000000;*/
+/*  }*/
+/*}*/
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Lato, Helvetica, sans-serif;
+  font-size: 13px; /* Reduced from default 14px */
+}
+
+/* Global font size reduction */
+html {
+  font-size: 13px; /* Base font size */
+}
+
+/* Override PrimeReact component font sizes */
+.p-component {
+  font-size: 0.95rem;
+}
+
+.p-datatable {
+  font-size: 0.9rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  font-size: 0.85rem;
+}
+
+.p-button {
+  font-size: 0.9rem;
+}
+
+.p-inputtext {
+  font-size: 0.9rem;
+}
+
+.p-dropdown {
+  font-size: 0.9rem;
+}
+
+/*Client form*/
+.client-dialog-width {
+  max-width: 50vw !important;
+}
+
+.client-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 1rem; /* Space between columns */
+}
+
+/*Property form*/
+.property-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+  gap: 1rem; /* Space between columns */
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Space between fields in the same column */
+}
+
+.p-field label {
+  font-weight: bold;
+}
+
+.p-button-disabled {
+  background-color: #d8d8d8 !important;
+  cursor: not-allowed !important;
+  color: #6b6b6b !important;
+  border: none;
+}
+
+.background-code {
+  background-color: #e2f0fb !important;
+}
+
+.fixed-width-multiselect {
+  width: 100%; /* Ensure the MultiSelect fits the parent container */
+  max-width: 100%; /* Optional: Set a maximum width for better control */
+}
+
+.fixed-width-multiselect .p-multiselect {
+  display: flex;
+  flex-direction: column;
+}
+
+.fixed-width-multiselect .p-multiselect-header .p-checkbox-label {
+  display: inline-block;
+  visibility: visible;
+  color: inherit;
+}
+
+/* Fix for Additional Equipment MultiSelect chip wrapping */
+.p-multiselect-panel .p-multiselect-items {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.p-multiselect .p-multiselect-label-container {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.p-multiselect .p-multiselect-token {
+  max-width: calc(100% - 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 2px;
+}
+
+.p-multiselect .p-multiselect-token-container {
+  max-height: 100px;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Specific styling for Additional Equipment MultiSelect */
+.additional-equipment-multiselect .p-multiselect-label-container {
+  max-width: 100%;
+  min-height: 40px;
+  max-height: 120px;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  display: flex;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.additional-equipment-multiselect .p-multiselect-token {
+  margin: 2px;
+  font-size: 0.9rem;
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.additional-equipment-multiselect .p-multiselect-label {
+  padding: 8px 12px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fixed-width-multiselect .p-multiselect-label-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow chips to wrap into multiple rows */
+  gap: 8px; /* Add spacing between chips */
+  align-items: flex-start; /* Align chips to the top */
+  /*min-height: 40px; !* Prevent collapse when no chips are selected *!*/
+  overflow: visible; /* Ensure content remains visible */
+}
+
+.fixed-width-multiselect .p-multiselect-token {
+  margin: 4px; /* Space around individual chips */
+  white-space: normal; /* Allow chip text to wrap if necessary */
+  word-break: break-word; /* Break long chip labels */
+}
+
+.fixed-width-multiselect .p-multiselect-input {
+  flex-basis: 100%; /* Force the input field to take a full row */
+  margin-top: 4px; /* Add a small gap from the chips */
+  border: none; /* Optional: Remove border for better styling */
+}
+
+.fixed-width-multiselect .p-multiselect-trigger {
+  flex-shrink: 0; /* Ensure the dropdown button doesn't move */
+}
+
+.fixed-width-multiselect .p-multiselect-panel {
+  max-height: 300px; /* Limit dropdown height */
+  overflow-y: auto; /* Enable scrolling for dropdown options */
+}
+
+.fixed-width-multiselect .p-multiselect-label {
+  display: flex
+;
+  flex-flow: wrap;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure the autocomplete dropdown (pac-container) appears on top - GMAPS*/
+.pac-container {
+  z-index: 10000 !important;
+}
+
+.half-width-btn {
+  width: 49%;
+}
+
+/* Timeline Component Styles */
+.timeline {
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline.timeline-left::before {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--surface-border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 3.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--surface-ground);
+  border: 2px solid var(--surface-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.timeline-content {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard specific styles */
+.dashboard-card-header {
+  border-bottom: 1px solid var(--surface-border);
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+}
+
+.stat-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Skeleton loading animations */
+.skeleton-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Equipment MultiSelect - Hide checkboxes on disabled section headers */
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"] .p-checkbox,
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"] .p-checkbox-box {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"] {
+  pointer-events: none !important;
+  cursor: default !important;
+  background: transparent !important;
+}
+
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"]:hover {
+  background: transparent !important;
+}
+
+/* Compact input fields for price and area ranges */
+.compact-range-inputs {
+  max-width: 60% !important;
+}
+
+.compact-range-inputs .p-inputnumber,
+.compact-range-inputs .p-inputnumber-input {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.compact-range-inputs input {
+  width: 100% !important;
+}
+
+
