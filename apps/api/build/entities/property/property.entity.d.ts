@@ -22,6 +22,7 @@ export declare class Property {
     constructionYear?: number;
     bathrooms?: number;
     floor?: number;
+    roomStructure?: string;
     heating?: HeatingType;
     createdAt: Date;
     updatedAt: Date;

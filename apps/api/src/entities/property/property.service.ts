@@ -4,6 +4,7 @@ import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyStatsQueryDto, PropertyStatsDto } from './dto/property-stats.dto';
+import { PublicPropertyDto } from './dto/public-property.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { DataSource, Between } from 'typeorm';
 import { PropertyRepository } from '@src/entities/property/property.repository';
@@ -141,6 +142,67 @@ export class PropertyService {
     });
   }
 
+  /**
+   * Public-facing API for user-web frontend
+   * Returns sanitized property data without sensitive information
+   * Automatically filters only ACTIVE properties
+   */
+  async findAllPublic(options: FilterPropertyDto): Promise<Pagination<PublicPropertyDto>> {
+    // Force status to 'active' for public API - ignore any status filter from client
+    const paginationOptions = {
+      ...options,
+      status: ['active'], // Always filter only active properties for public
+      page: options.page || 1,
+      limit: options.limit || 10,
+      sortBy: options.sortBy || 'createdAt',
+      order: (options.order || 'DESC') as 'ASC' | 'DESC'
+    };
+
+    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
+
+    // Transform to public DTOs (exclude sensitive data)
+    const publicItems = items.map(property => this.transformToPublicDto(property));
+
+    return new Pagination<PublicPropertyDto>(publicItems, {
+      totalItems,
+      itemCount: publicItems.length,
+      itemsPerPage: paginationOptions.limit,
+      totalPages: Math.ceil(totalItems / paginationOptions.limit),
+      currentPage: paginationOptions.page,
+    });
+  }
+
+  /**
+   * Transform Property entity to PublicPropertyDto
+   * Excludes: salePrice, comment, client, createdAt, updatedAt
+   */
+  private transformToPublicDto(property: Property): PublicPropertyDto {
+    return {
+      id: property.id,
+      code: property.code,
+      description: property.description,
+      propertyType: property.propertyType,
+      price: property.price, // Only public price
+      area: property.area,
+      neighborhood: property.neighborhood,
+      lat: property.lat,
+      lon: property.lon,
+      elevator: property.elevator,
+      additionalEquipment: property.additionalEquipment || [],
+      constructionYear: property.constructionYear,
+      bathrooms: property.bathrooms,
+      floor: property.floor,
+      roomStructure: property.roomStructure,
+      heating: property.heating,
+      images: property.images?.map(img => ({
+        id: img.id,
+        url: img.url,
+        isPrimary: img.isFavorite,
+        displayOrder: img.order,
+      })) || [],
+    };
+  }
+
   async findOne(id: string): Promise<Property> {
     const property = await this.propertyRepository.findOne({
       where: { id },
@@ -173,6 +235,23 @@ export class PropertyService {
         moneyAmount: property.client.moneyAmount,
       } : null,
     };
+  }
+
+  /**
+   * Public-facing single property endpoint for user-web frontend
+   * Returns sanitized property data without sensitive information
+   */
+  async findOnePublic(id: string): Promise<PublicPropertyDto> {
+    const property = await this.propertyRepository.findOne({
+      where: { id },
+      relations: ['images'],
+    });
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.transformToPublicDto(property);
   }
 
 

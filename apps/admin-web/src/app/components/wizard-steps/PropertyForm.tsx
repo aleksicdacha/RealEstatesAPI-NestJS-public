@@ -17,6 +17,7 @@ interface PropertyFormData {
   code: string;
   propertyType: string;
   status: string;
+  roomStructure?: string;
   price: string | number;
   salePrice: string | number;
   bathrooms: string | number;
@@ -66,6 +67,7 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
     code: '',
     propertyType: '',
     status: 'active',
+    roomStructure: '',
     price: '' as string | number,
     salePrice: '' as string | number,
     bathrooms: '' as string | number,
@@ -243,6 +245,25 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
             {formErrors.propertyType && (
               <small className="p-error">{formErrors.propertyType}</small>
             )}
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="roomStructure">{t('roomStructure')}</label>
+            <Dropdown
+              id="roomStructure"
+              value={formData.roomStructure}
+              options={[
+                { label: t('structureGarsonjera'), value: 'garsonjera' },
+                { label: t('structureJednosoban'), value: 'jednosoban' },
+                { label: t('structureDvosoban'), value: 'dvosoban' },
+                { label: t('structureTrosoban'), value: 'trosoban' },
+                { label: t('structureCetvorosoban'), value: 'četvorosoban' },
+                { label: t('structureCetvoroiposoban'), value: 'četvoroiposoban' },
+                { label: t('structurePetosobanIVeci'), value: 'petosoban i veći' },
+                { label: t('structureOstalo'), value: 'ostalo' },
+              ]}
+              onChange={handleDropdownChange}
+              placeholder={t('selectRoomStructure')}
+            />
           </div>
           <div className="p-field py-2">
             <label htmlFor="address">{t('address')} <span className="text-red-500">*</span></label>

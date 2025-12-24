@@ -105,6 +105,9 @@ export default function PropertiesPage() {
       if (filters.status && filters.status.length > 0) {
         queryParams.status = filters.status.join(',');
       }
+      if (filters.roomStructure && filters.roomStructure.length > 0) {
+        queryParams.roomStructure = filters.roomStructure.join(',');
+      }
       if (filters.priceFrom !== undefined && filters.priceFrom !== null) queryParams.minPrice = filters.priceFrom;
       if (filters.priceTo !== undefined && filters.priceTo !== null) queryParams.maxPrice = filters.priceTo;
       if (filters.areaFrom !== undefined && filters.areaFrom !== null) queryParams.minArea = filters.areaFrom;
@@ -322,7 +325,7 @@ export default function PropertiesPage() {
       {/* Main Content: Table and Map */}
       <div style={{ display: 'flex', gap: '20px' }}>
         {/* Left side - Data Table */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 2, minWidth: 0 }}>
 
           {/* Full-page loading overlay */}
           {loading && (

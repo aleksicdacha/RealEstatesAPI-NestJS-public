@@ -80,6 +80,10 @@ export class Property {
   @Column({ type: 'int', nullable: true })
   floor?: number;
 
+  // Room structure: garsonjera, jednosoban, dvosoban, trosoban, četvorosoban, petosoban i veći, etc.
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  roomStructure?: string;
+
   @Column({ type: 'enum', enum: HeatingType, nullable: true })
   heating?: HeatingType;
 

@@ -115,6 +115,11 @@ let PropertyRepository = class PropertyRepository extends typeorm_1.Repository {
             });
             queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
         }
+        if (options.roomStructure && options.roomStructure.length > 0) {
+            queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', {
+                roomStructures: options.roomStructure
+            });
+        }
         if (options.heating && options.heating.length > 0) {
             queryBuilder.andWhere('property.heating IN (:...heating)', {
                 heating: options.heating

@@ -34,6 +34,12 @@ let PropertyController = class PropertyController {
     async getFilterOptions() {
         return this.propertyService.getFilterOptions();
     }
+    async findAllPublic(query) {
+        return this.propertyService.findAllPublic(query);
+    }
+    findOnePublic(guid) {
+        return this.propertyService.findOnePublic(guid);
+    }
     async findAll(query) {
         return this.propertyService.findAll(query);
     }
@@ -72,6 +78,20 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PropertyController.prototype, "getFilterOptions", null);
+__decorate([
+    (0, common_1.Get)('public'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [filter_property_dto_1.FilterPropertyDto]),
+    __metadata("design:returntype", Promise)
+], PropertyController.prototype, "findAllPublic", null);
+__decorate([
+    (0, common_1.Get)('public/:guid'),
+    __param(0, (0, common_1.Param)('guid')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PropertyController.prototype, "findOnePublic", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)()),

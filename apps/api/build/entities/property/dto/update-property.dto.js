@@ -36,6 +36,7 @@ class UpdatePropertyDTO {
     constructionYear;
     bathrooms;
     floor;
+    roomStructure;
     heating;
     images;
 }
@@ -158,6 +159,12 @@ __decorate([
     (0, class_validator_1.Max)(200, { message: 'Floor cannot exceed 200.' }),
     __metadata("design:type", Number)
 ], UpdatePropertyDTO.prototype, "floor", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Room structure must be a string.' }),
+    (0, class_validator_1.MaxLength)(50, { message: 'Room structure must not exceed 50 characters.' }),
+    __metadata("design:type", String)
+], UpdatePropertyDTO.prototype, "roomStructure", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(heating_enum_1.HeatingType, { message: 'Invalid heating type.' }),

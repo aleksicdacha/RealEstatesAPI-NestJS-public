@@ -130,6 +130,13 @@ export class PropertyRepository extends Repository<Property> {
       queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
     }
 
+    // Room structure filter
+    if (options.roomStructure && options.roomStructure.length > 0) {
+      queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', { 
+        roomStructures: options.roomStructure 
+      });
+    }
+
     // Heating filter
     if (options.heating && options.heating.length > 0) {
       queryBuilder.andWhere('property.heating IN (:...heating)', { 

@@ -13,6 +13,7 @@ export interface PropertyFilterValues {
   city?: string;
   neighborhoods?: string[];
   propertyTypes?: string[];
+  roomStructure?: string[];
   status?: string[];
   priceFrom?: number | null;
   priceTo?: number | null;
@@ -319,7 +320,7 @@ export const PropertyFilters: React.FC<PropertyFiltersProps> = ({ onFilterChange
           <h3 className="text-xl font-semibold m-0">{t('filters')}</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* City */}
           <div className="p-field">
             <label className="block mb-2 font-medium">
@@ -364,6 +365,31 @@ export const PropertyFilters: React.FC<PropertyFiltersProps> = ({ onFilterChange
               options={propertyTypeOptions}
               onChange={(e) => handleFilterUpdate('propertyTypes', e.value)}
               placeholder={t('selectPropertyType')}
+              className="w-full"
+              display="chip"
+            />
+          </div>
+
+          {/* Room Structure */}
+          <div className="p-field">
+            <label className="block mb-2 font-medium">
+              <i className="pi pi-th-large mr-2" style={{ fontSize: '14px' }}></i>
+              {t('roomStructure')}
+            </label>
+            <MultiSelect
+              value={filters.roomStructure}
+              options={[
+                { label: t('structureGarsonjera'), value: 'garsonjera' },
+                { label: t('structureJednosoban'), value: 'jednosoban' },
+                { label: t('structureDvosoban'), value: 'dvosoban' },
+                { label: t('structureTrosoban'), value: 'trosoban' },
+                { label: t('structureCetvorosoban'), value: 'četvorosoban' },
+                { label: t('structureCetvoroiposoban'), value: 'četvoroiposoban' },
+                { label: t('structurePetosobanIVeci'), value: 'petosoban i veći' },
+                { label: t('structureOstalo'), value: 'ostalo' },
+              ]}
+              onChange={(e) => handleFilterUpdate('roomStructure', e.value)}
+              placeholder={t('selectRoomStructure')}
               className="w-full"
               display="chip"
             />

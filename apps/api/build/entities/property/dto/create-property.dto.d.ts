@@ -20,6 +20,7 @@ export declare class CreatePropertyDto {
     constructionYear?: number;
     bathrooms?: number;
     floor?: number;
+    roomStructure?: string;
     heating?: HeatingType;
     images?: string[];
 }

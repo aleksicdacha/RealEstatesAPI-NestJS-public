@@ -47,6 +47,25 @@ export class PropertyController {
     return this.propertyService.getFilterOptions();
   }
 
+  /**
+   * Public endpoint for user-web frontend
+   * Returns sanitized property data without sensitive information
+   */
+  @Get('public')
+  async findAllPublic(@Query() query: FilterPropertyDto) {
+    return this.propertyService.findAllPublic(query);
+  }
+
+  /**
+   * Public endpoint for single property (user-web frontend)
+   * Returns sanitized property data without sensitive information
+   * MUST be before @Get(':guid') to avoid route conflict
+   */
+  @Get('public/:guid')
+  findOnePublic(@Param('guid') guid: string) {
+    return this.propertyService.findOnePublic(guid);
+  }
+
   @Get()
   async findAll(@Query() query: FilterPropertyDto) {
     return this.propertyService.findAll(query);

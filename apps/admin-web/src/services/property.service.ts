@@ -19,6 +19,7 @@ export interface Property {
   constructionYear?: number;
   bathrooms?: number;
   floor?: number;
+  roomStructure?: string;
   heating?: string;
   createdAt: string;
   updatedAt: string;
@@ -64,6 +65,7 @@ export interface CreatePropertyDto {
   constructionYear?: number;
   bathrooms?: number;
   floor?: number;
+  roomStructure?: string;
   heating?: string;
   images?: string[];
 }
@@ -86,6 +88,7 @@ export interface UpdatePropertyDto {
   constructionYear?: number;
   bathrooms?: number;
   floor?: number;
+  roomStructure?: string;
   heating?: string;
   images?: Array<{
     id?: string;
@@ -103,6 +106,7 @@ export interface PropertyFilter extends Record<string, unknown> {
   searchField?: string;
   searchValue?: string;
   propertyType?: string;
+  roomStructure?: string;
   status?: string;
   clientId?: string;
   minPrice?: number;

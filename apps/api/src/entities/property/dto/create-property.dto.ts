@@ -130,6 +130,12 @@ export class CreatePropertyDto {
   @Max(200, { message: 'Floor cannot exceed 200.' })
   floor?: number;
 
+  // Room structure: garsonjera, jednosoban, dvosoban, trosoban, četvorosoban, četvoroiposoban, petosoban i veći, etc.
+  @IsOptional()
+  @IsString({ message: 'Room structure must be a string.' })
+  @MaxLength(50, { message: 'Room structure must not exceed 50 characters.' })
+  roomStructure?: string;
+
   @IsOptional()
   @IsEnum(HeatingType, { message: 'Invalid heating type.' })
   heating?: HeatingType;

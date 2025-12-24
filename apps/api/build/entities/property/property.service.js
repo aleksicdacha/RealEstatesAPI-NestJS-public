@@ -112,6 +112,51 @@ let PropertyService = class PropertyService {
             currentPage: paginationOptions.page,
         });
     }
+    async findAllPublic(options) {
+        const paginationOptions = {
+            ...options,
+            status: ['active'],
+            page: options.page || 1,
+            limit: options.limit || 10,
+            sortBy: options.sortBy || 'createdAt',
+            order: (options.order || 'DESC')
+        };
+        const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
+        const publicItems = items.map(property => this.transformToPublicDto(property));
+        return new nestjs_typeorm_paginate_1.Pagination(publicItems, {
+            totalItems,
+            itemCount: publicItems.length,
+            itemsPerPage: paginationOptions.limit,
+            totalPages: Math.ceil(totalItems / paginationOptions.limit),
+            currentPage: paginationOptions.page,
+        });
+    }
+    transformToPublicDto(property) {
+        return {
+            id: property.id,
+            code: property.code,
+            description: property.description,
+            propertyType: property.propertyType,
+            price: property.price,
+            area: property.area,
+            neighborhood: property.neighborhood,
+            lat: property.lat,
+            lon: property.lon,
+            elevator: property.elevator,
+            additionalEquipment: property.additionalEquipment || [],
+            constructionYear: property.constructionYear,
+            bathrooms: property.bathrooms,
+            floor: property.floor,
+            roomStructure: property.roomStructure,
+            heating: property.heating,
+            images: property.images?.map(img => ({
+                id: img.id,
+                url: img.url,
+                isPrimary: img.isFavorite,
+                displayOrder: img.order,
+            })) || [],
+        };
+    }
     async findOne(id) {
         const property = await this.propertyRepository.findOne({
             where: { id },
@@ -141,6 +186,16 @@ let PropertyService = class PropertyService {
                 moneyAmount: property.client.moneyAmount,
             } : null,
         };
+    }
+    async findOnePublic(id) {
+        const property = await this.propertyRepository.findOne({
+            where: { id },
+            relations: ['images'],
+        });
+        if (!property) {
+            throw new common_1.NotFoundException(`Property with ID ${id} not found`);
+        }
+        return this.transformToPublicDto(property);
     }
     async remove(id) {
         try {

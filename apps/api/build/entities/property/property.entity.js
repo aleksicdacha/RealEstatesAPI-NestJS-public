@@ -36,6 +36,7 @@ let Property = class Property {
     constructionYear;
     bathrooms;
     floor;
+    roomStructure;
     heating;
     createdAt;
     updatedAt;
@@ -125,6 +126,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'int', nullable: true }),
     __metadata("design:type", Number)
 ], Property.prototype, "floor", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], Property.prototype, "roomStructure", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: heating_enum_1.HeatingType, nullable: true }),
     __metadata("design:type", String)

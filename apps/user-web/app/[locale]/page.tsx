@@ -1,19 +1,38 @@
-import { useTranslations } from 'next-intl';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { fetchProperties, Property } from '@/lib/api';
+import { PropertyCard } from '@/app/components/PropertyCard';
+import { PropertyMap } from '@/app/components/PropertyMap';
 
 export default function HomePage() {
-  const t = useTranslations('HomePage');
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch latest properties from API
+    // Public API automatically returns only active properties
+    fetchProperties({
+      page: 1,
+      limit: 6,
+      sortBy: 'createdAt',
+      order: 'DESC',
+    }).then((data) => {
+      setProperties(data.items);
+    });
+  }, []);
 
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+        <div className="px-4 text-center">
           <h1 className="text-5xl font-bold mb-6">
-            {t('title', { default: 'Pronađite Svoj Savršen Dom' })}
+            Pronađite Svoj Savršen Dom
           </h1>
           <p className="text-xl mb-8">
-            {t('subtitle', { default: 'Hiljade nekretnina na jednom mestu' })}
+            Hiljade nekretnina na jednom mestu
           </p>
           
           {/* Search Bar */}
@@ -44,28 +63,40 @@ export default function HomePage() {
 
       {/* Featured Properties */}
       <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">
             Izdvojene Nekretnine
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gray-300"></div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">Stan 65m², Centar</h3>
-                  <p className="text-gray-600 mb-2">Beograd, Vračar</p>
-                  <p className="text-primary-600 font-bold text-xl">120,000 €</p>
-                </div>
+          
+          {/* Split layout: 50% Properties List, 50% Map */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Properties List */}
+            <div className="pr-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {properties.map((property) => (
+                  <PropertyCard 
+                    key={property.id} 
+                    property={property}
+                    onHover={setSelectedPropertyId}
+                  />
+                ))}
               </div>
-            ))}
+            </div>
+            
+            {/* Map */}
+            <div className="h-[800px] sticky top-4 rounded-lg overflow-hidden shadow-lg">
+              <PropertyMap 
+                properties={properties}
+                selectedPropertyId={selectedPropertyId || undefined}
+              />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Why Choose Us */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="px-4">
           <h2 className="text-3xl font-bold mb-12 text-center">
             Zašto Izabrati Nas?
           </h2>
@@ -88,7 +119,7 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-primary-600 text-2xl">✓</span>
               </div>
-              <h3 className="font-bold text-xl mb-2">Bez Provizije</h3>
+              <h3 className="font-bold text-xl mb-2">3% Provizije</h3>
               <p className="text-gray-600">Direktan kontakt sa vlasnicima</p>
             </div>
           </div>

@@ -30,6 +30,7 @@ interface PropertyFormData {
   code: string;
   propertyType: string;
   status: string;
+  roomStructure?: string;
   price: string | number;
   salePrice: string | number;
   bathrooms: string | number;
@@ -58,6 +59,7 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
     code: propertyData.code,
     propertyType: propertyData.propertyType,
     status: propertyData.status,
+    roomStructure: propertyData.roomStructure || '',
     price: typeof propertyData.price === 'number' ? propertyData.price : parseFloat(propertyData.price) || '',
     salePrice: typeof propertyData.salePrice === 'number' ? propertyData.salePrice : parseFloat(propertyData.salePrice) || '',
     bathrooms: propertyData.bathrooms || '',
@@ -126,6 +128,7 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
         description: formData.description || undefined,
         propertyType: formData.propertyType || undefined,
         status: formData.status || undefined,
+        roomStructure: formData.roomStructure || undefined,
         price: parseFloat(String(formData.price)),
         salePrice: formData.salePrice ? parseFloat(String(formData.salePrice)) : undefined,
         area: formData.area ? parseFloat(String(formData.area)) : undefined,

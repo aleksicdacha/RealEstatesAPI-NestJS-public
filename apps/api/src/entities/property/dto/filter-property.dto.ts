@@ -98,6 +98,11 @@ export class FilterPropertyDto {
   @IsOptional()
   @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
   @IsArray()
+  roomStructure?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.split(',') : value)
+  @IsArray()
   heating?: string[];
 
   @IsOptional()
