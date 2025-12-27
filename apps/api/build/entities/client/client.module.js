@@ -14,12 +14,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const client_entity_1 = require("./client.entity");
 const client_repository_1 = require("./client.repository");
 const property_module_1 = require("../property/property.module");
+const representative_entity_1 = require("../representative/representative.entity");
 let ClientModule = class ClientModule {
 };
 exports.ClientModule = ClientModule;
 exports.ClientModule = ClientModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([client_entity_1.Client]), property_module_1.PropertyModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([client_entity_1.Client, representative_entity_1.Representative]), property_module_1.PropertyModule],
         providers: [client_service_1.ClientService, client_repository_1.ClientRepository],
         controllers: [client_controller_1.ClientController],
         exports: [client_service_1.ClientService, client_repository_1.ClientRepository],

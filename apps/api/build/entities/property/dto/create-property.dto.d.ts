@@ -1,6 +1,7 @@
 import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import { Orientation } from '@src/entities/property/enums/orientation.enum';
 export declare class CreatePropertyDto {
     id: string;
     code: string;
@@ -20,6 +21,13 @@ export declare class CreatePropertyDto {
     constructionYear?: number;
     bathrooms?: number;
     floor?: number;
+    roomStructure?: string;
     heating?: HeatingType;
+    contractNumber?: string;
+    cadastralParcel?: string;
+    cadastralMunicipality?: string;
+    orientation?: Orientation;
+    youtubeUrl?: string;
+    specialOffer?: number;
     images?: string[];
 }

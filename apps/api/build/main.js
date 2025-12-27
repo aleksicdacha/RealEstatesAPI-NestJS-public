@@ -22,7 +22,7 @@ async function bootstrap() {
         type: common_1.VersioningType.URI,
         defaultVersion: '1',
     });
-    app.useStaticAssets((0, path_1.join)(__dirname, '..', '..', 'uploads'), {
+    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'uploads'), {
         prefix: '/uploads',
     });
     app.useGlobalPipes(new common_1.ValidationPipe({

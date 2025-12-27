@@ -18,6 +18,19 @@ interface ClientFormData {
   phone: string;
   moneyAmount: string | number;
   comment: string;
+  ownerJmbg?: string;
+  ownerBirthplace?: string;
+  ownerIdCardNumber?: string;
+  ownerIdCardIssuePlace?: string;
+  representative?: {
+    name: string;
+    address: string;
+    phone?: string;
+    jmbg: string;
+    birthplace?: string;
+    idCardNumber?: string;
+    idCardIssuePlace?: string;
+  };
 }
 
 interface ClientFormProps {
@@ -46,8 +59,9 @@ const ClientForm = forwardRef<ClientFormRef, ClientFormProps>(({
 
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | string>('');
+  const [showRepresentative, setShowRepresentative] = useState(false);
 
-  const [clientData, setClientData] = useState({
+  const [clientData, setClientData] = useState<ClientFormData>({
     name: '',
     email: '',
     status: 'active',
@@ -55,8 +69,12 @@ const ClientForm = forwardRef<ClientFormRef, ClientFormProps>(({
     paymentType: 'cash',
     address: '',
     phone: '',
-    moneyAmount: '' as string | number,
+    moneyAmount: '',
     comment: '',
+    ownerJmbg: '',
+    ownerBirthplace: '',
+    ownerIdCardNumber: '',
+    ownerIdCardIssuePlace: '',
     // ...initialData, // Spread initialData to pre-fill the form
   });
   const [formErrors, setFormErrors] = useState({
@@ -116,12 +134,21 @@ const ClientForm = forwardRef<ClientFormRef, ClientFormProps>(({
         phone: client.phone || '',
         moneyAmount: client.moneyAmount || '',
         comment: client.comment || '',
+        ownerJmbg: client.ownerJmbg || '',
+        ownerBirthplace: client.ownerBirthplace || '',
+        ownerIdCardNumber: client.ownerIdCardNumber || '',
+        ownerIdCardIssuePlace: client.ownerIdCardIssuePlace || '',
+        representative: client.representative,
       });
+      if (client.representative) {
+        setShowRepresentative(true);
+      }
     }
   };
 
   const handleClearSelection = () => {
     setSelectedClient('');
+    setShowRepresentative(false);
     setClientData({
       name: '',
       email: '',
@@ -132,6 +159,10 @@ const ClientForm = forwardRef<ClientFormRef, ClientFormProps>(({
       phone: '',
       moneyAmount: '',
       comment: '',
+      ownerJmbg: '',
+      ownerBirthplace: '',
+      ownerIdCardNumber: '',
+      ownerIdCardIssuePlace: '',
     });
   };
 
@@ -199,7 +230,7 @@ const ClientForm = forwardRef<ClientFormRef, ClientFormProps>(({
 
   const isFormValid = () => {
     return ['name', 'email', 'address'].every(
-      (field) => formErrors[field as keyof typeof formErrors] === '' && clientData[field as keyof ClientFormData].toString().trim() !== '',
+      (field) => formErrors[field as keyof typeof formErrors] === '' && (clientData[field as keyof ClientFormData] as string)?.trim() !== '',
     );
   };
 
@@ -415,6 +446,184 @@ const ClientForm = forwardRef<ClientFormRef, ClientFormProps>(({
             {formErrors.moneyAmount && <small className="p-error">{formErrors.moneyAmount}</small>}
           </div>
         </div>
+
+        {/* Owner Section */}
+        <div className="col-12 mt-4">
+          <h4 className="text-900 mb-3">{t('ownerDetails')}</h4>
+        </div>
+        <div className="form-column">
+          <div className="p-field py-2">
+            <label htmlFor="ownerJmbg">{t('ownerJmbg')}</label>
+            <InputText
+              id="ownerJmbg"
+              name="ownerJmbg"
+              value={clientData.ownerJmbg}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '').slice(0, 13);
+                setClientData(prev => ({ ...prev, ownerJmbg: value }));
+              }}
+              maxLength={13}
+              placeholder="1234567890123"
+            />
+            <small className="text-gray-500">{t('jmbgHint')}</small>
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="ownerBirthplace">{t('ownerBirthplace')}</label>
+            <InputText
+              id="ownerBirthplace"
+              name="ownerBirthplace"
+              value={clientData.ownerBirthplace}
+              onChange={handleInputChange}
+              maxLength={255}
+            />
+          </div>
+        </div>
+        <div className="form-column">
+          <div className="p-field py-2">
+            <label htmlFor="ownerIdCardNumber">{t('ownerIdCardNumber')}</label>
+            <InputText
+              id="ownerIdCardNumber"
+              name="ownerIdCardNumber"
+              value={clientData.ownerIdCardNumber}
+              onChange={handleInputChange}
+              maxLength={50}
+            />
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="ownerIdCardIssuePlace">{t('ownerIdCardIssuePlace')}</label>
+            <InputText
+              id="ownerIdCardIssuePlace"
+              name="ownerIdCardIssuePlace"
+              value={clientData.ownerIdCardIssuePlace}
+              onChange={handleInputChange}
+              maxLength={255}
+            />
+          </div>
+        </div>
+
+        {/* Representative Section */}
+        <div className="col-12 mt-4">
+          <div className="flex align-items-center justify-content-between mb-3">
+            <h4 className="text-900 m-0">{t('representativeDetails')}</h4>
+            <Button
+              type="button"
+              label={showRepresentative ? t('removeRepresentative') : t('addRepresentative')}
+              icon={showRepresentative ? 'pi pi-minus' : 'pi pi-plus'}
+              className={showRepresentative ? 'p-button-outlined p-button-danger' : 'p-button-outlined'}
+              onClick={() => {
+                setShowRepresentative(!showRepresentative);
+                if (showRepresentative) {
+                  setClientData(prev => ({ ...prev, representative: undefined }));
+                } else {
+                  setClientData(prev => ({
+                    ...prev,
+                    representative: { name: '', address: '', phone: '', jmbg: '', birthplace: '', idCardNumber: '', idCardIssuePlace: '' }
+                  }));
+                }
+              }}
+            />
+          </div>
+        </div>
+
+        {showRepresentative && (
+          <>
+            <div className="form-column">
+              <div className="p-field py-2">
+                <label htmlFor="representativeName">{t('representativeName')} <span className="text-red-500">*</span></label>
+                <InputText
+                  id="representativeName"
+                  value={clientData.representative?.name || ''}
+                  onChange={(e) => setClientData(prev => ({
+                    ...prev,
+                    representative: { ...prev.representative!, name: e.target.value }
+                  }))}
+                  maxLength={255}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representativeAddress">{t('representativeAddress')} <span className="text-red-500">*</span></label>
+                <InputText
+                  id="representativeAddress"
+                  value={clientData.representative?.address || ''}
+                  onChange={(e) => setClientData(prev => ({
+                    ...prev,
+                    representative: { ...prev.representative!, address: e.target.value }
+                  }))}
+                  maxLength={500}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representativePhone">{t('representativePhone')}</label>
+                <InputText
+                  id="representativePhone"
+                  value={clientData.representative?.phone || ''}
+                  onChange={(e) => setClientData(prev => ({
+                    ...prev,
+                    representative: { ...prev.representative!, phone: e.target.value }
+                  }))}
+                  maxLength={50}
+                />
+              </div>
+            </div>
+            <div className="form-column">
+              <div className="p-field py-2">
+                <label htmlFor="representativeJmbg">{t('representativeJmbg')} <span className="text-red-500">*</span></label>
+                <InputText
+                  id="representativeJmbg"
+                  value={clientData.representative?.jmbg || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 13);
+                    setClientData(prev => ({
+                      ...prev,
+                      representative: { ...prev.representative!, jmbg: value }
+                    }));
+                  }}
+                  maxLength={13}
+                  placeholder="1234567890123"
+                />
+                <small className="text-gray-500">{t('jmbgHint')}</small>
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representativeBirthplace">{t('representativeBirthplace')}</label>
+                <InputText
+                  id="representativeBirthplace"
+                  value={clientData.representative?.birthplace || ''}
+                  onChange={(e) => setClientData(prev => ({
+                    ...prev,
+                    representative: { ...prev.representative!, birthplace: e.target.value }
+                  }))}
+                  maxLength={255}
+                />
+              </div>
+            </div>
+            <div className="form-column">
+              <div className="p-field py-2">
+                <label htmlFor="representativeIdCardNumber">{t('representativeIdCardNumber')}</label>
+                <InputText
+                  id="representativeIdCardNumber"
+                  value={clientData.representative?.idCardNumber || ''}
+                  onChange={(e) => setClientData(prev => ({
+                    ...prev,
+                    representative: { ...prev.representative!, idCardNumber: e.target.value }
+                  }))}
+                  maxLength={50}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representativeIdCardIssuePlace">{t('representativeIdCardIssuePlace')}</label>
+                <InputText
+                  id="representativeIdCardIssuePlace"
+                  value={clientData.representative?.idCardIssuePlace || ''}
+                  onChange={(e) => setClientData(prev => ({
+                    ...prev,
+                    representative: { ...prev.representative!, idCardIssuePlace: e.target.value }
+                  }))}
+                  maxLength={255}
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="p-field py-2">
           <label htmlFor="comment">{t('comment')}</label>

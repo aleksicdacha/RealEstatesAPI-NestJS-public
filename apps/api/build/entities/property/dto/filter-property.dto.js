@@ -34,6 +34,7 @@ class FilterPropertyDto {
     neighborhoods;
     bathrooms;
     floors;
+    roomStructure;
     heating;
     features;
 }
@@ -150,6 +151,12 @@ __decorate([
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
 ], FilterPropertyDto.prototype, "floors", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => typeof value === 'string' ? value.split(',') : value),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], FilterPropertyDto.prototype, "roomStructure", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Transform)(({ value }) => typeof value === 'string' ? value.split(',') : value),

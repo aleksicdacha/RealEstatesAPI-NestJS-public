@@ -11,10 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateClientDTO = void 0;
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 const payment_type_enum_1 = require("../enums/payment-type.enum");
 const transaction_type_enum_1 = require("../enums/transaction-type.enum");
 const client_status_enum_1 = require("../enums/client-status.enum");
 const nestjs_i18n_1 = require("nestjs-i18n");
+const update_representative_dto_1 = require("../../representative/dto/update-representative.dto");
 class UpdateClientDTO {
     paymentType;
     transactionType;
@@ -26,6 +28,11 @@ class UpdateClientDTO {
     comment;
     moneyAmount;
     propertyId;
+    ownerJmbg;
+    ownerBirthplace;
+    ownerIdCardNumber;
+    ownerIdCardIssuePlace;
+    representative;
 }
 exports.UpdateClientDTO = UpdateClientDTO;
 __decorate([
@@ -79,4 +86,35 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateClientDTO.prototype, "propertyId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(13, 13, { message: 'JMBG must be exactly 13 digits.' }),
+    (0, class_validator_1.Matches)(/^\d{13}$/, { message: 'JMBG must contain only digits.' }),
+    __metadata("design:type", String)
+], UpdateClientDTO.prototype, "ownerJmbg", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(255),
+    __metadata("design:type", String)
+], UpdateClientDTO.prototype, "ownerBirthplace", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(50),
+    __metadata("design:type", String)
+], UpdateClientDTO.prototype, "ownerIdCardNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(255),
+    __metadata("design:type", String)
+], UpdateClientDTO.prototype, "ownerIdCardIssuePlace", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => update_representative_dto_1.UpdateRepresentativeDto),
+    __metadata("design:type", update_representative_dto_1.UpdateRepresentativeDto)
+], UpdateClientDTO.prototype, "representative", void 0);
 //# sourceMappingURL=update-client.dto.js.map

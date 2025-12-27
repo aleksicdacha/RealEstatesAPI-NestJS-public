@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = void 0;
 const typeorm_1 = require("typeorm");
 const property_entity_1 = require("../property/property.entity");
+const representative_entity_1 = require("../representative/representative.entity");
 const class_validator_1 = require("class-validator");
 const client_status_enum_1 = require("./enums/client-status.enum");
 const transaction_type_enum_1 = require("./enums/transaction-type.enum");
@@ -27,7 +28,12 @@ let Client = class Client {
     paymentType;
     comment;
     moneyAmount;
+    ownerJmbg;
+    ownerBirthplace;
+    ownerIdCardNumber;
+    ownerIdCardIssuePlace;
     property;
+    representative;
     propertyId;
 };
 exports.Client = Client;
@@ -85,10 +91,37 @@ __decorate([
     __metadata("design:type", Number)
 ], Client.prototype, "moneyAmount", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 13, nullable: true }),
+    (0, class_validator_1.Length)(13, 13, { message: 'Owner JMBG must be exactly 13 digits' }),
+    (0, class_validator_1.Matches)(/^\d{13}$/, { message: 'Owner JMBG must contain only digits' }),
+    __metadata("design:type", String)
+], Client.prototype, "ownerJmbg", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Client.prototype, "ownerBirthplace", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], Client.prototype, "ownerIdCardNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Client.prototype, "ownerIdCardIssuePlace", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => property_entity_1.Property, { onDelete: 'SET NULL', cascade: true, eager: true }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", property_entity_1.Property)
 ], Client.prototype, "property", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => representative_entity_1.Representative, (representative) => representative.client, {
+        cascade: true,
+        eager: true,
+        nullable: true
+    }),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", representative_entity_1.Representative)
+], Client.prototype, "representative", void 0);
 exports.Client = Client = __decorate([
     (0, typeorm_1.Entity)('clients')
 ], Client);

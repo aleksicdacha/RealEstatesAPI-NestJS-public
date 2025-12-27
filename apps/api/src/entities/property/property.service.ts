@@ -4,8 +4,9 @@ import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyStatsQueryDto, PropertyStatsDto } from './dto/property-stats.dto';
+import { PublicPropertyDto } from './dto/public-property.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { DataSource, Between } from 'typeorm';
+import { DataSource, Between, Not, IsNull } from 'typeorm';
 import { PropertyRepository } from '@src/entities/property/property.repository';
 import { PropertyImageRepository } from '@src/entities/property-image/property-image.repository';
 
@@ -17,8 +18,49 @@ export class PropertyService {
     private readonly dataSource: DataSource,
   ) {}
 
+  /**
+   * Reorganizes special offers when a new value is set
+   * If the desired value already exists, shifts that property and all higher values by 1
+   * Properties with specialOffer > 20 get set to null
+   */
+  private async reorganizeSpecialOffers(newSpecialOffer: number, excludePropertyId?: string): Promise<void> {
+    if (!newSpecialOffer || newSpecialOffer < 1 || newSpecialOffer > 20) {
+      return; // Nothing to reorganize if value is invalid or null
+    }
+
+    // Find all properties with specialOffer >= newSpecialOffer (excluding the current property being updated)
+    const whereCondition: any = {
+      specialOffer: Not(IsNull()),
+    };
+    
+    if (excludePropertyId) {
+      whereCondition.id = Not(excludePropertyId);
+    }
+
+    const affectedProperties = await this.propertyRepository.find({
+      where: whereCondition,
+      order: { specialOffer: 'DESC' }, // Start from highest to avoid conflicts
+    });
+
+    // Filter properties with specialOffer >= newSpecialOffer
+    const toShift = affectedProperties.filter(p => p.specialOffer >= newSpecialOffer);
+
+    // Shift each property's specialOffer by 1
+    for (const property of toShift) {
+      const newValue = property.specialOffer + 1;
+      
+      if (newValue > 20) {
+        // Set to null if exceeds 20
+        await this.propertyRepository.update(property.id, { specialOffer: null });
+      } else {
+        // Increment by 1
+        await this.propertyRepository.update(property.id, { specialOffer: newValue });
+      }
+    }
+  }
+
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
-    const { code, images, ...propertyData } = createPropertyDto;
+    const { code, images, specialOffer, ...propertyData } = createPropertyDto;
 
     // Check if the code already exists
     const existingProperty = await this.propertyRepository.findOne({ where: { code } });
@@ -26,9 +68,18 @@ export class PropertyService {
       throw new ConflictException(`Property with code "${code}" already exists.`);
     }
 
+    // Reorganize special offers if a new value is being set
+    if (specialOffer && specialOffer >= 1 && specialOffer <= 20) {
+      await this.reorganizeSpecialOffers(specialOffer);
+    }
+
     // Create the property
     try {
-      const property = this.propertyRepository.create({ code, ...propertyData });
+      const property = this.propertyRepository.create({ 
+        code, 
+        ...propertyData,
+        specialOffer: (specialOffer && specialOffer >= 1 && specialOffer <= 20) ? specialOffer : null,
+      });
       const savedProperty = await this.propertyRepository.save(property);
 
       // Save the images and associate them with the property
@@ -55,7 +106,7 @@ export class PropertyService {
   }
 
   async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
-    const { code, images, additionalEquipment, ...propertyData } = updatePropertyDto;
+    const { code, images, additionalEquipment, specialOffer, ...propertyData } = updatePropertyDto;
 
     // Fetch the property to update
     const property = await this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
@@ -71,11 +122,19 @@ export class PropertyService {
       }
     }
 
+    // Reorganize special offers if the value is being changed
+    if (specialOffer !== undefined && specialOffer !== property.specialOffer) {
+      if (specialOffer && specialOffer >= 1 && specialOffer <= 20) {
+        await this.reorganizeSpecialOffers(specialOffer, id);
+      }
+    }
+
     // Serialize additional_equipment if provided
     const updatedData = {
       ...propertyData,
       code,
       additionalEquipment: additionalEquipment ?? null,
+      specialOffer: (specialOffer && specialOffer >= 1 && specialOffer <= 20) ? specialOffer : null,
     };
 
     // Update the property fields
@@ -117,7 +176,7 @@ export class PropertyService {
     }
 
     // Return the updated property
-    return this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
+    return this.propertyRepository.findOne({ where: { id }, relations: ['client', 'client.representative', 'images'] });
   }
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
@@ -141,10 +200,74 @@ export class PropertyService {
     });
   }
 
+  /**
+   * Public-facing API for user-web frontend
+   * Returns sanitized property data without sensitive information
+   * Automatically filters only ACTIVE properties
+   */
+  async findAllPublic(options: FilterPropertyDto): Promise<Pagination<PublicPropertyDto>> {
+    // Force status to 'active' for public API - ignore any status filter from client
+    const paginationOptions = {
+      ...options,
+      status: 'active', // Always filter only active properties for public
+      page: options.page || 1,
+      limit: options.limit || 10,
+      sortBy: options.sortBy || 'createdAt',
+      order: (options.order || 'DESC') as 'ASC' | 'DESC'
+    };
+
+    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
+
+    // Transform to public DTOs (exclude sensitive data)
+    const publicItems = items.map(property => this.transformToPublicDto(property));
+
+    return new Pagination<PublicPropertyDto>(publicItems, {
+      totalItems,
+      itemCount: publicItems.length,
+      itemsPerPage: paginationOptions.limit,
+      totalPages: Math.ceil(totalItems / paginationOptions.limit),
+      currentPage: paginationOptions.page,
+    });
+  }
+
+  /**
+   * Transform Property entity to PublicPropertyDto
+   * Excludes: salePrice, comment, client, createdAt, updatedAt, contractNumber, cadastralParcel, cadastralMunicipality
+   */
+  private transformToPublicDto(property: Property): PublicPropertyDto {
+    return {
+      id: property.id,
+      code: property.code,
+      description: property.description,
+      propertyType: property.propertyType,
+      price: property.price, // Only public price
+      area: property.area,
+      neighborhood: property.neighborhood,
+      lat: property.lat,
+      lon: property.lon,
+      elevator: property.elevator,
+      additionalEquipment: property.additionalEquipment || [],
+      constructionYear: property.constructionYear,
+      bathrooms: property.bathrooms,
+      floor: property.floor,
+      roomStructure: property.roomStructure,
+      heating: property.heating,
+      orientation: property.orientation, // Public-facing
+      youtubeUrl: property.youtubeUrl, // Public-facing for video embed
+      specialOffer: property.specialOffer, // For homepage ordering
+      images: property.images?.map(img => ({
+        id: img.id,
+        url: img.url,
+        isPrimary: img.isFavorite,
+        displayOrder: img.order,
+      })) || [],
+    };
+  }
+
   async findOne(id: string): Promise<Property> {
     const property = await this.propertyRepository.findOne({
       where: { id },
-      relations: ['client', 'images'], // Eager load the images relation
+      relations: ['client', 'client.representative', 'images'], // Eager load the images relation
     });
 
     if (!property) {
@@ -171,8 +294,30 @@ export class PropertyService {
         comment: property.client.comment,
         status: property.client.status,
         moneyAmount: property.client.moneyAmount,
+        ownerJmbg: property.client.ownerJmbg,
+        ownerBirthplace: property.client.ownerBirthplace,
+        ownerIdCardNumber: property.client.ownerIdCardNumber,
+        ownerIdCardIssuePlace: property.client.ownerIdCardIssuePlace,
+        representative: property.client.representative,
       } : null,
     };
+  }
+
+  /**
+   * Public-facing single property endpoint for user-web frontend
+   * Returns sanitized property data without sensitive information
+   */
+  async findOnePublic(id: string): Promise<PublicPropertyDto> {
+    const property = await this.propertyRepository.findOne({
+      where: { id },
+      relations: ['images'],
+    });
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.transformToPublicDto(property);
   }
 
 

@@ -3,6 +3,7 @@ import { Client } from '@src/entities/client/client.entity';
 import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import { Orientation } from '@src/entities/property/enums/orientation.enum';
 export declare class Property {
     id: string;
     code: string;
@@ -22,7 +23,14 @@ export declare class Property {
     constructionYear?: number;
     bathrooms?: number;
     floor?: number;
+    roomStructure?: string;
     heating?: HeatingType;
+    contractNumber?: string;
+    cadastralParcel?: string;
+    cadastralMunicipality?: string;
+    orientation?: Orientation;
+    youtubeUrl?: string;
+    specialOffer?: number;
     createdAt: Date;
     updatedAt: Date;
     images?: PropertyImage[];

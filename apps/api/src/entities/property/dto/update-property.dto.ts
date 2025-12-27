@@ -11,6 +11,7 @@ import {
   Min,
   Max,
   IsBoolean,
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UpdatePropertyImageDto } from '@src/entities/property-image/dto/update-propertyImage.dto';
@@ -18,6 +19,7 @@ import { IsImmutable } from '@src/common/validators/is-immutable.validator';
 import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import { Orientation } from '@src/entities/property/enums/orientation.enum';
 
 export class UpdatePropertyDTO {
   @IsImmutable({ message: 'Code cannot be updated once created.' })
@@ -138,6 +140,12 @@ export class UpdatePropertyDTO {
   @Max(200, { message: 'Floor cannot exceed 200.' })
   floor?: number;
 
+  // Room structure: garsonjera, jednosoban, dvosoban, trosoban, četvorosoban, četvoroiposoban, petosoban i veći, etc.
+  @IsOptional()
+  @IsString({ message: 'Room structure must be a string.' })
+  @MaxLength(50, { message: 'Room structure must not exceed 50 characters.' })
+  roomStructure?: string;
+
   @IsOptional()
   @IsEnum(HeatingType, { message: 'Invalid heating type.' })
   heating?: HeatingType;
@@ -147,4 +155,35 @@ export class UpdatePropertyDTO {
   @ValidateNested({ each: true })
   @Type(() => UpdatePropertyImageDto)
   images?: UpdatePropertyImageDto[];
+
+  // Extended fields
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  contractNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  cadastralParcel?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  cadastralMunicipality?: string;
+
+  @IsOptional()
+  @IsEnum(Orientation)
+  orientation?: Orientation;
+
+  @IsOptional()
+  @IsUrl()
+  @MaxLength(500)
+  youtubeUrl?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(20)
+  specialOffer?: number;
 }

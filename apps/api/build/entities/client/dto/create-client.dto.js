@@ -11,9 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateClientDTO = void 0;
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 const payment_type_enum_1 = require("../enums/payment-type.enum");
 const transaction_type_enum_1 = require("../enums/transaction-type.enum");
 const client_status_enum_1 = require("../enums/client-status.enum");
+const create_representative_dto_1 = require("../../representative/dto/create-representative.dto");
 class CreateClientDTO {
     paymentType;
     transactionType;
@@ -26,6 +28,11 @@ class CreateClientDTO {
     moneyAmount;
     property;
     propertyId;
+    ownerJmbg;
+    ownerBirthplace;
+    ownerIdCardNumber;
+    ownerIdCardIssuePlace;
+    representative;
 }
 exports.CreateClientDTO = CreateClientDTO;
 __decorate([
@@ -82,4 +89,35 @@ __decorate([
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], CreateClientDTO.prototype, "propertyId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(13, 13, { message: 'JMBG must be exactly 13 digits.' }),
+    (0, class_validator_1.Matches)(/^\d{13}$/, { message: 'JMBG must contain only digits.' }),
+    __metadata("design:type", String)
+], CreateClientDTO.prototype, "ownerJmbg", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(255),
+    __metadata("design:type", String)
+], CreateClientDTO.prototype, "ownerBirthplace", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(50),
+    __metadata("design:type", String)
+], CreateClientDTO.prototype, "ownerIdCardNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(255),
+    __metadata("design:type", String)
+], CreateClientDTO.prototype, "ownerIdCardIssuePlace", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => create_representative_dto_1.CreateRepresentativeDto),
+    __metadata("design:type", create_representative_dto_1.CreateRepresentativeDto)
+], CreateClientDTO.prototype, "representative", void 0);
 //# sourceMappingURL=create-client.dto.js.map

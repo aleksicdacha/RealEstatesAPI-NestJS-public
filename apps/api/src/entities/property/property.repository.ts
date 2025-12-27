@@ -15,6 +15,7 @@ export class PropertyRepository extends Repository<Property> {
     
     const queryBuilder = this.createQueryBuilder('property');
     queryBuilder.leftJoinAndSelect('property.client', 'client');
+    queryBuilder.leftJoinAndSelect('client.representative', 'representative');
     queryBuilder.leftJoinAndSelect('property.images', 'images');
 
     if (options.searchField && options.searchValue) {
@@ -128,6 +129,13 @@ export class PropertyRepository extends Repository<Property> {
         }
       });
       queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
+    }
+
+    // Room structure filter
+    if (options.roomStructure && options.roomStructure.length > 0) {
+      queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', { 
+        roomStructures: options.roomStructure 
+      });
     }
 
     // Heating filter

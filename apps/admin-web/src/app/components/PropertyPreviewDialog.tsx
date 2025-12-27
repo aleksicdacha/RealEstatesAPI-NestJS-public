@@ -18,7 +18,6 @@ interface PropertyPreviewDialogProps {
   visible: boolean;
   property: Property | null;
   onHide: () => void;
-  onEdit?: (property: Property) => void;
 }
 
 interface PropertyImageData {
@@ -32,7 +31,6 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
   visible,
   property,
   onHide,
-  onEdit
 }) => {
   const t = useTranslations('properties');
   const tCommon = useTranslations('common');
@@ -63,8 +61,12 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
         if (imagesResponse.ok) {
           const imagesData: PropertyImageData[] = await imagesResponse.json();
           console.log('[PropertyPreview] Images data received:', imagesData);
-          // Sort images by order field
-          const sortedImages = imagesData.sort((a, b) => a.order - b.order);
+          // Sort images: favorite first, then by order field
+          const sortedImages = imagesData.sort((a, b) => {
+            if (a.isFavorite && !b.isFavorite) return -1;
+            if (!a.isFavorite && b.isFavorite) return 1;
+            return a.order - b.order;
+          });
           const imageUrls = sortedImages.map((img) => {
             let imageUrl = img.url;
             
@@ -134,6 +136,20 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       'The rest types': 'heatingOther',
     };
     return heatingMap[heatingValue] || 'heatingOther';
+  };
+
+  const getOrientationTranslationKey = (orientationValue: string): string => {
+    const orientationMap: Record<string, string> = {
+      'north': 'orientationNorth',
+      'south': 'orientationSouth',
+      'east': 'orientationEast',
+      'west': 'orientationWest',
+      'northeast': 'orientationNorthEast',
+      'northwest': 'orientationNorthWest',
+      'southeast': 'orientationSouthEast',
+      'southwest': 'orientationSouthWest',
+    };
+    return orientationMap[orientationValue] || orientationValue;
   };
 
   const getPropertyTypeTranslationKey = (typeValue: string): string => {
@@ -209,14 +225,6 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
         onClick={onHide}
         className="p-button-text"
       />
-      {onEdit && property && (
-        <Button
-          label={t('editProperty')}
-          icon="pi pi-pencil"
-          onClick={() => onEdit(property)}
-          className="p-button-primary"
-        />
-      )}
     </div>
   );
 
@@ -313,6 +321,42 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
               <div className="col-12 md:col-6">
                 <p><strong>{t('elevatorAvailable')}:</strong> {property.elevator ? tCommon('yes') : tCommon('no')}</p>
               </div>
+              
+              {property.contractNumber && (
+                <div className="col-12 md:col-6">
+                  <p><strong>{t('contractNumber')}:</strong> {property.contractNumber}</p>
+                </div>
+              )}
+              
+              {property.cadastralParcel && (
+                <div className="col-12 md:col-6">
+                  <p><strong>{t('cadastralParcel')}:</strong> {property.cadastralParcel}</p>
+                </div>
+              )}
+              
+              {property.cadastralMunicipality && (
+                <div className="col-12 md:col-6">
+                  <p><strong>{t('cadastralMunicipality')}:</strong> {property.cadastralMunicipality}</p>
+                </div>
+              )}
+              
+              {property.orientation && (
+                <div className="col-12 md:col-6">
+                  <p><strong>{t('orientation')}:</strong> {t(getOrientationTranslationKey(property.orientation))}</p>
+                </div>
+              )}
+              
+              {property.youtubeUrl && (
+                <div className="col-12 md:col-6">
+                  <p><strong>{t('youtubeUrl')}:</strong> <a href={property.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-primary">YouTube</a></p>
+                </div>
+              )}
+              
+              {property.specialOffer && (
+                <div className="col-12 md:col-6">
+                  <p><strong>{t('specialOffer')}:</strong> {property.specialOffer}</p>
+                </div>
+              )}
               
               {property.description && (
                 <div className="col-12">
@@ -421,11 +465,74 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                     />
                   </div>
                 </div>
+                {client.ownerJmbg && (
+                  <div className="col-12">
+                    <p><strong>{t('jmbg')}:</strong> {client.ownerJmbg}</p>
+                  </div>
+                )}
+                {client.ownerBirthplace && (
+                  <div className="col-12">
+                    <p><strong>{t('birthplace')}:</strong> {client.ownerBirthplace}</p>
+                  </div>
+                )}
+                {client.ownerIdCardNumber && (
+                  <div className="col-12">
+                    <p><strong>{t('idCardNumber')}:</strong> {client.ownerIdCardNumber}</p>
+                  </div>
+                )}
+                {client.ownerIdCardIssuePlace && (
+                  <div className="col-12">
+                    <p><strong>{t('idCardIssuePlace')}:</strong> {client.ownerIdCardIssuePlace}</p>
+                  </div>
+                )}
               </div>
             </Card>
           ) : (
             <Card title={tClients('clientDetails')} className="mb-3">
               <p className="text-color-secondary">{tCommon('noData')}</p>
+            </Card>
+          )}
+
+          {/* Representative Information */}
+          {client?.representative && (
+            <Card title={t('representativeDetails')} className="mb-3">
+              <div className="grid">
+                {client.representative.name && (
+                  <div className="col-12">
+                    <p><strong>{t('representativeName')}:</strong> {client.representative.name}</p>
+                  </div>
+                )}
+                {client.representative.address && (
+                  <div className="col-12">
+                    <p><strong>{t('representativeAddress')}:</strong> {client.representative.address}</p>
+                  </div>
+                )}
+                {client.representative.phone && (
+                  <div className="col-12">
+                    <p><strong>{t('representativePhone')}:</strong> {client.representative.phone}</p>
+                  </div>
+                )}
+                {client.representative.jmbg && (
+                  <div className="col-12">
+                    <p><strong>{t('representativeJmbg')}:</strong> {client.representative.jmbg}</p>
+                  </div>
+                )}
+                {client.representative.birthplace && (
+                  <div className="col-12">
+                    <p><strong>{t('representativeBirthplace')}:</strong> {client.representative.birthplace}</p>
+                  </div>
+                )}
+                {client.representative.idCardNumber && (
+                  <div className="col-12">
+                    <p><strong>{t('representativeIdCardNumber')}:</strong> {client.representative.idCardNumber}</p>
+                  </div>
+                )}
+                {client.representative.idCardIssuePlace && (
+                  <div className="col-12">
+                    <p><strong>{t('representativeIdCardIssuePlace')}:</strong> {client.representative.idCardIssuePlace}</p>
+                  </div>
+                )}
+              </div>
             </Card>
           )}
 

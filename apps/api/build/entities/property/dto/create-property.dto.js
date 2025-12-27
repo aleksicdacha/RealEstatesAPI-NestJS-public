@@ -15,6 +15,7 @@ const class_transformer_1 = require("class-transformer");
 const heating_enum_1 = require("../enums/heating.enum");
 const property_type_enum_1 = require("../enums/property-type.enum");
 const property_status_enum_1 = require("../enums/property-status.enum");
+const orientation_enum_1 = require("../enums/orientation.enum");
 class CreatePropertyDto {
     id;
     code;
@@ -34,7 +35,14 @@ class CreatePropertyDto {
     constructionYear;
     bathrooms;
     floor;
+    roomStructure;
     heating;
+    contractNumber;
+    cadastralParcel;
+    cadastralMunicipality;
+    orientation;
+    youtubeUrl;
+    specialOffer;
     images;
 }
 exports.CreatePropertyDto = CreatePropertyDto;
@@ -150,9 +158,51 @@ __decorate([
 ], CreatePropertyDto.prototype, "floor", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Room structure must be a string.' }),
+    (0, class_validator_1.MaxLength)(50, { message: 'Room structure must not exceed 50 characters.' }),
+    __metadata("design:type", String)
+], CreatePropertyDto.prototype, "roomStructure", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(heating_enum_1.HeatingType, { message: 'Invalid heating type.' }),
     __metadata("design:type", String)
 ], CreatePropertyDto.prototype, "heating", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Contract number must be a string.' }),
+    (0, class_validator_1.MaxLength)(100, { message: 'Contract number must not exceed 100 characters.' }),
+    __metadata("design:type", String)
+], CreatePropertyDto.prototype, "contractNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Cadastral parcel must be a string.' }),
+    (0, class_validator_1.MaxLength)(100, { message: 'Cadastral parcel must not exceed 100 characters.' }),
+    __metadata("design:type", String)
+], CreatePropertyDto.prototype, "cadastralParcel", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Cadastral municipality must be a string.' }),
+    (0, class_validator_1.MaxLength)(100, { message: 'Cadastral municipality must not exceed 100 characters.' }),
+    __metadata("design:type", String)
+], CreatePropertyDto.prototype, "cadastralMunicipality", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(orientation_enum_1.Orientation, { message: 'Invalid orientation.' }),
+    __metadata("design:type", String)
+], CreatePropertyDto.prototype, "orientation", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUrl)({}, { message: 'Invalid YouTube URL.' }),
+    (0, class_validator_1.MaxLength)(500, { message: 'YouTube URL must not exceed 500 characters.' }),
+    __metadata("design:type", String)
+], CreatePropertyDto.prototype, "youtubeUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)({ message: 'Special offer must be an integer.' }),
+    (0, class_validator_1.Min)(1, { message: 'Special offer must be at least 1.' }),
+    (0, class_validator_1.Max)(20, { message: 'Special offer cannot exceed 20.' }),
+    __metadata("design:type", Number)
+], CreatePropertyDto.prototype, "specialOffer", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)({ message: 'Images must be an array of URLs.' }),

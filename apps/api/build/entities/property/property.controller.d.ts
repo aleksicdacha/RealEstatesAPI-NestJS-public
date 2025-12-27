@@ -12,6 +12,8 @@ export declare class PropertyController {
         cities: string[];
         neighborhoods: string[];
     }>;
+    findAllPublic(query: FilterPropertyDto): Promise<import("nestjs-typeorm-paginate").Pagination<import("./dto/public-property.dto").PublicPropertyDto, import("nestjs-typeorm-paginate").IPaginationMeta>>;
+    findOnePublic(guid: string): Promise<import("./dto/public-property.dto").PublicPropertyDto>;
     findAll(query: FilterPropertyDto): Promise<import("nestjs-typeorm-paginate").Pagination<import("./property.entity").Property, import("nestjs-typeorm-paginate").IPaginationMeta>>;
     findOne(guid: string): Promise<import("./property.entity").Property>;
     update(guid: string, updatePropertyDto: UpdatePropertyDTO): Promise<import("./property.entity").Property>;

@@ -25,14 +25,46 @@ let PropertyService = class PropertyService {
         this.propertyImageRepository = propertyImageRepository;
         this.dataSource = dataSource;
     }
+    async reorganizeSpecialOffers(newSpecialOffer, excludePropertyId) {
+        if (!newSpecialOffer || newSpecialOffer < 1 || newSpecialOffer > 20) {
+            return;
+        }
+        const whereCondition = {
+            specialOffer: (0, typeorm_1.Not)((0, typeorm_1.IsNull)()),
+        };
+        if (excludePropertyId) {
+            whereCondition.id = (0, typeorm_1.Not)(excludePropertyId);
+        }
+        const affectedProperties = await this.propertyRepository.find({
+            where: whereCondition,
+            order: { specialOffer: 'DESC' },
+        });
+        const toShift = affectedProperties.filter(p => p.specialOffer >= newSpecialOffer);
+        for (const property of toShift) {
+            const newValue = property.specialOffer + 1;
+            if (newValue > 20) {
+                await this.propertyRepository.update(property.id, { specialOffer: null });
+            }
+            else {
+                await this.propertyRepository.update(property.id, { specialOffer: newValue });
+            }
+        }
+    }
     async create(createPropertyDto) {
-        const { code, images, ...propertyData } = createPropertyDto;
+        const { code, images, specialOffer, ...propertyData } = createPropertyDto;
         const existingProperty = await this.propertyRepository.findOne({ where: { code } });
         if (existingProperty) {
             throw new common_1.ConflictException(`Property with code "${code}" already exists.`);
         }
+        if (specialOffer && specialOffer >= 1 && specialOffer <= 20) {
+            await this.reorganizeSpecialOffers(specialOffer);
+        }
         try {
-            const property = this.propertyRepository.create({ code, ...propertyData });
+            const property = this.propertyRepository.create({
+                code,
+                ...propertyData,
+                specialOffer: (specialOffer && specialOffer >= 1 && specialOffer <= 20) ? specialOffer : null,
+            });
             const savedProperty = await this.propertyRepository.save(property);
             if (images && images.length > 0) {
                 const propertyImages = images.map((imageUrl, index) => this.propertyImageRepository.create({
@@ -53,7 +85,7 @@ let PropertyService = class PropertyService {
         }
     }
     async update(id, updatePropertyDto) {
-        const { code, images, additionalEquipment, ...propertyData } = updatePropertyDto;
+        const { code, images, additionalEquipment, specialOffer, ...propertyData } = updatePropertyDto;
         const property = await this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
         if (!property) {
             throw new common_1.NotFoundException(`Property with id "${id}" not found.`);
@@ -64,10 +96,16 @@ let PropertyService = class PropertyService {
                 throw new common_1.ConflictException(`Property with code "${code}" already exists.`);
             }
         }
+        if (specialOffer !== undefined && specialOffer !== property.specialOffer) {
+            if (specialOffer && specialOffer >= 1 && specialOffer <= 20) {
+                await this.reorganizeSpecialOffers(specialOffer, id);
+            }
+        }
         const updatedData = {
             ...propertyData,
             code,
             additionalEquipment: additionalEquipment ?? null,
+            specialOffer: (specialOffer && specialOffer >= 1 && specialOffer <= 20) ? specialOffer : null,
         };
         await this.propertyRepository.update(id, updatedData);
         if (images) {
@@ -93,7 +131,7 @@ let PropertyService = class PropertyService {
                 await this.propertyImageRepository.save(propertyImages);
             }
         }
-        return this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
+        return this.propertyRepository.findOne({ where: { id }, relations: ['client', 'client.representative', 'images'] });
     }
     async findAll(options) {
         const paginationOptions = {
@@ -112,10 +150,58 @@ let PropertyService = class PropertyService {
             currentPage: paginationOptions.page,
         });
     }
+    async findAllPublic(options) {
+        const paginationOptions = {
+            ...options,
+            status: 'active',
+            page: options.page || 1,
+            limit: options.limit || 10,
+            sortBy: options.sortBy || 'createdAt',
+            order: (options.order || 'DESC')
+        };
+        const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
+        const publicItems = items.map(property => this.transformToPublicDto(property));
+        return new nestjs_typeorm_paginate_1.Pagination(publicItems, {
+            totalItems,
+            itemCount: publicItems.length,
+            itemsPerPage: paginationOptions.limit,
+            totalPages: Math.ceil(totalItems / paginationOptions.limit),
+            currentPage: paginationOptions.page,
+        });
+    }
+    transformToPublicDto(property) {
+        return {
+            id: property.id,
+            code: property.code,
+            description: property.description,
+            propertyType: property.propertyType,
+            price: property.price,
+            area: property.area,
+            neighborhood: property.neighborhood,
+            lat: property.lat,
+            lon: property.lon,
+            elevator: property.elevator,
+            additionalEquipment: property.additionalEquipment || [],
+            constructionYear: property.constructionYear,
+            bathrooms: property.bathrooms,
+            floor: property.floor,
+            roomStructure: property.roomStructure,
+            heating: property.heating,
+            orientation: property.orientation,
+            youtubeUrl: property.youtubeUrl,
+            specialOffer: property.specialOffer,
+            images: property.images?.map(img => ({
+                id: img.id,
+                url: img.url,
+                isPrimary: img.isFavorite,
+                displayOrder: img.order,
+            })) || [],
+        };
+    }
     async findOne(id) {
         const property = await this.propertyRepository.findOne({
             where: { id },
-            relations: ['client', 'images'],
+            relations: ['client', 'client.representative', 'images'],
         });
         if (!property) {
             throw new common_1.NotFoundException(`Property with ID ${id} not found`);
@@ -139,8 +225,23 @@ let PropertyService = class PropertyService {
                 comment: property.client.comment,
                 status: property.client.status,
                 moneyAmount: property.client.moneyAmount,
+                ownerJmbg: property.client.ownerJmbg,
+                ownerBirthplace: property.client.ownerBirthplace,
+                ownerIdCardNumber: property.client.ownerIdCardNumber,
+                ownerIdCardIssuePlace: property.client.ownerIdCardIssuePlace,
+                representative: property.client.representative,
             } : null,
         };
+    }
+    async findOnePublic(id) {
+        const property = await this.propertyRepository.findOne({
+            where: { id },
+            relations: ['images'],
+        });
+        if (!property) {
+            throw new common_1.NotFoundException(`Property with ID ${id} not found`);
+        }
+        return this.transformToPublicDto(property);
     }
     async remove(id) {
         try {

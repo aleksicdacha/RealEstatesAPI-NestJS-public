@@ -17,6 +17,7 @@ const client_entity_1 = require("../client/client.entity");
 const heating_enum_1 = require("./enums/heating.enum");
 const property_type_enum_1 = require("./enums/property-type.enum");
 const property_status_enum_1 = require("./enums/property-status.enum");
+const orientation_enum_1 = require("./enums/orientation.enum");
 let Property = class Property {
     id;
     code;
@@ -36,7 +37,14 @@ let Property = class Property {
     constructionYear;
     bathrooms;
     floor;
+    roomStructure;
     heating;
+    contractNumber;
+    cadastralParcel;
+    cadastralMunicipality;
+    orientation;
+    youtubeUrl;
+    specialOffer;
     createdAt;
     updatedAt;
     images;
@@ -126,9 +134,41 @@ __decorate([
     __metadata("design:type", Number)
 ], Property.prototype, "floor", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], Property.prototype, "roomStructure", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: heating_enum_1.HeatingType, nullable: true }),
     __metadata("design:type", String)
 ], Property.prototype, "heating", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Property.prototype, "contractNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Property.prototype, "cadastralParcel", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Property.prototype, "cadastralMunicipality", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: orientation_enum_1.Orientation, nullable: true }),
+    __metadata("design:type", String)
+], Property.prototype, "orientation", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
+    (0, class_validator_1.IsUrl)({}, { message: 'Invalid YouTube URL' }),
+    __metadata("design:type", String)
+], Property.prototype, "youtubeUrl", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', nullable: true }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(20),
+    __metadata("design:type", Number)
+], Property.prototype, "specialOffer", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

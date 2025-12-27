@@ -24,6 +24,7 @@ let PropertyRepository = class PropertyRepository extends typeorm_1.Repository {
         console.log('🔍 Backend received filter options:', JSON.stringify(options, null, 2));
         const queryBuilder = this.createQueryBuilder('property');
         queryBuilder.leftJoinAndSelect('property.client', 'client');
+        queryBuilder.leftJoinAndSelect('client.representative', 'representative');
         queryBuilder.leftJoinAndSelect('property.images', 'images');
         if (options.searchField && options.searchValue) {
             queryBuilder.andWhere(`property.${options.searchField} ILIKE :searchValue`, {
@@ -114,6 +115,11 @@ let PropertyRepository = class PropertyRepository extends typeorm_1.Repository {
                 }
             });
             queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
+        }
+        if (options.roomStructure && options.roomStructure.length > 0) {
+            queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', {
+                roomStructures: options.roomStructure
+            });
         }
         if (options.heating && options.heating.length > 0) {
             queryBuilder.andWhere('property.heating IN (:...heating)', {

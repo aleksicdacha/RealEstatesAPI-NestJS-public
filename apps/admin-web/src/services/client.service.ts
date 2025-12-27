@@ -11,6 +11,20 @@ export interface Client {
   paymentType?: string;
   comment?: string;
   moneyAmount?: number;
+  ownerJmbg?: string;
+  ownerBirthplace?: string;
+  ownerIdCardNumber?: string;
+  ownerIdCardIssuePlace?: string;
+  representative?: {
+    id?: string;
+    name: string;
+    address: string;
+    phone?: string;
+    jmbg: string;
+    birthplace?: string;
+    idCardNumber?: string;
+    idCardIssuePlace?: string;
+  };
   property?: {
     id: string;
     code: string;
@@ -30,6 +44,19 @@ export interface CreateClientDto {
   paymentType?: string;
   comment?: string;
   moneyAmount?: number;
+  ownerJmbg?: string;
+  ownerBirthplace?: string;
+  ownerIdCardNumber?: string;
+  ownerIdCardIssuePlace?: string;
+  representative?: {
+    name: string;
+    address: string;
+    phone?: string;
+    jmbg: string;
+    birthplace?: string;
+    idCardNumber?: string;
+    idCardIssuePlace?: string;
+  };
 }
 
 export interface UpdateClientDto {
@@ -42,6 +69,19 @@ export interface UpdateClientDto {
   paymentType?: string;
   comment?: string;
   moneyAmount?: number;
+  ownerJmbg?: string;
+  ownerBirthplace?: string;
+  ownerIdCardNumber?: string;
+  ownerIdCardIssuePlace?: string;
+  representative?: {
+    name: string;
+    address: string;
+    phone?: string;
+    jmbg: string;
+    birthplace?: string;
+    idCardNumber?: string;
+    idCardIssuePlace?: string;
+  };
 }
 
 export interface ClientFilter extends Record<string, unknown> {

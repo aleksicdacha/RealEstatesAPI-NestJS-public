@@ -20,6 +20,7 @@ export declare class FilterPropertyDto {
     neighborhoods?: string[];
     bathrooms?: number[];
     floors?: string[];
+    roomStructure?: string[];
     heating?: string[];
     features?: string[];
 }

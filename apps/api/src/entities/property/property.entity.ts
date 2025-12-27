@@ -7,11 +7,12 @@ import {
   UpdateDateColumn, Unique, OneToOne,
 } from 'typeorm';
 import { PropertyImage } from '@src/entities/property-image/property-image.entity';
-import { IsPositive } from 'class-validator';
+import { IsPositive, IsInt, Min, Max, IsUrl } from 'class-validator';
 import { Client } from '@src/entities/client/client.entity';
 import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import { Orientation } from '@src/entities/property/enums/orientation.enum';
 
 @Entity('properties')
 @Unique(['code'])
@@ -80,8 +81,35 @@ export class Property {
   @Column({ type: 'int', nullable: true })
   floor?: number;
 
+  // Room structure: garsonjera, jednosoban, dvosoban, trosoban, četvorosoban, petosoban i veći, etc.
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  roomStructure?: string;
+
   @Column({ type: 'enum', enum: HeatingType, nullable: true })
   heating?: HeatingType;
+
+  // Extended property fields
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  contractNumber?: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  cadastralParcel?: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  cadastralMunicipality?: string;
+
+  @Column({ type: 'enum', enum: Orientation, nullable: true })
+  orientation?: Orientation;
+
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  @IsUrl({}, { message: 'Invalid YouTube URL' })
+  youtubeUrl?: string;
+
+  @Column({ type: 'int', nullable: true })
+  @IsInt()
+  @Min(1)
+  @Max(20)
+  specialOffer?: number;
 
   @CreateDateColumn()
   createdAt: Date;

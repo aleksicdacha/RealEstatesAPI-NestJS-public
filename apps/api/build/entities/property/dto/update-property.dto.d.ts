@@ -2,6 +2,7 @@ import { UpdatePropertyImageDto } from '@src/entities/property-image/dto/update-
 import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import { Orientation } from '@src/entities/property/enums/orientation.enum';
 export declare class UpdatePropertyDTO {
     code?: string;
     name?: string;
@@ -21,6 +22,13 @@ export declare class UpdatePropertyDTO {
     constructionYear?: number;
     bathrooms?: number;
     floor?: number;
+    roomStructure?: string;
     heating?: HeatingType;
     images?: UpdatePropertyImageDto[];
+    contractNumber?: string;
+    cadastralParcel?: string;
+    cadastralMunicipality?: string;
+    orientation?: Orientation;
+    youtubeUrl?: string;
+    specialOffer?: number;
 }

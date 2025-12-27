@@ -291,6 +291,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ onLocationChange, onLoadingCh
         center={center}
         zoom={16}
         options={{
+          mapId: MAP_ID,
           styles: customMapStyles,
           zoomControl: true,
           streetViewControl: false,

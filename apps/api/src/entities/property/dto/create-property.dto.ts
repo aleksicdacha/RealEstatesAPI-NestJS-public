@@ -17,6 +17,7 @@ import { Type } from 'class-transformer'; // To handle nested validation
 import { HeatingType } from '@src/entities/property/enums/heating.enum';
 import { PropertyType } from '@src/entities/property/enums/property-type.enum';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import { Orientation } from '@src/entities/property/enums/orientation.enum';
 
 export class CreatePropertyDto {
   @IsString()
@@ -130,9 +131,46 @@ export class CreatePropertyDto {
   @Max(200, { message: 'Floor cannot exceed 200.' })
   floor?: number;
 
+  // Room structure: garsonjera, jednosoban, dvosoban, trosoban, četvorosoban, četvoroiposoban, petosoban i veći, etc.
+  @IsOptional()
+  @IsString({ message: 'Room structure must be a string.' })
+  @MaxLength(50, { message: 'Room structure must not exceed 50 characters.' })
+  roomStructure?: string;
+
   @IsOptional()
   @IsEnum(HeatingType, { message: 'Invalid heating type.' })
   heating?: HeatingType;
+
+  // Extended property fields
+  @IsOptional()
+  @IsString({ message: 'Contract number must be a string.' })
+  @MaxLength(100, { message: 'Contract number must not exceed 100 characters.' })
+  contractNumber?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Cadastral parcel must be a string.' })
+  @MaxLength(100, { message: 'Cadastral parcel must not exceed 100 characters.' })
+  cadastralParcel?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Cadastral municipality must be a string.' })
+  @MaxLength(100, { message: 'Cadastral municipality must not exceed 100 characters.' })
+  cadastralMunicipality?: string;
+
+  @IsOptional()
+  @IsEnum(Orientation, { message: 'Invalid orientation.' })
+  orientation?: Orientation;
+
+  @IsOptional()
+  @IsUrl({}, { message: 'Invalid YouTube URL.' })
+  @MaxLength(500, { message: 'YouTube URL must not exceed 500 characters.' })
+  youtubeUrl?: string;
+
+  @IsOptional()
+  @IsInt({ message: 'Special offer must be an integer.' })
+  @Min(1, { message: 'Special offer must be at least 1.' })
+  @Max(20, { message: 'Special offer cannot exceed 20.' })
+  specialOffer?: number;
 
   @IsOptional()
   @IsArray({ message: 'Images must be an array of URLs.' })

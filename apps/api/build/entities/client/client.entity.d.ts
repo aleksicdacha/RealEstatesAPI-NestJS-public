@@ -1,4 +1,5 @@
 import { Property } from '@src/entities/property/property.entity';
+import { Representative } from '@src/entities/representative/representative.entity';
 import { ClientStatus } from '@src/entities/client/enums/client-status.enum';
 import { TransactionType } from '@src/entities/client/enums/transaction-type.enum';
 import { PaymentType } from '@src/entities/client/enums/payment-type.enum';
@@ -13,6 +14,11 @@ export declare class Client {
     paymentType: PaymentType;
     comment: string | null;
     moneyAmount: number;
+    ownerJmbg: string;
+    ownerBirthplace: string;
+    ownerIdCardNumber: string;
+    ownerIdCardIssuePlace: string;
     property?: Property;
+    representative?: Representative;
     propertyId?: string;
 }
