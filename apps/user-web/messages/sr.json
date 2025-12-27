@@ -1,0 +1,25 @@
+{
+  "HomePage": {
+    "title": "Pronađite Svoj Savršen Dom",
+    "subtitle": "Hiljade nekretnina na jednom mestu",
+    "search": "Pretraži",
+    "forSale": "Prodaja",
+    "forRent": "Izdavanje"
+  },
+  "Navigation": {
+    "home": "Početna",
+    "properties": "Nekretnine",
+    "forSale": "Prodaja",
+    "forRent": "Izdavanje",
+    "about": "O nama",
+    "contact": "Kontakt"
+  },
+  "PropertyTypes": {
+    "APARTMENT": "Stan",
+    "HOUSE": "Kuća",
+    "LAND": "Plac",
+    "OFFICE": "Kancelarija",
+    "COMMERCIAL": "Poslovni prostor",
+    "GARAGE": "Garaža"
+  }
+}
