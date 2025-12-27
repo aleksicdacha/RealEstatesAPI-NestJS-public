@@ -1,6 +1,7 @@
 import { PropertyType } from '../enums/property-type.enum';
 import { PropertyStatus } from '../enums/property-status.enum';
 import { HeatingType } from '../enums/heating.enum';
+import { Orientation } from '../enums/orientation.enum';
 
 /**
  * DTO for public-facing property data (user-web frontend)
@@ -23,6 +24,9 @@ export class PublicPropertyDto {
   floor?: number;
   roomStructure?: string;
   heating?: HeatingType;
+  orientation?: Orientation; // Public-facing field
+  youtubeUrl?: string; // Public-facing field for video embed
+  specialOffer?: number; // For homepage ordering
   images?: Array<{
     id: string;
     url: string;
@@ -37,4 +41,7 @@ export class PublicPropertyDto {
   // - comment: Internal notes
   // - client: Owner information
   // - createdAt, updatedAt: Internal metadata
+  // - contractNumber: Internal contract data
+  // - cadastralParcel (KP): Internal cadastral data
+  // - cadastralMunicipality (KO): Internal cadastral data
 }

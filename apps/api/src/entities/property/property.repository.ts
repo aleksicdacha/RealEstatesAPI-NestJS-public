@@ -15,6 +15,7 @@ export class PropertyRepository extends Repository<Property> {
     
     const queryBuilder = this.createQueryBuilder('property');
     queryBuilder.leftJoinAndSelect('property.client', 'client');
+    queryBuilder.leftJoinAndSelect('client.representative', 'representative');
     queryBuilder.leftJoinAndSelect('property.images', 'images');
 
     if (options.searchField && options.searchValue) {

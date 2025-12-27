@@ -48,6 +48,12 @@ interface PropertyFormData {
   lat?: number;
   lon?: number;
   images?: PropertyImage[];
+  contractNumber?: string;
+  cadastralParcel?: string;
+  cadastralMunicipality?: string;
+  orientation?: string;
+  youtubeUrl?: string;
+  specialOffer?: string | number;
 }
 
 export default function EditPropertyDialog({ onCloseDialog, propertyData, onSuccess }: EditPropertyDialogProps) {
@@ -75,6 +81,12 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
     additionalEquipment: propertyData.additionalEquipment || [],
     lat: propertyData.lat,
     lon: propertyData.lon,
+    contractNumber: propertyData.contractNumber || '',
+    cadastralParcel: propertyData.cadastralParcel || '',
+    cadastralMunicipality: propertyData.cadastralMunicipality || '',
+    orientation: propertyData.orientation || '',
+    youtubeUrl: propertyData.youtubeUrl || '',
+    specialOffer: propertyData.specialOffer || '',
     images: propertyData.images?.map(img => ({
       ...img,
       // Clean URL - remove /uploads/ prefix if it exists, then add the correct base URL
@@ -143,6 +155,12 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
         bathrooms: formData.bathrooms ? parseFloat(String(formData.bathrooms)) : undefined,
         floor: formData.floor ? parseInt(String(formData.floor)) : undefined,
         heating: formData.heating || undefined,
+        contractNumber: formData.contractNumber || undefined,
+        cadastralParcel: formData.cadastralParcel || undefined,
+        cadastralMunicipality: formData.cadastralMunicipality || undefined,
+        orientation: formData.orientation || undefined,
+        youtubeUrl: formData.youtubeUrl || undefined,
+        specialOffer: formData.specialOffer ? parseInt(String(formData.specialOffer)) : undefined,
         images: formData.images?.map(img => ({
           id: img.id.startsWith('new-') ? undefined : img.id, // Don't send ID for new images
           url: img.url,
@@ -371,6 +389,114 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
               </div>
             )}
           </div>
+
+          {/* Owner Extended Information */}
+          {(propertyData.client.ownerJmbg || propertyData.client.ownerBirthplace || propertyData.client.ownerIdCardNumber || propertyData.client.ownerIdCardIssuePlace) && (
+            <>
+              <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #e0e0e0' }} />
+              <div style={{ 
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '12px'
+              }}>
+                {propertyData.client.ownerJmbg && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('jmbg') || 'JMBG'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.ownerJmbg}</div>
+                  </div>
+                )}
+                {propertyData.client.ownerBirthplace && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('birthplace') || 'Birthplace'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.ownerBirthplace}</div>
+                  </div>
+                )}
+                {propertyData.client.ownerIdCardNumber && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('idCardNumber') || 'ID Card Number'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.ownerIdCardNumber}</div>
+                  </div>
+                )}
+                {propertyData.client.ownerIdCardIssuePlace && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('idCardIssuePlace') || 'ID Issue Place'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.ownerIdCardIssuePlace}</div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Representative Information */}
+          {propertyData.client.representative && (
+            <>
+              <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #e0e0e0' }} />
+              <h4 style={{ 
+                margin: '0 0 12px 0',
+                fontSize: '15px',
+                fontWeight: '600',
+                color: '#555',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <i className="pi pi-briefcase" style={{ fontSize: '16px', color: '#ff9800' }}></i>
+                {t('representativeDetails') || 'Representative Information'}
+              </h4>
+              <div style={{ 
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '12px'
+              }}>
+                {propertyData.client.representative.name && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativeName') || 'Representative Name'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.representative.name}</div>
+                  </div>
+                )}
+                {propertyData.client.representative.phone && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativePhone') || 'Representative Phone'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>
+                      <a href={`tel:${propertyData.client.representative.phone}`} style={{ color: '#2196f3', textDecoration: 'none' }}>
+                        {propertyData.client.representative.phone}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {propertyData.client.representative.address && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativeAddress') || 'Representative Address'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.representative.address}</div>
+                  </div>
+                )}
+                {propertyData.client.representative.jmbg && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativeJmbg') || 'Representative JMBG'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.representative.jmbg}</div>
+                  </div>
+                )}
+                {propertyData.client.representative.birthplace && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativeBirthplace') || 'Birthplace'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.representative.birthplace}</div>
+                  </div>
+                )}
+                {propertyData.client.representative.idCardNumber && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativeIdCardNumber') || 'ID Card Number'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.representative.idCardNumber}</div>
+                  </div>
+                )}
+                {propertyData.client.representative.idCardIssuePlace && (
+                  <div>
+                    <strong style={{ color: '#666', fontSize: '13px' }}>{t('representativeIdCardIssuePlace') || 'ID Issue Place'}:</strong>
+                    <div style={{ marginTop: '4px', fontSize: '14px' }}>{propertyData.client.representative.idCardIssuePlace}</div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 

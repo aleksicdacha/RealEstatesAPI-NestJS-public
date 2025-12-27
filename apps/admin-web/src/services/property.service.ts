@@ -21,6 +21,12 @@ export interface Property {
   floor?: number;
   roomStructure?: string;
   heating?: string;
+  contractNumber?: string;
+  cadastralParcel?: string;
+  cadastralMunicipality?: string;
+  orientation?: string;
+  youtubeUrl?: string;
+  specialOffer?: number;
   createdAt: string;
   updatedAt: string;
   images?: PropertyImage[];
@@ -45,6 +51,20 @@ export interface Client {
   paymentType?: string;
   comment?: string;
   moneyAmount?: number;
+  ownerJmbg?: string;
+  ownerBirthplace?: string;
+  ownerIdCardNumber?: string;
+  ownerIdCardIssuePlace?: string;
+  representative?: {
+    id: string;
+    name: string;
+    address: string;
+    phone?: string;
+    jmbg: string;
+    birthplace?: string;
+    idCardNumber?: string;
+    idCardIssuePlace?: string;
+  };
 }
 
 export interface CreatePropertyDto {

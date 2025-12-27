@@ -27,6 +27,13 @@ interface PropertyFormData {
   comment: string;
   additionalEquipment: string[];
   id: string;
+  roomStructure?: string;
+  contractNumber?: string;
+  cadastralParcel?: string;
+  cadastralMunicipality?: string;
+  orientation?: string;
+  youtubeUrl?: string;
+  specialOffer?: string | number;
 }
 
 interface ClientFormData {
@@ -39,6 +46,19 @@ interface ClientFormData {
   phone: string;
   moneyAmount: string | number;
   comment: string;
+  ownerJmbg?: string;
+  ownerBirthplace?: string;
+  ownerIdCardNumber?: string;
+  ownerIdCardIssuePlace?: string;
+  representative?: {
+    name: string;
+    address: string;
+    phone: string;
+    jmbg: string;
+    birthplace: string;
+    idCardNumber: string;
+    idCardIssuePlace: string;
+  };
 }
 
 interface PropertyWizardProps {
@@ -85,6 +105,13 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
     comment: '',
     additionalEquipment: [],
     id: '' as string,
+    roomStructure: '',
+    contractNumber: '',
+    cadastralParcel: '',
+    cadastralMunicipality: '',
+    orientation: '',
+    youtubeUrl: '',
+    specialOffer: '',
   });
 
   const [clientData, setClientData] = useState<ClientFormData>({
@@ -97,6 +124,11 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
     phone: '',
     moneyAmount: '',
     comment: '',
+    ownerJmbg: '',
+    ownerBirthplace: '',
+    ownerIdCardNumber: '',
+    ownerIdCardIssuePlace: '',
+    representative: undefined,
   });
 
   const [uploadedImages, setUploadedImages] = useState<{ url: string }[]>([]);
@@ -252,6 +284,13 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
         "description": propertyData.description ? propertyData.description : null,
         "comment": propertyData.comment ? propertyData.comment : null,
         "additionalEquipment": propertyData.additionalEquipment ? propertyData.additionalEquipment : [],
+        "roomStructure": propertyData.roomStructure ? propertyData.roomStructure : null,
+        "contractNumber": propertyData.contractNumber ? propertyData.contractNumber : null,
+        "cadastralParcel": propertyData.cadastralParcel ? propertyData.cadastralParcel : null,
+        "cadastralMunicipality": propertyData.cadastralMunicipality ? propertyData.cadastralMunicipality : null,
+        "orientation": propertyData.orientation ? propertyData.orientation : null,
+        "youtubeUrl": propertyData.youtubeUrl ? propertyData.youtubeUrl : null,
+        "specialOffer": propertyData.specialOffer ? +propertyData.specialOffer : null,
       };
 
       const clientPayload = {
@@ -264,7 +303,12 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
         "phone": clientData.phone,
         "moneyAmount": +clientData.moneyAmount,
         "comment": clientData.comment ? clientData.comment : null,
-        "property": propertyUUID
+        "property": propertyUUID,
+        "ownerJmbg": clientData.ownerJmbg || null,
+        "ownerBirthplace": clientData.ownerBirthplace || null,
+        "ownerIdCardNumber": clientData.ownerIdCardNumber || null,
+        "ownerIdCardIssuePlace": clientData.ownerIdCardIssuePlace || null,
+        "representative": clientData.representative || null,
       };
 
 

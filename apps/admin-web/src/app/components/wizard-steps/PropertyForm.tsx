@@ -11,6 +11,7 @@ import { getPropertyTypeOptions } from '../../[locale]/mappings/property-type-op
 import { getStatusOptions } from '../../[locale]/mappings/status-options';
 import { getHeatingOptions } from '../../[locale]/mappings/heating-options';
 import { getFeaturesOptions } from '../../[locale]/mappings/additional-equipment-options';
+import { getOrientationOptions } from '../../[locale]/mappings/orientation-options';
 import { v4 as uuidv4 } from 'uuid';
 
 interface PropertyFormData {
@@ -32,6 +33,12 @@ interface PropertyFormData {
   comment: string;
   additionalEquipment: string[];
   id: string;
+  contractNumber?: string;
+  cadastralParcel?: string;
+  cadastralMunicipality?: string;
+  orientation?: string;
+  youtubeUrl?: string;
+  specialOffer?: number | string;
 }
 
 interface PropertyFormErrors {
@@ -62,6 +69,7 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
   const statusOptions = React.useMemo(() => getStatusOptions(t), [t]);
   const heatingOptions = React.useMemo(() => getHeatingOptions(t), [t]);
   const featuresOptions = React.useMemo(() => getFeaturesOptions(t), [t]);
+  const orientationOptions = React.useMemo(() => getOrientationOptions(t), [t]);
 
   const [formData, setFormData] = useState({
     code: '',
@@ -81,6 +89,12 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
     comment: '',
     additionalEquipment: [],
     id: '',
+    contractNumber: '',
+    cadastralParcel: '',
+    cadastralMunicipality: '',
+    orientation: '',
+    youtubeUrl: '',
+    specialOffer: '' as string | number,
     ...initialData, // Spread initialData to pre-fill the form
   });
 
@@ -153,12 +167,17 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
     }
   };
 
-  const handleDropdownChange = (e: { target: { id: string; value: string | string[] } }) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-    // Clear error when user selects a value
-    if (id === 'propertyType' && value) {
-      setFormErrors((prev) => ({ ...prev, [id]: '' }));
+  const handleDropdownChange = (e: any) => {
+    // For PrimeReact Dropdown/MultiSelect, value is in e.value, name in e.target.id or e.originalEvent.target.id
+    const fieldName = e.target?.id || e.originalEvent?.target?.id;
+    const value = e.value;
+    
+    if (fieldName) {
+      setFormData((prev) => ({ ...prev, [fieldName]: value }));
+      // Clear error when user selects a value
+      if (fieldName === 'propertyType' && value) {
+        setFormErrors((prev) => ({ ...prev, [fieldName]: '' }));
+      }
     }
   };
 
@@ -269,6 +288,26 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
             <label htmlFor="address">{t('address')} <span className="text-red-500">*</span></label>
             <InputText id="address" name="address" value={formData.address} onChange={handleInputChange} />
           </div>
+          <div className="p-field py-2">
+            <label htmlFor="cadastralMunicipality">{t('cadastralMunicipality')}</label>
+            <InputText
+              id="cadastralMunicipality"
+              name="cadastralMunicipality"
+              value={formData.cadastralMunicipality}
+              onChange={handleInputChange}
+              maxLength={100}
+            />
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="orientation">{t('orientation')}</label>
+            <Dropdown
+              id="orientation"
+              value={formData.orientation}
+              options={orientationOptions}
+              onChange={handleDropdownChange}
+              placeholder={t('selectOrientation')}
+            />
+          </div>
           {formData.neighborhood && (
             <div className="p-field py-2">
               <label htmlFor="neighborhood">
@@ -378,6 +417,26 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
             />
           </div>
           <div className="p-field py-2">
+            <label htmlFor="contractNumber">{t('contractNumber')}</label>
+            <InputText
+              id="contractNumber"
+              name="contractNumber"
+              value={formData.contractNumber}
+              onChange={handleInputChange}
+              maxLength={100}
+            />
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="cadastralParcel">{t('cadastralParcel')}</label>
+            <InputText
+              id="cadastralParcel"
+              name="cadastralParcel"
+              value={formData.cadastralParcel}
+              onChange={handleInputChange}
+              maxLength={100}
+            />
+          </div>
+          <div className="p-field py-2">
             <label htmlFor="comment">{t('comment')}</label>
             <InputTextarea
               id="comment"
@@ -454,6 +513,36 @@ const PropertyForm = forwardRef<PropertyFormRef, PropertyFormProps>(({ initialDa
               onChange={handleDropdownChange}
               placeholder={t('selectHeatingType')}
             />
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="youtubeUrl">{t('youtubeUrl')}</label>
+            <InputText
+              id="youtubeUrl"
+              name="youtubeUrl"
+              value={formData.youtubeUrl}
+              onChange={handleInputChange}
+              maxLength={500}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </div>
+          <div className="p-field py-2">
+            <label htmlFor="specialOffer">{t('specialOffer')}</label>
+            <InputText
+              id="specialOffer"
+              name="specialOffer"
+              type="number"
+              min={1}
+              max={20}
+              value={formData.specialOffer?.toString()}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  specialOffer: e.target.value ? parseInt(e.target.value) : '',
+                }))
+              }
+              placeholder="1-20"
+            />
+            <small className="text-gray-500">{t('specialOfferHint')}</small>
           </div>
           <div className="p-field py-2">
             <label htmlFor="additionalEquipment">{t('additionalEquipment')}</label>
