@@ -1,6 +1,6 @@
 'use client';
 
-import { GoogleMap, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow, LoadScript } from '@react-google-maps/api';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { Property } from '@/lib/api';
 import { useState, useRef, useEffect } from 'react';
@@ -10,6 +10,7 @@ interface PropertyMapProps {
   properties: Property[];
   onPropertyClick?: (property: Property) => void;
   selectedPropertyId?: string; // Add selected property ID prop
+  hideInfoWindow?: boolean;
 }
 
 const mapContainerStyle = {
@@ -47,56 +48,72 @@ const mapOptions: google.maps.MapOptions = {
   heading: 0, // Rotation angle
 };
 
-// Custom marker icons by property type
+// Custom marker icons by property type with specific icons
 function getMarkerIcon(propertyType: string): string {
   const iconBase = 'data:image/svg+xml;base64,';
-  const colors: { [key: string]: string } = {
-    'Apartment': '#EA580C', // Orange
-    'House': '#16A34A', // Green
-    'Office': '#2563EB', // Blue
-    'Land': '#A855F7', // Purple
-    'CommercialSpace': '#DC2626', // Red
-    'VacationHome': '#0891B2', // Cyan
-    'ApartmentInHouse': '#F59E0B', // Amber
-    'Duplex': '#EC4899', // Pink
+  
+  const icons: { [key: string]: { color: string, icon: string } } = {
+    'Apartment': {
+      color: '#EA580C',
+      icon: '<path d="M10 11h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z" fill="white"/>'
+    },
+    'House': {
+      color: '#16A34A',
+      icon: '<path d="M10 16v6h4v-4h4v4h4v-6l-6-4.5z" fill="white"/><path d="M16 8l-8 6h2v8h5v-5h2v5h5v-8h2z" fill="white" opacity="0.5"/>'
+    },
+    'Office': {
+      color: '#2563EB',
+      icon: '<rect x="10" y="10" width="12" height="12" fill="white"/><path d="M11 12h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2z" fill="currentColor"/>'
+    },
+    'Land': {
+      color: '#A855F7',
+      icon: '<path d="M10 18h12v2H10zm1-2l2-3 3 2 2-3 2 3z" fill="white"/><circle cx="13" cy="14" r="1" fill="white"/><circle cx="19" cy="14" r="1" fill="white"/>'
+    },
+    'CommercialSpace': {
+      color: '#DC2626',
+      icon: '<rect x="11" y="11" width="10" height="10" rx="1" fill="white"/><path d="M13 13h2v2h-2zm0 3h2v2h-2zm3-3h2v2h-2zm0 3h2v2h-2z" fill="currentColor"/>'
+    },
+    'VacationHome': {
+      color: '#0891B2',
+      icon: '<path d="M16 9l-7 5v7h4v-4h6v4h4v-7z" fill="white"/><circle cx="19" cy="13" r="1.5" fill="yellow"/>'
+    },
+    'ApartmentInHouse': {
+      color: '#F59E0B',
+      icon: '<path d="M10 16v6h3v-4h6v4h3v-6l-6-4.5z" fill="white"/><rect x="14" y="13" width="4" height="5" fill="white" opacity="0.7"/>'
+    },
+    'Duplex': {
+      color: '#EC4899',
+      icon: '<path d="M10 15v7h4v-5h4v5h4v-7l-6-4z" fill="white"/><line x1="16" y1="11" x2="16" y2="22" stroke="white" stroke-width="1"/>'
+    },
   };
   
-  const color = colors[propertyType] || '#EA580C';
-  const svg = `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="${color}"/><circle cx="16" cy="16" r="8" fill="white"/><path d="M16 10v6m0 2v2" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+  const config = icons[propertyType] || icons['Apartment'];
+  const svg = `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="${config.color}"/>
+    <circle cx="16" cy="16" r="9" fill="${config.color}" opacity="0.9"/>
+    ${config.icon}
+  </svg>`;
   return iconBase + btoa(svg);
 }
 
-export function PropertyMap({ properties, onPropertyClick, selectedPropertyId }: PropertyMapProps) {
+export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, hideInfoWindow = false }: PropertyMapProps) {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const clustererRef = useRef<MarkerClusterer | null>(null);
   const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
-  });
-
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
+    setMapReady(true);
   };
 
-  // Pan to selected property when selectedPropertyId changes
-  useEffect(() => {
-    if (!selectedPropertyId || !mapRef.current) return;
-
-    const property = properties.find(p => p.id === selectedPropertyId);
-    if (property && property.lat && property.lon) {
-      mapRef.current.panTo({ lat: property.lat, lng: property.lon });
-      mapRef.current.setZoom(17); // Zoom in closer to the selected property
-      setSelectedProperty(property);
-    }
-  }, [selectedPropertyId, properties]);
+  // Pan to selected property when selectedPropertyId changes - REMOVED: logic moved to marker creation useEffect
 
   useEffect(() => {
-    if (!isLoaded || !mapRef.current || properties.length === 0) return;
+    if (!mapReady || !mapRef.current || properties.length === 0) return;
 
-    // Clear existing markers
+    // Clear existing markers and any previous clusterer
     markersRef.current.forEach(marker => marker.setMap(null));
     markersRef.current.clear();
 
@@ -123,9 +140,14 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId }:
         });
 
         marker.addListener('click', () => {
-          setSelectedProperty(property);
+          // Always notify parent that a property was clicked (for navigation)
           if (onPropertyClick) {
             onPropertyClick(property);
+          }
+
+          // Only open the InfoWindow when not explicitly hidden
+          if (!hideInfoWindow) {
+            setSelectedProperty(property);
           }
         });
 
@@ -146,46 +168,64 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId }:
 
     // Fit bounds to show all markers
     if (markers.length > 0 && mapRef.current) {
-      const bounds = new google.maps.LatLngBounds();
-      markers.forEach(marker => {
+      if (markers.length === 1) {
+        // For single property, center on it with fixed zoom
+        const marker = markers[0];
         const position = marker.getPosition();
-        if (position) bounds.extend(position);
-      });
-      mapRef.current.fitBounds(bounds);
-      
-      // Add padding to the bounds for better visibility
-      setTimeout(() => {
-        if (mapRef.current && markers.length > 1) {
-          mapRef.current.fitBounds(bounds, {
-            top: 50,
-            right: 50,
-            bottom: 50,
-            left: 50
-          });
+        if (position) {
+          mapRef.current.panTo(position);
+          mapRef.current.setZoom(15);
         }
-      }, 100);
+      } else {
+        // For multiple properties, use fitBounds
+        const bounds = new google.maps.LatLngBounds();
+        markers.forEach(marker => {
+          const position = marker.getPosition();
+          if (position) bounds.extend(position);
+        });
+        mapRef.current.fitBounds(bounds);
+
+        // Add padding to the bounds for better visibility
+        setTimeout(() => {
+          if (mapRef.current && markers.length > 1) {
+            mapRef.current.fitBounds(bounds, {
+              top: 50,
+              right: 50,
+              bottom: 50,
+              left: 50
+            });
+          }
+        }, 100);
+      }
     }
-  }, [isLoaded, properties, onPropertyClick]);
 
-  if (loadError) {
-    return <div className="h-full flex items-center justify-center text-red-600">Error loading maps</div>;
-  }
-
-  if (!isLoaded) {
-    return <div className="h-full flex items-center justify-center">Loading maps...</div>;
-  }
+    // Cleanup function
+    return () => {
+      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current.clear();
+      if (clustererRef.current) {
+        clustererRef.current.clearMarkers();
+        clustererRef.current = null;
+      }
+    };
+  }, [properties, onPropertyClick, selectedPropertyId, mapReady]);
 
   const favoriteImage = selectedProperty?.images.find(img => img.isFavorite) || selectedProperty?.images[0];
 
   return (
-    <GoogleMap
-      mapContainerStyle={mapContainerStyle}
-      center={defaultCenter}
-      zoom={15}
-      options={mapOptions}
-      onLoad={handleMapLoad}
+    <LoadScript
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
+      libraries={['places']}
+      loadingElement={<div className="h-full flex items-center justify-center">Loading maps...</div>}
     >
-      {selectedProperty && (
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={defaultCenter}
+        zoom={15}
+        options={mapOptions}
+        onLoad={handleMapLoad}
+      >
+      {selectedProperty && !hideInfoWindow && (
         <InfoWindow
           position={{ lat: selectedProperty.lat, lng: selectedProperty.lon }}
           onCloseClick={() => setSelectedProperty(null)}
@@ -223,5 +263,6 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId }:
         </InfoWindow>
       )}
     </GoogleMap>
+    </LoadScript>
   );
 }

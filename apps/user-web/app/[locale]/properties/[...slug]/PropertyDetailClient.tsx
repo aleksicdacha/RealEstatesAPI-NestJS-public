@@ -4,7 +4,11 @@ import { Property, getImageUrl } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { PropertyMap } from '@/app/components/PropertyMap';
+import dynamic from 'next/dynamic';
+const PropertyMap = dynamic(() => import('@/app/components/PropertyMap').then(mod => ({ default: mod.PropertyMap })), {
+  ssr: false,
+  loading: () => <div className="h-[400px] rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">Učitavanje mape...</div>
+});
 import { PropertySidebar } from '@/app/components/PropertySidebar';
 
 interface PropertyDetailClientProps {
@@ -228,7 +232,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
               <div id="lokacija" className="bg-white rounded-lg border p-6 mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Lokacija</h2>
                 <div className="h-[400px] rounded-lg overflow-hidden">
-                  <PropertyMap properties={[property]} />
+                  <PropertyMap properties={[property]} hideInfoWindow={true} />
                 </div>
                 <p className="text-sm text-gray-500 mt-4">
                   <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
