@@ -116,7 +116,7 @@ export function FavouritePropertyCard({ property }: FavouritePropertyCardProps) 
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <span>{property.area} m²</span>
           <span>·</span>
-          <span>{property.rooms} soba</span>
+          <span>{property.roomStructure}</span>
         </div>
       </Link>
     </div>

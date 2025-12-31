@@ -11,11 +11,39 @@
     "properties": "Nekretnine",
     "forSale": "Prodaja",
     "forRent": "Izdavanje",
-    "about": "O nama",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "about": "O nama"
   },
-  "Favourites": {
-    "addToFavourites": "Dodaj u omiljene",
-    "removeFromFavourites": "Ukloni iz omiljenih"
+  "Landing": {
+    "heroTitle": "Pronađite Svoj Savršen Dom",
+    "heroSubtitle": "Više od 10.000 nekretnina širom Srbije. Kupujte i iznajmljujte sa poverenjem.",
+    "buyProperty": "Kupite Nekretninu",
+    "rentProperty": "Iznajmite Nekretninu",
+    "ourServices": "Naše Usluge",
+    "servicesSubtitle": "Kompletno rešenje za vaše nekretninske potrebe",
+    "saleProperties": "Prodaja Nekretnina",
+    "saleDescription": "Širok izbor stanova, kuća i poslovnih prostora širom Srbije",
+    "rentProperties": "Izdavanje Nekretnina",
+    "rentDescription": "Stanovi i kuće za iznajmljivanje sa fleksibilnim ugovorima",
+    "valuation": "Procena Nekretnina",
+    "valuationDescription": "Profesionalna procena vrednosti vaše nekretnine",
+    "viewOffer": "Pogledajte Ponudu →",
+    "findApartment": "Pronađite Stan →",
+    "contactUs": "Kontaktirajte Nas →",
+    "popularCities": "Najpopularniji Gradovi",
+    "citiesSubtitle": "Pronađite nekretnine u najtraženijim lokacijama",
+    "belgrade": "Beograd",
+    "capital": "Prestonica",
+    "noviSad": "Novi Sad",
+    "vojvodina": "Vojvodina",
+    "nis": "Niš",
+    "southernSerbia": "Južna Srbija",
+    "kragujevac": "Kragujevac",
+    "sumadija": "Šumadija",
+    "readyToFind": "Spremni da Pronađete Svoj Dom?",
+    "joinClients": "Pridružite se hiljadama zadovoljnih klijenata",
+    "startSearch": "Započnite Pretragu",
+    "contactUsBtn": "Kontaktirajte Nas",
+    "yourTrustedPartner": "Vaš pouzdani partner"
   }
 }

@@ -242,30 +242,14 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
 
         // Force smooth animation with guaranteed completion
         const performAnimation = () => {
-          // Use animateCamera for smooth transition (Google Maps v3.50+)
-          if (typeof map.animateCamera === 'function') {
-            map.animateCamera({
-              center: position,
-              zoom: 16,
-              duration: 1200, // Increased duration for guaranteed smoothness
-              easing: 'easeInOut'
-            });
+          // Use panTo for smooth transition to the property location
+          map.panTo(position);
+          map.setZoom(16);
 
-            // Set timeout to mark animation as complete
-            animationTimeoutRef.current = setTimeout(() => {
-              setIsAnimating(false);
-            }, 1250); // Slightly longer than animation duration
-
-          } else {
-            // Fallback for older versions with guaranteed timing
-            map.panTo(position);
-            animationTimeoutRef.current = setTimeout(() => {
-              if (map) {
-                map.setZoom(16);
-              }
-              setIsAnimating(false);
-            }, 800);
-          }
+          // Set timeout to mark animation as complete
+          animationTimeoutRef.current = setTimeout(() => {
+            setIsAnimating(false);
+          }, 1250); // Slightly longer than animation duration
         };
 
         // Small delay to ensure any previous animation is cancelled
