@@ -14,12 +14,8 @@
     "about": "O nama",
     "contact": "Kontakt"
   },
-  "PropertyTypes": {
-    "APARTMENT": "Stan",
-    "HOUSE": "Kuća",
-    "LAND": "Plac",
-    "OFFICE": "Kancelarija",
-    "COMMERCIAL": "Poslovni prostor",
-    "GARAGE": "Garaža"
+  "Favourites": {
+    "addToFavourites": "Dodaj u omiljene",
+    "removeFromFavourites": "Ukloni iz omiljenih"
   }
 }

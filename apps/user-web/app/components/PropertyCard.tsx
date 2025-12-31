@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Property, getFavoriteImage, getImageUrl } from '@/lib/api';
-import { useState } from 'react';
+import { useFavourites } from '@/app/contexts/FavouritesContext';
 import { usePathname } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { getRoomStructureIcon, getRoomStructureName } from '@/app/utils/roomStructureIcons';
+import { useTranslations } from 'next-intl';
 
 interface PropertyCardProps {
   property: Property;
@@ -56,9 +57,10 @@ function getPropertyTypeName(type: string): string {
 }
 
 export function PropertyCard({ property, onHover }: PropertyCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { toggleFavourite, isFavourite } = useFavourites();
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr'; // Extract locale from path
+  const t = useTranslations('Favourites');
   const favoriteImage = getFavoriteImage(property.images);
   const imageUrl = favoriteImage ? getImageUrl(favoriteImage.url) : null;
 
@@ -98,13 +100,14 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
           className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors z-10"
           onClick={(e) => {
             e.preventDefault();
-            setIsFavorite(!isFavorite);
+            toggleFavourite(property.id);
           }}
-          aria-label="Add to favorites"
+          title={isFavourite(property.id) ? t('removeFromFavourites') : t('addToFavourites')}
+          aria-label={isFavourite(property.id) ? t('removeFromFavourites') : t('addToFavourites')}
         >
           <svg 
-            className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-600'}`} 
-            fill={isFavorite ? 'currentColor' : 'none'} 
+            className={`w-6 h-6 ${isFavourite(property.id) ? 'text-red-500 fill-current' : 'text-gray-600'}`} 
+            fill={isFavourite(property.id) ? 'currentColor' : 'none'} 
             stroke="currentColor" 
             viewBox="0 0 24 24"
           >

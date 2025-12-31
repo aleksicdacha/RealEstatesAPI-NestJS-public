@@ -5,11 +5,14 @@ import Link from 'next/link';
 import { fetchProperties, Property } from '@/lib/api';
 import { PropertyCard } from '@/app/components/PropertyCard';
 import { PropertyMap } from '@/app/components/PropertyMap';
+import { FavouritePropertyCard } from '@/app/components/FavouritePropertyCard';
+import { useFavourites } from '@/app/contexts/FavouritesContext';
 
 export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
+  const { favourites } = useFavourites();
 
   useEffect(() => {
     // Fetch latest properties from API
@@ -66,9 +69,9 @@ export default function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="px-2">
           <div className="flex flex-col items-center mb-8">
-            <h2 className="text-3xl font-bold mb-6 text-center">
+            {/* <h2 className="text-3xl font-bold mb-6 text-center">
               Izdvojene Nekretnine
-            </h2>
+            </h2> */}
 
             {/* Map Toggle Switch */}
             <div className="flex items-center gap-3 bg-white rounded-full p-1 shadow-sm border">
@@ -126,6 +129,33 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Favourite Properties */}
+      {favourites.length > 0 && (
+        <section key={favourites.length} className="py-16 bg-white">
+          <div className="px-2">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-6 text-center">
+                Omiljene Nekretnine
+              </h2>
+              <p className="text-center text-gray-600">
+                Vaše sačuvane nekretnine ({favourites.length})
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+              {properties
+                .filter(property => favourites.includes(property.id))
+                .map((property) => (
+                  <FavouritePropertyCard
+                    key={property.id}
+                    property={property}
+                  />
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Why Choose Us */}
       <section className="py-16">

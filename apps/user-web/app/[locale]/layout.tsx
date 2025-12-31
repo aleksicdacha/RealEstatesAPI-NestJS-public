@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
+import { FavouritesProvider } from '@/app/contexts/FavouritesContext';
 
 export const metadata: Metadata = {
   title: "Real Estate - Pronađite Svoj Dom",
@@ -34,9 +35,11 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <Header />
-      {children}
-      <Footer />
+      <FavouritesProvider>
+        <Header />
+        {children}
+        <Footer />
+      </FavouritesProvider>
     </NextIntlClientProvider>
   );
 }

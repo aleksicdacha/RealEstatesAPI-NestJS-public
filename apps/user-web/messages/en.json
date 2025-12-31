@@ -14,12 +14,8 @@
     "about": "About",
     "contact": "Contact"
   },
-  "PropertyTypes": {
-    "APARTMENT": "Apartment",
-    "HOUSE": "House",
-    "LAND": "Land",
-    "OFFICE": "Office",
-    "COMMERCIAL": "Commercial",
-    "GARAGE": "Garage"
+  "Favourites": {
+    "addToFavourites": "Add to favourites",
+    "removeFromFavourites": "Remove from favourites"
   }
 }

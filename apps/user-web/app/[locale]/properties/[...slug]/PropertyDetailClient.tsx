@@ -10,6 +10,8 @@ const PropertyMap = dynamic(() => import('@/app/components/PropertyMap').then(mo
   loading: () => <div className="h-[400px] rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">Učitavanje mape...</div>
 });
 import { PropertySidebar } from '@/app/components/PropertySidebar';
+import { useFavourites } from '@/app/contexts/FavouritesContext';
+import { useTranslations } from 'next-intl';
 
 interface PropertyDetailClientProps {
   property: Property;
@@ -17,6 +19,8 @@ interface PropertyDetailClientProps {
 
 export default function PropertyDetailClient({ property }: PropertyDetailClientProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const { toggleFavourite, isFavourite } = useFavourites();
+  const t = useTranslations('Favourites');
   const favoriteImage = property.images.find(img => img.isFavorite) || property.images[0];
   const sortedImages = [...property.images].sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) return -1;
@@ -39,13 +43,32 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
           </div>
 
           {/* Location and ID */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {property.neighborhood || 'Niš'}
-            </h1>
-            <p className="text-gray-600">
-              Prodaja {property.propertyType} • ID {property.code}
-            </p>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {property.neighborhood || 'Niš'}
+              </h1>
+              <p className="text-gray-600">
+                Prodaja {property.propertyType} • ID {property.code}
+              </p>
+            </div>
+            
+            {/* Favourite Button */}
+            <button 
+              onClick={() => toggleFavourite(property.id)}
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+              title={isFavourite(property.id) ? t('removeFromFavourites') : t('addToFavourites')}
+              aria-label={isFavourite(property.id) ? t('removeFromFavourites') : t('addToFavourites')}
+            >
+              <svg 
+                className={`w-6 h-6 ${isFavourite(property.id) ? 'text-red-500 fill-current' : 'text-gray-600'}`} 
+                fill={isFavourite(property.id) ? 'currentColor' : 'none'} 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
           </div>
 
           {/* Image Gallery */}
