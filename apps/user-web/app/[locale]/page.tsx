@@ -9,6 +9,7 @@ import { PropertyMap } from '@/app/components/PropertyMap';
 export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [showMap, setShowMap] = useState(true);
 
   useEffect(() => {
     // Fetch latest properties from API
@@ -63,29 +64,61 @@ export default function HomePage() {
 
       {/* Featured Properties */}
       <section className="py-16 bg-gray-50">
-        <div className="px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">
-            Izdvojene Nekretnine
-          </h2>
-          
-          {/* Split layout: 50% Properties List, 50% Map */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="px-2">
+          <div className="flex flex-col items-center mb-8">
+            <h2 className="text-3xl font-bold mb-6 text-center">
+              Izdvojene Nekretnine
+            </h2>
+
+            {/* Map Toggle Switch */}
+            <div className="flex items-center gap-3 bg-white rounded-full p-1 shadow-sm border">
+              <button
+                onClick={() => setShowMap(true)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  showMap
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Prikaži mapu
+              </button>
+              <button
+                onClick={() => setShowMap(false)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  !showMap
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Sakrij mapu
+              </button>
+            </div>
+          </div>
+
+          {/* Split layout: 65% Properties List, 35% Map */}
+          <div className={`grid gap-8 transition-all duration-500 ease-in-out ${
+            showMap ? 'lg:grid-cols-[65%_35%]' : 'grid-cols-1'
+          }`}>
             {/* Properties List */}
-            <div className="pr-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {properties.map((property) => (
-                  <PropertyCard 
-                    key={property.id} 
+                  <PropertyCard
+                    key={property.id}
                     property={property}
                     onHover={setSelectedPropertyId}
                   />
                 ))}
               </div>
             </div>
-            
+
             {/* Map */}
-            <div className="h-[800px] sticky top-4 rounded-lg overflow-hidden shadow-lg">
-              <PropertyMap 
+            <div className={`w-[95%] transition-all duration-500 ease-in-out ${
+              showMap
+                ? 'opacity-100 max-h-[800px] h-[800px]'
+                : 'opacity-0 max-h-0 h-0 overflow-hidden'
+            } sticky top-4 rounded-lg overflow-hidden shadow-lg`}>
+              <PropertyMap
                 properties={properties}
                 selectedPropertyId={selectedPropertyId || undefined}
               />

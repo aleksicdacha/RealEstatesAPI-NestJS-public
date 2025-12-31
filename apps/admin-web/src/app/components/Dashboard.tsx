@@ -82,6 +82,11 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Quick Actions */}
+      <div className="col-12">
+        <QuickActions />
+      </div>
+
       {/* Charts and Tables Row */}
       <div className="col-12 lg:col-8">
         <RecentPropertiesTable 
@@ -120,11 +125,6 @@ const Dashboard: React.FC = () => {
           totalUsers={stats.totalUsers}
           loading={loading}
         />
-      </div>
-
-      {/* Quick Actions */}
-      <div className="col-12">
-        <QuickActions />
       </div>
     </div>
   );

@@ -24,16 +24,89 @@ const defaultCenter = {
 };
 
 const customMapStyles = [
+  // Light, modern, neutral theme
+  {
+    elementType: 'geometry',
+    stylers: [{ color: '#f5f5f5' }]
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#616161' }]
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [{ color: '#f5f5f5' }]
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#bdbdbd' }]
+  },
   {
     featureType: 'poi',
-    elementType: 'labels',
-    stylers: [{ visibility: 'off' }],
+    elementType: 'geometry',
+    stylers: [{ color: '#eeeeee' }]
   },
   {
-    featureType: 'transit',
-    elementType: 'labels',
-    stylers: [{ visibility: 'off' }],
+    featureType: 'poi',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#757575' }]
   },
+  {
+    featureType: 'poi.park',
+    elementType: 'geometry',
+    stylers: [{ color: '#e5e5e5' }]
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#9e9e9e' }]
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [{ color: '#ffffff' }]
+  },
+  {
+    featureType: 'road.arterial',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#757575' }]
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry',
+    stylers: [{ color: '#dadada' }]
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#616161' }]
+  },
+  {
+    featureType: 'road.local',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#9e9e9e' }]
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'geometry',
+    stylers: [{ color: '#e5e5e5' }]
+  },
+  {
+    featureType: 'transit.station',
+    elementType: 'geometry',
+    stylers: [{ color: '#eeeeee' }]
+  },
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [{ color: '#c9c9c9' }]
+  },
+  {
+    featureType: 'water',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#9e9e9e' }]
+  }
 ];
 
 const mapOptions: google.maps.MapOptions = {
@@ -108,7 +181,98 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
     setMapReady(true);
   };
 
-  // Pan to selected property when selectedPropertyId changes - REMOVED: logic moved to marker creation useEffect
+  const [isAnimating, setIsAnimating] = useState(false);
+  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Pan to selected property when selectedPropertyId changes
+  useEffect(() => {
+    if (!mapRef.current || !mapReady) return;
+
+    // If no property is selected, zoom out to show all markers
+    if (!selectedPropertyId) {
+      const markers = Array.from(markersRef.current.values());
+      if (markers.length > 0 && mapRef.current) {
+        if (markers.length === 1) {
+          // For single property, center on it
+          const marker = markers[0];
+          const position = marker.getPosition();
+          if (position) {
+            mapRef.current.panTo(position);
+            mapRef.current.setZoom(15);
+          }
+        } else {
+          // For multiple properties, fit bounds to show all
+          const bounds = new google.maps.LatLngBounds();
+          markers.forEach(marker => {
+            const position = marker.getPosition();
+            if (position) bounds.extend(position);
+          });
+          mapRef.current.fitBounds(bounds);
+
+          // Add padding for better visibility
+          setTimeout(() => {
+            if (mapRef.current && markers.length > 1) {
+              mapRef.current.fitBounds(bounds, {
+                top: 50,
+                right: 50,
+                bottom: 50,
+                left: 50
+              });
+            }
+          }, 100);
+        }
+      }
+      return;
+    }
+
+    // Prevent multiple animations from running simultaneously
+    if (isAnimating) {
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+      }
+      setIsAnimating(false);
+    }
+
+    const selectedMarker = markersRef.current.get(selectedPropertyId);
+    if (selectedMarker) {
+      const position = selectedMarker.getPosition();
+      if (position) {
+        const map = mapRef.current;
+        setIsAnimating(true);
+
+        // Force smooth animation with guaranteed completion
+        const performAnimation = () => {
+          // Use animateCamera for smooth transition (Google Maps v3.50+)
+          if (typeof map.animateCamera === 'function') {
+            map.animateCamera({
+              center: position,
+              zoom: 16,
+              duration: 1200, // Increased duration for guaranteed smoothness
+              easing: 'easeInOut'
+            });
+
+            // Set timeout to mark animation as complete
+            animationTimeoutRef.current = setTimeout(() => {
+              setIsAnimating(false);
+            }, 1250); // Slightly longer than animation duration
+
+          } else {
+            // Fallback for older versions with guaranteed timing
+            map.panTo(position);
+            animationTimeoutRef.current = setTimeout(() => {
+              if (map) {
+                map.setZoom(16);
+              }
+              setIsAnimating(false);
+            }, 800);
+          }
+        };
+
+        // Small delay to ensure any previous animation is cancelled
+        setTimeout(performAnimation, 50);
+      }
+    }
+  }, [selectedPropertyId, mapReady, isAnimating]);
 
   useEffect(() => {
     if (!mapReady || !mapRef.current || properties.length === 0) return;
@@ -208,7 +372,7 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
         clustererRef.current = null;
       }
     };
-  }, [properties, onPropertyClick, selectedPropertyId, mapReady]);
+  }, [properties, onPropertyClick, mapReady]);
 
   const favoriteImage = selectedProperty?.images.find(img => img.isFavorite) || selectedProperty?.images[0];
 

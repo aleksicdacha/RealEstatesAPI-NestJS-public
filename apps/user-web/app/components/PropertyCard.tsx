@@ -119,10 +119,10 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
       </div>
 
       {/* Content */}
-      <Link href={propertyUrl} className="block p-5">
+      <Link href={propertyUrl} className="block p-4">
         {/* Price */}
-        <div className="mb-3">
-          <p className="text-2xl font-bold text-orange-600">
+        <div className="mb-2">
+          <p className="text-xl font-bold text-orange-600">
             {new Intl.NumberFormat('sr-RS', { 
               style: 'currency', 
               currency: 'EUR',
@@ -134,40 +134,35 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
 
         {/* Transaction type and property type */}
         <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
-          <span>Prodaja</span>
-          <span className="text-gray-400">·</span>
           {getPropertyTypeIcon(property.propertyType)}
           <span>{getPropertyTypeName(property.propertyType)}</span>
-        </div>
-
-        {/* Location */}
-        <div className="mb-4 flex items-start gap-2 text-gray-600">
-          <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <span className="text-gray-400">·</span>
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <span className="text-sm line-clamp-1">{property.neighborhood || 'Niš'}</span>
+          <span className="line-clamp-1">{property.neighborhood || 'Niš'}</span>
         </div>
 
         {/* Property details */}
-        <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
           {/* Area */}
-          <div className="flex items-center gap-2 text-gray-600">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center gap-1 text-gray-600">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
             </svg>
-            <span className="text-sm font-medium">{property.area} m²</span>
+            <span className="text-xs font-medium">{property.area} m²</span>
           </div>
 
           {/* Floor */}
           {property.floor !== undefined && property.floor !== null && (
             <>
               <span className="text-gray-300">|</span>
-              <div className="flex items-center gap-2 text-gray-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-1 text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span className="text-sm font-medium">{property.floor}. sprat</span>
+                <span className="text-xs font-medium">{property.floor}. sp.</span>
               </div>
             </>
           )}
@@ -176,11 +171,11 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
           {property.roomStructure && (
             <>
               <span className="text-gray-300">|</span>
-              <div className="flex items-center gap-2 text-gray-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-1 text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                <span className="text-sm font-medium">{property.roomStructure}</span>
+                <span className="text-xs font-medium">{property.roomStructure}</span>
               </div>
             </>
           )}
@@ -188,7 +183,7 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
 
         {/* Additional info - Heating */}
         {property.heating && (
-          <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-600">
+          <div className="mt-1 pt-2 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-600">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />

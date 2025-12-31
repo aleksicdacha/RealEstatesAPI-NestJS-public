@@ -6,20 +6,35 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useTranslations } from 'next-intl';
-import { clientService } from '@/services/client.service';
+import { clientService, CreateClientDto } from '@/services/client.service';
 import { propertyService, Property } from '@/services/property.service';
+
+interface RepresentativeData {
+  name: string;
+  address: string;
+  phone?: string;
+  jmbg: string;
+  birthplace?: string;
+  idCardNumber?: string;
+  idCardIssuePlace?: string;
+}
 
 interface ClientFormData {
   name: string;
   email: string;
   phone: string;
   address: string;
+  jmbg: string;
+  birthplace: string;
+  idCardNumber: string;
+  idCardIssuePlace: string;
   status: string;
   transactionType: string;
   paymentType: string;
   comment: string;
   moneyAmount: string | number;
   propertyId?: string;
+  representative: RepresentativeData;
 }
 
 interface ClientWizardProps {
@@ -39,13 +54,28 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
     email: '',
     phone: '',
     address: '',
+    jmbg: '',
+    birthplace: '',
+    idCardNumber: '',
+    idCardIssuePlace: '',
     status: 'active',
     transactionType: 'buyer',
     paymentType: 'cash',
     comment: '',
     moneyAmount: '',
     propertyId: undefined,
+    representative: {
+      name: '',
+      address: '',
+      phone: '',
+      jmbg: '',
+      birthplace: '',
+      idCardNumber: '',
+      idCardIssuePlace: '',
+    },
   });
+
+  const [showRepresentative, setShowRepresentative] = useState(false);
 
   const [formErrors, setFormErrors] = useState({
     name: '',
@@ -68,7 +98,7 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
     try {
       const response = await propertyService.getProperties({ limit: 1000 });
       // Filter out properties that already have a client
-      const availableProperties = response.items.filter(p => !p.client);
+      const availableProperties = response.items.filter((p: Property) => !p.client);
       setProperties(availableProperties);
     } catch (error) {
       console.error('Error loading properties:', error);
@@ -108,11 +138,22 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
-    if (formErrors[name as keyof typeof formErrors]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    // Representative fields are prefixed with 'representative.'
+    if (name.startsWith('representative.')) {
+      const repField = name.replace('representative.', '');
+      setFormData(prev => ({
+        ...prev,
+        representative: {
+          ...prev.representative,
+          [repField]: value ?? '',
+        },
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+      // Clear error when user starts typing
+      if (formErrors[name as keyof typeof formErrors]) {
+        setFormErrors(prev => ({ ...prev, [name]: '' }));
+      }
     }
   };
 
@@ -164,7 +205,7 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
     setIsSubmitting(true);
 
     try {
-      const clientDto = {
+      const clientDto: any = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -175,6 +216,9 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
         comment: formData.comment,
         moneyAmount: formData.moneyAmount ? Number(formData.moneyAmount) : undefined,
       };
+      if (showRepresentative && formData.representative && formData.representative.name) {
+        clientDto.representative = formData.representative;
+      }
 
       const createdClient = await clientService.createClient(clientDto);
 
@@ -209,13 +253,27 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
         email: '',
         phone: '',
         address: '',
+        jmbg: '',
+        birthplace: '',
+        idCardNumber: '',
+        idCardIssuePlace: '',
         status: 'active',
         transactionType: 'buyer',
         paymentType: 'cash',
         comment: '',
         moneyAmount: '',
         propertyId: undefined,
+        representative: {
+          name: '',
+          address: '',
+          phone: '',
+          jmbg: '',
+          birthplace: '',
+          idCardNumber: '',
+          idCardIssuePlace: '',
+        },
       });
+      setShowRepresentative(false);
 
       if (onSuccess) {
         onSuccess();
@@ -269,7 +327,7 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
         {/* Left Column */}
         <div>
           <div className="p-field py-2">
-            <label htmlFor="name">{t('name')} <span className="text-red-500">*</span></label>
+            <label htmlFor="name">{t('name')}</label>
             <InputText
               id="name"
               name="name"
@@ -281,11 +339,10 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
           </div>
 
           <div className="p-field py-2">
-            <label htmlFor="email">{t('email')} <span className="text-red-500">*</span></label>
+            <label htmlFor="email">{t('email')}</label>
             <InputText
               id="email"
               name="email"
-              type="email"
               value={formData.email}
               onChange={handleInputChange}
               className={formErrors.email ? 'p-invalid' : ''}
@@ -314,14 +371,42 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
           </div>
 
           <div className="p-field py-2">
-            <label htmlFor="status">{t('status')}</label>
-            <Dropdown
-              id="status"
-              name="status"
-              value={formData.status}
-              options={statusOptions}
-              onChange={handleDropdownChange}
-              placeholder={t('selectStatus')}
+            <label htmlFor="jmbg">{t('jmbg')}</label>
+            <InputText
+              id="jmbg"
+              name="jmbg"
+              value={formData.jmbg}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="p-field py-2">
+            <label htmlFor="birthplace">{t('birthplace')}</label>
+            <InputText
+              id="birthplace"
+              name="birthplace"
+              value={formData.birthplace}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="p-field py-2">
+            <label htmlFor="idCardNumber">{t('idCardNumber')}</label>
+            <InputText
+              id="idCardNumber"
+              name="idCardNumber"
+              value={formData.idCardNumber}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="p-field py-2">
+            <label htmlFor="idCardIssuePlace">{t('idCardIssuePlace')}</label>
+            <InputText
+              id="idCardIssuePlace"
+              name="idCardIssuePlace"
+              value={formData.idCardIssuePlace}
+              onChange={handleInputChange}
             />
           </div>
         </div>
@@ -395,6 +480,85 @@ const ClientWizard: React.FC<ClientWizardProps> = ({ visible, onHide, onSuccess 
             />
           </div>
         </div>
+      </div>
+
+      {/* Representative Section Accordion at the bottom */}
+      <div className="mt-4">
+        <Button
+          type="button"
+          label={showRepresentative ? t('hideRepresentative') || 'Sakrij zastupnika' : t('addRepresentative') || 'Dodaj zastupnika'}
+          icon={showRepresentative ? 'pi pi-minus' : 'pi pi-plus'}
+          className="p-button-secondary mb-2 rounded-full px-4 py-2 shadow-md transition-colors duration-150 hover:bg-blue-600 hover:text-white"
+          style={{ borderRadius: '2rem', fontWeight: 500, fontSize: '1rem' }}
+          onClick={() => setShowRepresentative(v => !v)}
+        />
+        {showRepresentative && (
+          <div className="p-accordion-content border p-3 rounded bg-gray-50 mt-2">
+            <div className="p-field py-2">
+              <label htmlFor="representative.name">{t('representativeName') || 'Ime zastupnika'}</label>
+              <InputText
+                id="representative.name"
+                name="representative.name"
+                value={formData.representative?.name || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="p-field py-2">
+              <label htmlFor="representative.address">{t('representativeAddress') || 'Adresa zastupnika'}</label>
+              <InputText
+                id="representative.address"
+                name="representative.address"
+                value={formData.representative?.address || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="p-field py-2">
+              <label htmlFor="representative.phone">{t('representativePhone') || 'Telefon zastupnika'}</label>
+              <InputText
+                id="representative.phone"
+                name="representative.phone"
+                value={formData.representative?.phone || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="p-field py-2">
+              <label htmlFor="representative.jmbg">{t('representativeJmbg') || 'JMBG zastupnika'}</label>
+              <InputText
+                id="representative.jmbg"
+                name="representative.jmbg"
+                value={formData.representative?.jmbg || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="p-field py-2">
+              <label htmlFor="representative.birthplace">{t('representativeBirthplace') || 'Mesto rođenja zastupnika'}</label>
+              <InputText
+                id="representative.birthplace"
+                name="representative.birthplace"
+                value={formData.representative?.birthplace || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="p-field py-2">
+              <label htmlFor="representative.idCardNumber">{t('representativeIdCardNumber') || 'Broj lične karte zastupnika'}</label>
+              <InputText
+                id="representative.idCardNumber"
+                name="representative.idCardNumber"
+                value={formData.representative?.idCardNumber || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="p-field py-2">
+              <label htmlFor="representative.idCardIssuePlace">{t('representativeIdCardIssuePlace') || 'Mesto izdavanja LK zastupnika'}</label>
+              <InputText
+                id="representative.idCardIssuePlace"
+                name="representative.idCardIssuePlace"
+                value={formData.representative?.idCardIssuePlace || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </Dialog>
   );
