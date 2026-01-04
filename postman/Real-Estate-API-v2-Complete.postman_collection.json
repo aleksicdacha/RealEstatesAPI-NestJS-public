@@ -1,0 +1,721 @@
+{
+	"info": {
+		"_postman_id": "real-estate-api-v2",
+		"name": "Real Estate API v2.0 - Complete Collection",
+		"description": "Comprehensive API documentation for the Real Estate Management System with best practices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/v1",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "propertyId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    pm.collectionVariables.set('userId', jsonData.user.id);",
+									"    console.log('✅ Logged in successfully');",
+									"    console.log('Token:', jsonData.accessToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Authenticate user and receive JWT access token. Token is automatically saved to collection variables."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.collectionVariables.set('accessToken', '');",
+									"    pm.collectionVariables.set('refreshToken', '');",
+									"    console.log('✅ Logged out successfully');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						},
+						"description": "Logout current user and invalidate tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh"]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for login, logout, and token refresh"
+		},
+		{
+			"name": "Properties - Admin",
+			"item": [
+				{
+					"name": "Create Property",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('propertyId', jsonData.id);",
+									"    console.log('✅ Property created:', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"TEST001\",\n  \"propertyType\": \"Apartment\",\n  \"price\": 150000,\n  \"area\": 75,\n  \"floor\": 3,\n  \"roomStructure\": \"3-room\",\n  \"heating\": \"Central\",\n  \"bathrooms\": 1,\n  \"address\": \"Kralja Petra 10\",\n  \"neighborhood\": \"Centar\",\n  \"lat\": 44.787197,\n  \"lon\": 20.457273,\n  \"description\": \"Beautiful apartment in city center\",\n  \"status\": \"Active\",\n  \"elevator\": true,\n  \"constructionYear\": 2015,\n  \"specialOffer\": null,\n  \"images\": []\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/properties",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties"]
+						},
+						"description": "Create a new property (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Properties (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "propertyType",
+									"value": "Apartment",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "Active",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "100000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "200000",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all properties with full details including sensitive data (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Property by ID (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "{{propertyId}}"]
+						},
+						"description": "Get property by GUID with full details (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Property",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 160000,\n  \"description\": \"Updated description - beautiful renovated apartment\",\n  \"status\": \"Active\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "{{propertyId}}"]
+						},
+						"description": "Update property details (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "{{propertyId}}"]
+						},
+						"description": "Delete property permanently (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Filter Options",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties/filters/options",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "filters", "options"]
+						},
+						"description": "Get available filter options for properties (Public)"
+					},
+					"response": []
+				}
+			],
+			"description": "Admin endpoints for managing properties with full access"
+		},
+		{
+			"name": "Properties - Public",
+			"item": [
+				{
+					"name": "Get Public Properties",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties/public?page=1&limit=12&propertyType=Apartment",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "public"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "12"
+								},
+								{
+									"key": "propertyType",
+									"value": "Apartment"
+								},
+								{
+									"key": "minPrice",
+									"value": "50000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "300000",
+									"disabled": true
+								},
+								{
+									"key": "minArea",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "maxArea",
+									"value": "150",
+									"disabled": true
+								},
+								{
+									"key": "neighborhood",
+									"value": "Centar",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get public properties without sensitive data (No authentication required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Property by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties/public/{{propertyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "public", "{{propertyId}}"]
+						},
+						"description": "Get single property details without sensitive data (No authentication required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Property Stats",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/properties/stats/average-price-by-type",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "stats", "average-price-by-type"]
+						},
+						"description": "Get average property prices by type (Public)"
+					},
+					"response": []
+				}
+			],
+			"description": "Public endpoints for viewing properties - no authentication required"
+		},
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "Create Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('clientId', jsonData.id);",
+									"    console.log('✅ Client created:', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"John Doe\",\n  \"phone\": \"+381601234567\",\n  \"email\": \"john.doe@example.com\",\n  \"transactionType\": \"Sale\",\n  \"ownerName\": \"John Doe\",\n  \"ownerPhone\": \"+381601234567\",\n  \"ownerAddress\": \"Kralja Petra 15, Belgrade\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/clients",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients"]
+						},
+						"description": "Create a new client (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "transactionType",
+									"value": "Sale",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all clients with pagination (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "{{clientId}}"]
+						},
+						"description": "Get client by GUID (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Client",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+381601234999\",\n  \"email\": \"john.updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "{{clientId}}"]
+						},
+						"description": "Update client details (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Client",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "{{clientId}}"]
+						},
+						"description": "Delete client (Admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Client management endpoints (Admin only)"
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"User\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						},
+						"description": "Create a new user (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all users (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						},
+						"description": "Get user by ID (Admin or own profile)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						},
+						"description": "Update user details (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						},
+						"description": "Delete user (Admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "User management endpoints (Admin only)"
+		},
+		{
+			"name": "File Upload",
+			"item": [
+				{
+					"name": "Upload Images",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "propertyCode",
+									"value": "TEST001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/upload",
+							"host": ["{{baseUrl}}"],
+							"path": ["upload"]
+						},
+						"description": "Upload property images (Public - for ease of use)"
+					},
+					"response": []
+				}
+			],
+			"description": "File upload endpoints"
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Send Contact Message",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+381601234567\",\n  \"message\": \"I'm interested in property TEST001\",\n  \"propertyCode\": \"TEST001\",\n  \"recaptchaToken\": \"test-token\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contact",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact"]
+						},
+						"description": "Send contact form message (Public)"
+					},
+					"response": []
+				}
+			],
+			"description": "Contact form endpoints"
+		}
+	]
+}

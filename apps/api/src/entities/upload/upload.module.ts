@@ -1,17 +1,12 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { UploadController } from './upload.controller';
 import { UploadService } from './upload.service';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   controllers: [UploadController],
-  imports: [MulterModule.register({ dest: './uploads' })], // Optional if you're using Multer for file handling
+  imports: [MulterModule.register({ dest: './uploads' })],
   providers: [UploadService],
-  exports: [UploadService], // Export UploadService so it can be used in other modules
+  exports: [UploadService],
 })
-
-export class UploadModule implements OnModuleInit {
-  onModuleInit() {
-    console.log('UploadModule initialized');
-  }
-}
+export class UploadModule {}

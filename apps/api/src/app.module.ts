@@ -20,6 +20,7 @@ import { ContactModule } from './contact/contact.module';
 import { databaseConfig } from '@src/common/config/database.config';
 import { appConfig } from '@src/common/config/app.config';
 import { jwtConfig } from '@src/common/config/jwt.config';
+import { configValidationSchema } from '@src/common/config/validation.schema';
 
 // Middleware
 import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
@@ -32,6 +33,10 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
       cache: true,
       load: [databaseConfig, appConfig, jwtConfig],
       envFilePath: ['.env.local', '.env'],
+      validationSchema: configValidationSchema,
+      validationOptions: {
+        abortEarly: false,
+      },
     }),
 
     // Database

@@ -11,8 +11,7 @@ import { useTranslations } from 'next-intl';
 
 interface PropertyCardProps {
   property: Property;
-  onHover?: (propertyId: string | null) => void;
-}
+  onHover?: (propertyId: string | null) => void;  priority?: boolean;}
 
 function getPropertyTypeIcon(type: string): ReactElement {
   const icons: { [key: string]: ReactElement } = {
@@ -56,7 +55,7 @@ function getPropertyTypeName(type: string): string {
   return names[type] || type;
 }
 
-export function PropertyCard({ property, onHover }: PropertyCardProps) {
+export function PropertyCard({ property, onHover, priority = false }: PropertyCardProps) {
   const { toggleFavourite, isFavourite } = useFavourites();
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr'; // Extract locale from path
@@ -78,8 +77,8 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
       onMouseLeave={() => onHover?.(null)}
     >
       {/* Image with favorite badge */}
-      <div className="aspect-[4/3] bg-gray-300 relative overflow-hidden">
-        <Link href={propertyUrl} className="block w-full h-full">
+      <div className="aspect-[4/3] bg-gray-300 overflow-hidden relative">
+        <Link href={propertyUrl} className="block w-full h-full relative">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -87,6 +86,7 @@ export function PropertyCard({ property, onHover }: PropertyCardProps) {
               fill
               className="object-cover w-full h-full"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={priority}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200">

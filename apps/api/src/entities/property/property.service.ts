@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
@@ -12,6 +12,8 @@ import { PropertyImageRepository } from '@src/entities/property-image/property-i
 
 @Injectable()
 export class PropertyService {
+  private readonly logger = new Logger(PropertyService.name);
+
   constructor(
     private readonly propertyRepository: PropertyRepository, // No @InjectRepository here
     private readonly propertyImageRepository: PropertyImageRepository, // Direct injection
@@ -100,8 +102,9 @@ export class PropertyService {
         where: { id: savedProperty.id },
         relations: ['images'], // Ensure the images are loaded
       });
-    } catch (e) {
-      console.log('error', e)
+    } catch (error) {
+      this.logger.error('Failed to create property', error.stack);
+      throw new InternalServerErrorException('Failed to create property');
     }
   }
 
@@ -276,9 +279,7 @@ export class PropertyService {
 
     // Handle the case where client is null
     if (!property.client) {
-      console.warn(`Property with id "${id}" has no associated client.`);
-    } else {
-      console.log('Client ID:', property.client.id); // Access client ID safely
+      this.logger.debug(`Property ${id} has no associated client`);
     }
 
     return {
@@ -336,25 +337,22 @@ export class PropertyService {
           throw new NotFoundException(`Property with ID ${id} not found`);
         }
 
-        console.log(`Removing property with ID: ${id}`);
+        this.logger.debug(`Removing property: ${id}`);
 
         if (property.images && property.images.length > 0) {
-          console.log(`Found ${property.images.length} associated images for property ID: ${id}`);
+          this.logger.debug(`Found ${property.images.length} associated images for property: ${id}`);
 
           // Handle property images with optimized parallel processing
           await this.propertyImageRepository.handlePropertyImagesParallel(manager, id, property.images);
-        } else {
-          console.log(`No images associated with property ID: ${id}`);
         }
 
         // Delete the property itself
         await manager.delete(Property, { id });
-        console.log(`Property with ID ${id} successfully removed.`);
+        this.logger.log(`Property ${id} successfully removed`);
       });
     } catch (error) {
-      console.log(error);
-      console.error(`Failed to remove property with ID ${id}:`, error);
-      throw error; // Rethrow to propagate the error up the call chain
+      this.logger.error(`Failed to remove property ${id}`, error.stack);
+      throw new InternalServerErrorException('Failed to remove property');
     }
   }
 

@@ -47,8 +47,8 @@ export async function fetchData(endpoint: string, params: FetchParams) {
       headers: {
         "Content-Type": "application/json",
         // Add authorization header if token exists
-        ...(typeof window !== 'undefined' && localStorage.getItem('access_token') 
-          ? { "Authorization": `Bearer ${localStorage.getItem('access_token')}` }
+        ...(typeof window !== 'undefined' && localStorage.getItem('accessToken') 
+          ? { "Authorization": `Bearer ${localStorage.getItem('accessToken')}` }
           : {}
         ),
       },

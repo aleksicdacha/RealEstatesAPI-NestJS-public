@@ -107,11 +107,12 @@ export default function IzdavanjePage() {
             {/* Properties List */}
             <div className="">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {properties.map((property) => (
+                {properties.map((property, index) => (
                   <PropertyCard
                     key={property.id}
                     property={property}
                     onHover={setSelectedPropertyId}
+                    priority={index < 6}
                   />
                 ))}
               </div>
@@ -148,10 +149,11 @@ export default function IzdavanjePage() {
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {properties
                 .filter(property => favourites.includes(property.id))
-                .map((property) => (
+                .map((property, index) => (
                   <FavouritePropertyCard
                     key={property.id}
                     property={property}
+                    priority={index < 8}
                   />
                 ))}
             </div>

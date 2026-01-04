@@ -97,7 +97,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
                   </div>
                   {/* Main Image */}
                   <div className="relative mb-4">
-                    <div className="aspect-video rounded-lg overflow-hidden bg-gray-200">
+                    <div className="aspect-video rounded-lg overflow-hidden bg-gray-200 relative">
                       <Image
                         src={getImageUrl(sortedImages[selectedImageIndex]?.url)}
                         alt={`Nekretnina ${property.code} - slika ${selectedImageIndex + 1}`}

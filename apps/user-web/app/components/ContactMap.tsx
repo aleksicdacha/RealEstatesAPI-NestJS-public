@@ -1,6 +1,6 @@
 'use client';
 
-import { GoogleMap, Marker } from '@react-google-maps/api';
+import { GoogleMap, MarkerF } from '@react-google-maps/api';
 import { useState } from 'react';
 
 const mapContainerStyle = {
@@ -140,7 +140,7 @@ export function ContactMap() {
         gestureHandling: 'cooperative',
       }}
     >
-      <Marker
+      <MarkerF
         position={center}
         title="Olymp Nekretnine - Vizantijski bulevar 86 - Niš"
         icon={markerIcon}
