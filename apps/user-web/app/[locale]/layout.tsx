@@ -6,9 +6,10 @@ import { routing } from '@/i18n/routing';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 import { FavouritesProvider } from '@/app/contexts/FavouritesContext';
+import { GoogleMapsProvider } from '@/app/components/GoogleMapsProvider';
 
 export const metadata: Metadata = {
-  title: "Real Estate - Pronađite Svoj Dom",
+  title: "Olymp Nekretnine - Pronađite Svoj Dom",
   description: "Najbolja platforma za kupovinu i iznajmljivanje nekretnina",
 };
 
@@ -35,11 +36,13 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <FavouritesProvider>
-        <Header />
-        {children}
-        <Footer />
-      </FavouritesProvider>
+      <GoogleMapsProvider>
+        <FavouritesProvider>
+          <Header />
+          {children}
+          <Footer />
+        </FavouritesProvider>
+      </GoogleMapsProvider>
     </NextIntlClientProvider>
   );
 }

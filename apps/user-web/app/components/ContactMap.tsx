@@ -9,8 +9,8 @@ const mapContainerStyle = {
 };
 
 const center = {
-  lat: 43.308014, // Vizantijski bulevar 86, lokal 9, Niš - precise coordinates
-  lng: 21.911295,
+  lat: 43.3226322064035, // Vizantijski bulevar 86, Niš - tačne koordinate
+  lng: 21.932040566579317,
 };
 
 const customMapStyles = [
@@ -104,16 +104,16 @@ export function ContactMap() {
 
   const onLoad = (map: google.maps.Map) => {
     setMap(map);
-    // Set marker icon after Google Maps API is loaded
+    // Set marker icon after Google Maps API is loaded - consistent with property markers
     setMarkerIcon({
-      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="20" r="18" fill="#EA580C" stroke="white" stroke-width="4"/>
-          <path d="M20 10C15.5 10 12 13.5 12 18C12 23.5 20 30 20 30C20 30 28 23.5 28 18C28 13.5 24.5 10 20 10ZM20 22C17.5 22 15.5 20 15.5 17.5C15.5 15 17.5 13 20 13C22.5 13 24.5 15 24.5 17.5C24.5 20 22.5 22 20 22Z" fill="white"/>
-        </svg>
-      `),
-      scaledSize: new google.maps.Size(40, 40),
-      anchor: new google.maps.Point(20, 40),
+      url: 'data:image/svg+xml;base64,' + btoa(`<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="#EA580C"/>
+        <circle cx="16" cy="16" r="9" fill="#EA580C" opacity="0.9"/>
+        <rect x="11" y="11" width="10" height="10" rx="1" fill="white"/>
+        <path d="M13 13h2v2h-2zm0 3h2v2h-2zm3-3h2v2h-2zm0 3h2v2h-2z" fill="currentColor"/>
+      </svg>`),
+      scaledSize: new google.maps.Size(32, 42),
+      anchor: new google.maps.Point(16, 42),
     });
   };
 
@@ -142,7 +142,7 @@ export function ContactMap() {
     >
       <Marker
         position={center}
-        title="Olymp Nekretnine - Vizantijski bulevar 86, lokal 9, Niš"
+        title="Olymp Nekretnine - Vizantijski bulevar 86 - Niš"
         icon={markerIcon}
       />
     </GoogleMap>

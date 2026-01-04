@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { fetchProperties, Property } from '@/lib/api';
 import { PropertyCard } from '@/app/components/PropertyCard';
 import { PropertyMap } from '@/app/components/PropertyMap';
-import { LoadScript } from '@react-google-maps/api';
 import { FavouritePropertyCard } from '@/app/components/FavouritePropertyCard';
 import { useFavourites } from '@/app/contexts/FavouritesContext';
+
+export const dynamic = 'force-dynamic';
 
 export default function ProdajaPage() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -122,12 +123,10 @@ export default function ProdajaPage() {
                 ? 'opacity-100 max-h-[800px] h-[800px]'
                 : 'opacity-0 max-h-0 h-0 overflow-hidden'
             } sticky top-4 rounded-lg overflow-hidden shadow-lg`}>
-              <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''} libraries={['places']}>
-                <PropertyMap
-                  properties={properties}
-                  selectedPropertyId={selectedPropertyId || undefined}
-                />
-              </LoadScript>
+              <PropertyMap
+                properties={properties}
+                selectedPropertyId={selectedPropertyId || undefined}
+              />
             </div>
           </div>
         </div>

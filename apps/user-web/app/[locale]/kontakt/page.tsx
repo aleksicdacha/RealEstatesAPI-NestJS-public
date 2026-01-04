@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { LoadScript } from '@react-google-maps/api';
 
 const ContactMap = dynamic(() => import('@/app/components/ContactMap').then(mod => ({ default: mod.ContactMap })), {
   ssr: false,
@@ -32,24 +31,43 @@ export default function KontaktPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!recaptchaToken) {
       alert('Molimo vas da potvrdite da niste robot.');
       return;
     }
-    // Handle form submission here (send formData + recaptchaToken to backend)
-    console.log('Form submitted:', formData, 'reCAPTCHA:', recaptchaToken);
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    });
-    setRecaptchaToken(null);
-    if (recaptchaRef.current) recaptchaRef.current.reset();
-    alert('Poruka je uspešno poslata!');
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
+      });
+
+      if (response.ok) {
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+        setRecaptchaToken(null);
+        if (recaptchaRef.current) recaptchaRef.current.reset();
+        alert('Poruka je uspešno poslata!');
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Došlo je do greške prilikom slanja poruke. Molimo pokušajte ponovo.');
+    }
   };
 
   return (
@@ -85,7 +103,7 @@ export default function KontaktPage() {
                     </svg>
                     <div>
                       <p className="font-medium text-gray-900">{t('address')}</p>
-                      <p className="text-gray-600">Vizantijski bulevar 86, lokal 9, Niš</p>
+                      <p className="text-gray-800">Vizantijski bulevar 86 - Niš</p>
                     </div>
                   </div>
 
@@ -120,16 +138,16 @@ export default function KontaktPage() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('workingHours')}</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">{t('mondayFriday')}</span>
-                    <span className="font-medium">10:00 - 16:00</span>
+                    <span className="text-gray-800">{t('mondayFriday')}</span>
+                    <span className="font-medium text-gray-900">10:00 - 16:00</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">{t('saturday')}</span>
-                    <span className="font-medium">10:00 - 13:00</span>
+                    <span className="text-gray-800">{t('saturday')}</span>
+                    <span className="font-medium text-gray-900">10:00 - 13:00</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">{t('sunday')}</span>
-                    <span className="font-medium">Ne radi</span>
+                    <span className="text-gray-800">{t('sunday')}</span>
+                    <span className="font-medium text-gray-900">Ne radi</span>
                   </div>
                 </div>
               </div>
@@ -162,11 +180,9 @@ export default function KontaktPage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-8">{t('location')}</h2>
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="h-[400px] rounded-lg overflow-hidden">
-                  <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}>
-                    <ContactMap />
-                  </LoadScript>
+                  <ContactMap />
                 </div>
-                <p className="text-sm text-gray-500 mt-4 text-center">
+                <p className="text-sm text-gray-700 mt-4 text-center">
                   {t('locationDescription')}
                 </p>
               </div>
@@ -183,7 +199,7 @@ export default function KontaktPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
                     {t('name')} *
                   </label>
                   <input
@@ -193,12 +209,12 @@ export default function KontaktPage() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                     placeholder={t('yourName')}
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
                     Email *
                   </label>
                   <input
@@ -208,7 +224,7 @@ export default function KontaktPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                     placeholder={t('yourEmail')}
                   />
                 </div>
@@ -216,7 +232,7 @@ export default function KontaktPage() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
                     {t('phone')}
                   </label>
                   <input
@@ -225,12 +241,12 @@ export default function KontaktPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                     placeholder={t('yourPhone')}
                   />
                 </div>
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-900 mb-2">
                     {t('subject')} *
                   </label>
                   <select
@@ -239,20 +255,20 @@ export default function KontaktPage() {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                   >
-                    <option value="">{t('selectSubject')}</option>
-                    <option value="prodaja">{t('sale')}</option>
-                    <option value="izdavanje">{t('rent')}</option>
-                    <option value="kupovina">{t('buy')}</option>
-                    <option value="procena">{t('valuation')}</option>
-                    <option value="ostalo">{t('other')}</option>
+                    <option value="" className="text-gray-900">{t('selectSubject')}</option>
+                    <option value="prodaja" className="text-gray-900">{t('sale')}</option>
+                    <option value="izdavanje" className="text-gray-900">{t('rent')}</option>
+                    <option value="kupovina" className="text-gray-900">{t('buy')}</option>
+                    <option value="procena" className="text-gray-900">{t('valuation')}</option>
+                    <option value="ostalo" className="text-gray-900">{t('other')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-900 mb-2">
                   {t('message')} *
                 </label>
                 <textarea
@@ -262,7 +278,7 @@ export default function KontaktPage() {
                   onChange={handleInputChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                   placeholder={t('messagePlaceholder')}
                 />
               </div>

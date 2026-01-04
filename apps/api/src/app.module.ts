@@ -14,6 +14,7 @@ import { PropertyImageModule } from '@src/entities/property-image/property-image
 import { UploadModule } from '@src/entities/upload/upload.module';
 import { ClientModule } from '@src/entities/client/client.module';
 import { EmailModule } from './email/email.module';
+import { ContactModule } from './contact/contact.module';
 
 // Configuration
 import { databaseConfig } from '@src/common/config/database.config';
@@ -97,6 +98,7 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
     UploadModule,
     ClientModule,
     EmailModule,
+    ContactModule,
   ],
   providers: [
     {

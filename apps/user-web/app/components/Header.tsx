@@ -16,10 +16,11 @@ export function Header() {
       <div className="flex items-center h-16 px-4">
         {/* Logo */}
         <Link href={`/${locale}`} className="flex items-center gap-2 mr-8">
-          <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-lg">O</span>
-          </div>
-          <span className="text-xl font-bold text-gray-800">Olymp Nekretnine</span>
+          <img 
+            src="/assets/images/olymp_logo.png" 
+            alt="Olymp Nekretnine" 
+            className="h-10 w-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}

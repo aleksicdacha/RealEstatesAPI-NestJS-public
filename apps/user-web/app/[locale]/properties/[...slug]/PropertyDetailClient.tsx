@@ -9,8 +9,6 @@ import dynamic from 'next/dynamic';
 import { PropertySidebar } from '@/app/components/PropertySidebar';
 import { useFavourites } from '@/app/contexts/FavouritesContext';
 
-import { LoadScript } from '@react-google-maps/api';
-
 const PropertyMap = dynamic(() => import('@/app/components/PropertyMap').then(mod => ({ default: mod.PropertyMap })), {
   ssr: false,
   loading: () => <div className="h-[400px] rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">Učitavanje mape...</div>
@@ -207,9 +205,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
               <div id="lokacija" className="bg-white rounded-lg border p-6 mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Lokacija</h2>
                 <div className="h-[400px] rounded-lg overflow-hidden">
-                  <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''} libraries={['places']}>
-                    <PropertyMap properties={[property]} hideInfoWindow={true} />
-                  </LoadScript>
+                  <PropertyMap properties={[property]} hideInfoWindow={true} />
                 </div>
                 <p className="text-sm text-gray-500 mt-4">
                   <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
