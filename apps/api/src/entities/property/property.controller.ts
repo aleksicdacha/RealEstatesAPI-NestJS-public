@@ -18,9 +18,10 @@ import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyStatsQueryDto } from './dto/property-stats.dto';
 import { JwtAuthGuard } from '@src/auth/guards/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Public } from '@src/auth/decorators/public.decorator';
 
 @Controller('properties')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class PropertyController {
   constructor(
     private readonly propertyService: PropertyService,
@@ -37,11 +38,13 @@ export class PropertyController {
     return await this.propertyService.create(createPropertyDto);
   }
 
+  @Public()
   @Get('stats/average-price-by-type')
   async getAveragePriceByType(@Query() query: PropertyStatsQueryDto) {
     return this.propertyService.getAveragePriceByType(query);
   }
 
+  @Public()
   @Get('filters/options')
   async getFilterOptions() {
     return this.propertyService.getFilterOptions();
@@ -51,6 +54,7 @@ export class PropertyController {
    * Public endpoint for user-web frontend
    * Returns sanitized property data without sensitive information
    */
+  @Public()
   @Get('public')
   async findAllPublic(@Query() query: FilterPropertyDto) {
     return this.propertyService.findAllPublic(query);
@@ -61,6 +65,7 @@ export class PropertyController {
    * Returns sanitized property data without sensitive information
    * MUST be before @Get(':guid') to avoid route conflict
    */
+  @Public()
   @Get('public/:guid')
   findOnePublic(@Param('guid') guid: string) {
     return this.propertyService.findOnePublic(guid);

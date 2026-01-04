@@ -15,6 +15,7 @@ import { Client } from "../../../services/client.service";
 import { translatePropertyType } from "../../utils/propertyTypeTranslation";
 import ClientWizard from "../../components/ClientWizard";
 import EditClientDialog from "../../components/EditClientDialog";
+import { apiClient } from "../../../lib/api-client";
 
 export default function ClientsPage() {
   const t = useTranslations('clients');
@@ -41,40 +42,40 @@ export default function ClientsPage() {
   const loadClients = async () => {
     setLoading(true);
     try {
-      // Direct API call since clients endpoint returns array, not paginated response
-      const url = `http://localhost:3000/v1/clients`;
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Since the API returns a simple array, we need to handle it differently
+      const data = await apiClient.get<Client[]>('/clients');
       setClients(data);
       setTotalRecords(data.length);
     } catch (error) {
       console.error("Error fetching clients:", error);
+      toast.current?.show({
+        severity: "error",
+        summary: t('error'),
+        detail: t('loadError'),
+        life: 3000,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteClient = async (id: string) => {
-    const url = `http://localhost:3000/v1/clients/${id}`;
-
     try {
-      const response = await fetch(url, {
-        method: "DELETE"
+      await apiClient.delete(`/clients/${id}`);
+      toast.current?.show({
+        severity: "success",
+        summary: t('success'),
+        detail: t('deleteSuccess'),
+        life: 3000,
       });
-
-      if (!response.ok) {
-        throw new Error(`Error deleting client: ${response.statusText}`);
-      }
+      loadClients();
     } catch (error) {
       console.error("Deletion error:", error);
-      throw error;
+      toast.current?.show({
+        severity: "error",
+        summary: t('error'),
+        detail: t('deleteError'),
+        life: 3000,
+      });
     } finally {
       setLoading(false);
     }

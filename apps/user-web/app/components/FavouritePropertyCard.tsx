@@ -50,9 +50,10 @@ function getPropertyTypeName(type: string): string {
 
 interface FavouritePropertyCardProps {
   property: Property;
+  priority?: boolean;
 }
 
-export function FavouritePropertyCard({ property }: FavouritePropertyCardProps) {
+export function FavouritePropertyCard({ property, priority = false }: FavouritePropertyCardProps) {
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr';
   const favoriteImage = getFavoriteImage(property.images);
@@ -67,8 +68,8 @@ export function FavouritePropertyCard({ property }: FavouritePropertyCardProps) 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
       {/* Image */}
-      <div className="aspect-[16/9] bg-gray-300 relative overflow-hidden">
-        <Link href={propertyUrl} className="block w-full h-full">
+      <div className="aspect-[16/9] bg-gray-300 overflow-hidden relative">
+        <Link href={propertyUrl} className="block w-full h-full relative">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -76,6 +77,7 @@ export function FavouritePropertyCard({ property }: FavouritePropertyCardProps) 
               fill
               className="object-cover w-full h-full"
               sizes="(max-width: 768px) 100vw, 50vw"
+              priority={priority}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200">
