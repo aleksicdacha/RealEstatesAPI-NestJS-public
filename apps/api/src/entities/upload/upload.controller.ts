@@ -1,6 +1,5 @@
 import {
   Controller,
-  OnModuleInit,
   Post,
   UploadedFiles,
   UseInterceptors,
@@ -12,11 +11,7 @@ import { extname } from 'path';
 import { Public } from '@src/auth/decorators/public.decorator';
 
 @Controller('upload')
-export class UploadController implements OnModuleInit {
-  onModuleInit() {
-    console.log('UploadController initialized');
-  }
-
+export class UploadController {
   @Public()
   @Post()
   @UseInterceptors(

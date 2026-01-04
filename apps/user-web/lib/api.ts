@@ -53,6 +53,7 @@ export async function fetchProperties(params?: {
   sortBy?: string;
   order?: 'ASC' | 'DESC';
   roomStructure?: string;
+  clientTransactionType?: string;
 }): Promise<PaginatedResponse<Property>> {
   const queryParams = new URLSearchParams();
   
@@ -61,6 +62,7 @@ export async function fetchProperties(params?: {
   if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params?.order) queryParams.append('order', params.order);
   if (params?.roomStructure) queryParams.append('roomStructure', params.roomStructure);
+  if (params?.clientTransactionType) queryParams.append('clientTransactionType', params.clientTransactionType);
 
   // Use public endpoint for user-web to get sanitized data
   // Public API automatically returns only ACTIVE properties

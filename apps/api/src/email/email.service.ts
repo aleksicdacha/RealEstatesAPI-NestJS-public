@@ -231,4 +231,127 @@ export class EmailService {
       </html>
     `;
   }
+
+  async sendContactFormEmail(
+    name: string,
+    email: string,
+    phone: string,
+    subject: string,
+    message: string,
+    recaptchaToken: string
+  ): Promise<void> {
+    const mailOptions = {
+      from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
+      to: 'aleksic.dacha@gmail.com', // Test email for contact form
+      subject: `Kontakt forma: ${subject}`,
+      html: this.getContactFormTemplate(name, email, phone, subject, message),
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
+
+  private getContactFormTemplate(name: string, email: string, phone: string, subject: string, message: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+          }
+          .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          .header {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+            margin: -30px -30px 30px -30px;
+          }
+          .field {
+            margin-bottom: 20px;
+          }
+          .field-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+            display: block;
+          }
+          .field-value {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #f97316;
+          }
+          .message-content {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #f97316;
+            white-space: pre-wrap;
+          }
+          .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>📧 Nova poruka sa kontakt forme</h1>
+            <p>Primili ste novu poruku od potencijalnog klijenta</p>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Ime:</span>
+            <div class="field-value">${name}</div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Email:</span>
+            <div class="field-value">${email}</div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Telefon:</span>
+            <div class="field-value">${phone || 'Nije naveden'}</div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Predmet:</span>
+            <div class="field-value">${subject}</div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Poruka:</span>
+            <div class="message-content">${message}</div>
+          </div>
+
+          <div class="footer">
+            <p>Ova poruka je poslata sa kontakt forme vaše web stranice.</p>
+            <p>&copy; ${new Date().getFullYear()} Real Estate. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
 }

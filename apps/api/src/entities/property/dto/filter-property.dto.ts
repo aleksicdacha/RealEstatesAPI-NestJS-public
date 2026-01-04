@@ -2,6 +2,9 @@ import { IsOptional, IsString, IsEnum, Min, IsNumber, IsArray } from 'class-vali
 import { Type, Transform } from 'class-transformer';
 
 export class FilterPropertyDto {
+    @IsOptional()
+    @IsString()
+    clientTransactionType?: string;
   @IsOptional()
   @Type(() => Number)
   @Min(1)

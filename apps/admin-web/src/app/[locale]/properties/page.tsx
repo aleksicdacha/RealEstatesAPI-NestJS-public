@@ -26,6 +26,7 @@ import { PropertyFilters, PropertyFilterValues } from '../../components/Property
 import { PropertyMapView } from '../../components/PropertyMapView';
 import { Property } from '../../../services/property.service';
 import { translatePropertyType } from '../../utils/propertyTypeTranslation';
+import { apiClient } from '../../../lib/api-client';
 
 export default function PropertiesPage() {
   const t = useTranslations('properties');
@@ -140,19 +141,23 @@ export default function PropertiesPage() {
   };
 
   const handleDeleteProperty = async (id: string) => {
-    const url = `http://localhost:3000/v1/properties/${id}`;
-
     try {
-      const response = await fetch(url, {
-        method: "DELETE"
+      await apiClient.delete(`/properties/${id}`);
+      toast.current?.show({
+        severity: "success",
+        summary: t('success'),
+        detail: t('deleteSuccess'),
+        life: 3000,
       });
-
-      if (!response.ok) {
-        throw new Error(`Error deleting data: ${response.statusText}`);
-      }
+      loadProperties();
     } catch (error) {
-      console.error("Deletion data error:", error);
-      throw error;
+      console.error("Deletion error:", error);
+      toast.current?.show({
+        severity: "error",
+        summary: t('error'),
+        detail: t('deleteError'),
+        life: 3000,
+      });
     } finally {
       setLoading(false);
     }

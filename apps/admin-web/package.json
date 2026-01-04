@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "real-estate-admin",
   "version": "2.0.0",
   "private": true,
@@ -23,6 +24,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.4",
     "@radix-ui/react-toast": "^1.2.4",
     "@react-google-maps/api": "^2.20.7",
+    "@tailwindcss/postcss": "^4.1.18",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-query-devtools": "^5.66.0",
     "axios": "^1.11.0",
@@ -59,7 +61,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "postcss": "^8.5.0",
     "prettier": "^3.4.2",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.7.2"
   },
   "engines": {

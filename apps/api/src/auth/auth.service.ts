@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { UserService } from '@src/entities/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +12,8 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -29,8 +31,6 @@ export class AuthService {
     }
 
     const payload: JwtPayload = { username: user.username, role: user.role, sub: user.id };
-
-    console.log('Payload:', payload);
 
     const accessToken = this.jwtService.sign(payload);
     const tokens = await this.issueTokens(user.id, user.username);
