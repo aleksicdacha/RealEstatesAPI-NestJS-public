@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { fetchProperties, Property } from '@/lib/api';
 import { PropertyCard } from '@/app/components/PropertyCard';
 import { PropertyMap } from '@/app/components/PropertyMap';
+import { LoadScript } from '@react-google-maps/api';
 import { FavouritePropertyCard } from '@/app/components/FavouritePropertyCard';
 import { useFavourites } from '@/app/contexts/FavouritesContext';
 
@@ -15,12 +16,13 @@ export default function ProdajaPage() {
   const { favourites } = useFavourites();
 
   useEffect(() => {
-    // Fetch latest properties for sale
+    // Fetch latest properties for sale, only seller clients and active status
     fetchProperties({
       page: 1,
       limit: 12,
       sortBy: 'createdAt',
-      order: 'DESC'
+      order: 'DESC',
+      clientTransactionType: 'seller'
     }).then((data) => {
       setProperties(data.items);
     });
@@ -120,10 +122,12 @@ export default function ProdajaPage() {
                 ? 'opacity-100 max-h-[800px] h-[800px]'
                 : 'opacity-0 max-h-0 h-0 overflow-hidden'
             } sticky top-4 rounded-lg overflow-hidden shadow-lg`}>
-              <PropertyMap
-                properties={properties}
-                selectedPropertyId={selectedPropertyId || undefined}
-              />
+              <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''} libraries={['places']}>
+                <PropertyMap
+                  properties={properties}
+                  selectedPropertyId={selectedPropertyId || undefined}
+                />
+              </LoadScript>
             </div>
           </div>
         </div>

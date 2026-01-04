@@ -1,6 +1,6 @@
 'use client';
 
-import { GoogleMap, InfoWindow, LoadScript } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow } from '@react-google-maps/api';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { Property } from '@/lib/api';
 import { useState, useRef, useEffect } from 'react';
@@ -361,18 +361,13 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
   const favoriteImage = selectedProperty?.images.find(img => img.isFavorite) || selectedProperty?.images[0];
 
   return (
-    <LoadScript
-      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
-      libraries={['places']}
-      loadingElement={<div className="h-full flex items-center justify-center">Loading maps...</div>}
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      center={defaultCenter}
+      zoom={15}
+      options={mapOptions}
+      onLoad={handleMapLoad}
     >
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={defaultCenter}
-        zoom={15}
-        options={mapOptions}
-        onLoad={handleMapLoad}
-      >
       {selectedProperty && !hideInfoWindow && (
         <InfoWindow
           position={{ lat: selectedProperty.lat, lng: selectedProperty.lon }}
@@ -411,6 +406,5 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
         </InfoWindow>
       )}
     </GoogleMap>
-    </LoadScript>
   );
 }

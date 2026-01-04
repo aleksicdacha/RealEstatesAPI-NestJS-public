@@ -46,7 +46,11 @@ export class ClientService {
   }
 
   async update(id: string, updateClientDTO: UpdateClientDTO): Promise<Client> {
+    console.log('CLIENT UPDATE DTO:', JSON.stringify(updateClientDTO, null, 2));
     const { email, phone, propertyId, ...clientData } = updateClientDTO;
+    if (updateClientDTO.transactionType && !['seller','buyer','rents','rents-out'].includes(updateClientDTO.transactionType)) {
+      throw new Error(`Invalid transactionType: ${updateClientDTO.transactionType}`);
+    }
 
     // Find the client to update
     const client = await this.clientRepository.findOne({ where: { id }, relations: ['property'] });

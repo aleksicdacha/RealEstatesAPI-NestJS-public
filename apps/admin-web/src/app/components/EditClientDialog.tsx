@@ -130,8 +130,8 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
   const transactionTypeOptions = [
     { label: t('buyer'), value: 'buyer' },
     { label: t('seller'), value: 'seller' },
-    { label: t('rents'), value: 'renter' },
-    { label: t('rentsOut'), value: 'landlord' },
+    { label: t('rents'), value: 'rents' },
+    { label: t('rentsOut'), value: 'rents-out' },
   ];
 
   const paymentTypeOptions = [
@@ -169,11 +169,17 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
   };
 
   const handleDropdownChange = (e: any) => {
-    const { value, originalEvent } = e;
-    const name = originalEvent?.target?.id || e.target?.name;
-    
+    // Robustly extract name/id for PrimeReact Dropdown
+    let name = e.target?.name || e.target?.id;
+    if (!name && e.originalEvent?.target) {
+      name = e.originalEvent.target.name || e.originalEvent.target.id;
+    }
+    // Fallback for transactionType/paymentType
+    if (!name && e.value && (e.value === 'seller' || e.value === 'buyer' || e.value === 'rents' || e.value === 'rents-out' || e.value === 'cash' || e.value === 'credit' || e.value === 'combined')) {
+      name = 'transactionType';
+    }
     if (name) {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData(prev => ({ ...prev, [name]: e.value }));
     }
   };
 
