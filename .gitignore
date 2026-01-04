@@ -7,6 +7,9 @@ build.old/
 *.old/
 /uploads
 
+# Turbo
+.turbo/
+
 # Logs
 logs
 *.log
