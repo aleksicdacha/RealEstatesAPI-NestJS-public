@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { PropertyImage } from '@src/entities/property-image/property-image.entity';
 import { access, unlink } from 'fs/promises';
@@ -6,6 +6,8 @@ import { join } from 'path';
 
 @Injectable()
 export class PropertyImageRepository extends Repository<PropertyImage> {
+  private readonly logger = new Logger(PropertyImageRepository.name);
+
   constructor(private readonly dataSource: DataSource) {
     super(PropertyImage, dataSource.createEntityManager());
   }
@@ -29,14 +31,13 @@ export class PropertyImageRepository extends Repository<PropertyImage> {
   async handlePropertyImagesParallel(manager, propertyId: string, images: PropertyImage[]): Promise<void> {
     const deleteFilePromises = images.map(async (image) => {
       if (!image.url) {
-        console.warn(`Image URL is undefined for image record: ${JSON.stringify(image)}`);
-        return; // Skip this image
+        this.logger.warn(`Image URL is undefined for image record in property ${propertyId}`);
+        return;
       }
 
       // Check if the image is used by other properties
       const isUsedByOtherProperties = await this.isImageUsedByOtherProperties(image.url, propertyId);
       if (!isUsedByOtherProperties) {
-        // Delete the image file if it's not used elsewhere
         await this.deleteImageFile(image.url);
       }
     });
@@ -49,22 +50,19 @@ export class PropertyImageRepository extends Repository<PropertyImage> {
   }
 
   async deleteImageFile(filePath: string): Promise<void> {
-    console.log('filePath:::', filePath);
-
-    const basePath = process.env.FILE_UPLOAD_PATH || '/var/www/RealEstatesAPI-NestJS/uploads'; // Default fallback
+    const basePath = process.env.FILE_UPLOAD_PATH || '/var/www/RealEstatesAPI-NestJS/uploads';
     const fullPath = join(basePath, filePath);
 
     try {
-      // Ensure file exists before attempting to delete
       await access(fullPath);
       await unlink(fullPath);
-      console.log(`Deleted file: ${fullPath}`);
+      this.logger.debug(`Deleted file: ${fullPath}`);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        console.warn(`File not found: ${fullPath}, skipping deletion.`);
+        this.logger.warn(`File not found: ${fullPath}, skipping deletion`);
       } else {
-        console.error(`Failed to delete file: ${fullPath}`, error);
-        throw error; // Rethrow unexpected errors
+        this.logger.error(`Failed to delete file: ${fullPath}`, error.stack);
+        throw error;
       }
     }
   }

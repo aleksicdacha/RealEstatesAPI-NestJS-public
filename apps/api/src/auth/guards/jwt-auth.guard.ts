@@ -1,27 +1,25 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  private readonly logger = new Logger(JwtAuthGuard.name);
+
   constructor(private reflector: Reflector) {
     super();
   }
 
-  // console log Auth information
   handleRequest(err, user, info) {
-    console.log('JWT Auth Guard');
-    console.log('user:', user); // Log the user object
-    console.log('err:', err); // Log any error during token validation
-    console.log('info:', info); // Log additional info
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      this.logger.debug('Authentication failed', { error: err?.message, info });
+      throw err || new UnauthorizedException('Invalid or missing authentication token');
     }
     return user;
   }
 
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -29,6 +27,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
-    return <boolean>super.canActivate(context);
+    return super.canActivate(context);
   }
 }

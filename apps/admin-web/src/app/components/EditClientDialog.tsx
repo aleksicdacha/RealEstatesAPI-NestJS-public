@@ -27,13 +27,28 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
     email: '',
     phone: '',
     address: '',
+    jmbg: '',
+    birthplace: '',
+    idCardNumber: '',
+    idCardIssuePlace: '',
     status: 'active',
     transactionType: 'buyer',
     paymentType: 'cash',
     comment: '',
     moneyAmount: '' as string | number,
     propertyId: undefined as string | undefined,
+    representative: {
+      name: '',
+      address: '',
+      phone: '',
+      jmbg: '',
+      birthplace: '',
+      idCardNumber: '',
+      idCardIssuePlace: '',
+    },
   });
+
+  const [showRepresentative, setShowRepresentative] = useState(false);
 
   const [formErrors, setFormErrors] = useState({
     name: '',
@@ -52,13 +67,35 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
         email: client.email || '',
         phone: client.phone || '',
         address: client.address || '',
+        jmbg: client.ownerJmbg || '',
+        birthplace: client.ownerBirthplace || '',
+        idCardNumber: client.ownerIdCardNumber || '',
+        idCardIssuePlace: client.ownerIdCardIssuePlace || '',
         status: client.status || 'active',
         transactionType: client.transactionType || 'buyer',
         paymentType: client.paymentType || 'cash',
         comment: client.comment || '',
         moneyAmount: client.moneyAmount || '',
         propertyId: client.propertyId || undefined,
+        representative: client.representative ? {
+          name: client.representative.name || '',
+          address: client.representative.address || '',
+          phone: client.representative.phone || '',
+          jmbg: client.representative.jmbg || '',
+          birthplace: client.representative.birthplace || '',
+          idCardNumber: client.representative.idCardNumber || '',
+          idCardIssuePlace: client.representative.idCardIssuePlace || '',
+        } : {
+          name: '',
+          address: '',
+          phone: '',
+          jmbg: '',
+          birthplace: '',
+          idCardNumber: '',
+          idCardIssuePlace: '',
+        },
       });
+      setShowRepresentative(!!client.representative);
       loadProperties();
     }
   }, [visible, client]);
@@ -69,7 +106,7 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
       const response = await propertyService.getProperties({ limit: 1000 });
       // Filter out properties that already have a client, but include current client's property
       const availableProperties = response.items.filter(
-        p => !p.client || p.id === client?.propertyId
+        (p: Property) => !p.client || p.id === client?.propertyId
       );
       setProperties(availableProperties);
     } catch (error) {
@@ -93,8 +130,8 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
   const transactionTypeOptions = [
     { label: t('buyer'), value: 'buyer' },
     { label: t('seller'), value: 'seller' },
-    { label: t('rents'), value: 'renter' },
-    { label: t('rentsOut'), value: 'landlord' },
+    { label: t('rents'), value: 'rents' },
+    { label: t('rentsOut'), value: 'rents-out' },
   ];
 
   const paymentTypeOptions = [
@@ -113,20 +150,36 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
-    if (formErrors[name as keyof typeof formErrors]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    if (name.startsWith('representative.')) {
+      const repField = name.replace('representative.', '');
+      setFormData(prev => ({
+        ...prev,
+        representative: {
+          ...prev.representative,
+          [repField]: value ?? '',
+        },
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+      // Clear error when user starts typing
+      if (formErrors[name as keyof typeof formErrors]) {
+        setFormErrors(prev => ({ ...prev, [name]: '' }));
+      }
     }
   };
 
   const handleDropdownChange = (e: any) => {
-    const { value, originalEvent } = e;
-    const name = originalEvent?.target?.id || e.target?.name;
-    
+    // Robustly extract name/id for PrimeReact Dropdown
+    let name = e.target?.name || e.target?.id;
+    if (!name && e.originalEvent?.target) {
+      name = e.originalEvent.target.name || e.originalEvent.target.id;
+    }
+    // Fallback for transactionType/paymentType
+    if (!name && e.value && (e.value === 'seller' || e.value === 'buyer' || e.value === 'rents' || e.value === 'rents-out' || e.value === 'cash' || e.value === 'credit' || e.value === 'combined')) {
+      name = 'transactionType';
+    }
     if (name) {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData(prev => ({ ...prev, [name]: e.value }));
     }
   };
 
@@ -170,7 +223,7 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
 
     try {
       // Update client
-      await clientService.updateClient(client.id, {
+      const updateDto: any = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -181,7 +234,11 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
         comment: formData.comment,
         moneyAmount: formData.moneyAmount ? Number(formData.moneyAmount) : undefined,
         propertyId: formData.propertyId || null,
-      });
+      };
+      if (showRepresentative && formData.representative && formData.representative.name) {
+        updateDto.representative = formData.representative;
+      }
+      await clientService.updateClient(client.id, updateDto);
 
       toast.current?.show({
         severity: 'success',
@@ -245,7 +302,6 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
         onHide={handleCancel}
       >
         <div className="grid">
-          {/* Left Column */}
           <div className="col-6">
             {/* Name */}
             <div className="field">
@@ -271,7 +327,6 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
               <InputText
                 id="email"
                 name="email"
-                type="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 className={formErrors.email ? 'p-invalid' : ''}
@@ -308,23 +363,63 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
               />
             </div>
 
-            {/* Status */}
+            {/* JMBG */}
             <div className="field">
-              <label htmlFor="status" className="font-bold">
-                {t('status')}
+              <label htmlFor="jmbg" className="font-bold">
+                {t('jmbg')}
               </label>
-              <Dropdown
-                id="status"
-                name="status"
-                value={formData.status}
-                options={statusOptions}
-                onChange={handleDropdownChange}
+              <InputText
+                id="jmbg"
+                name="jmbg"
+                value={formData.jmbg}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Birthplace */}
+            <div className="field">
+              <label htmlFor="birthplace" className="font-bold">
+                {t('birthplace')}
+              </label>
+              <InputText
+                id="birthplace"
+                name="birthplace"
+                value={formData.birthplace}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* ID Card Number */}
+            <div className="field">
+              <label htmlFor="idCardNumber" className="font-bold">
+                {t('idCardNumber')}
+              </label>
+              <InputText
+                id="idCardNumber"
+                name="idCardNumber"
+                value={formData.idCardNumber}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* ID Card Issue Place */}
+            <div className="field">
+              <label htmlFor="idCardIssuePlace" className="font-bold">
+                {t('idCardIssuePlace')}
+              </label>
+              <InputText
+                id="idCardIssuePlace"
+                name="idCardIssuePlace"
+                value={formData.idCardIssuePlace}
+                onChange={handleInputChange}
                 disabled={isSubmitting}
               />
             </div>
           </div>
 
-          {/* Right Column */}
           <div className="col-6">
             {/* Transaction Type */}
             <div className="field">
@@ -337,6 +432,7 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
                 value={formData.transactionType}
                 options={transactionTypeOptions}
                 onChange={handleDropdownChange}
+                placeholder={t('selectTransactionType')}
                 disabled={isSubmitting}
               />
             </div>
@@ -352,6 +448,7 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
                 value={formData.paymentType}
                 options={paymentTypeOptions}
                 onChange={handleDropdownChange}
+                placeholder={t('selectPaymentType')}
                 disabled={isSubmitting}
               />
             </div>
@@ -359,22 +456,23 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
             {/* Money Amount */}
             <div className="field">
               <label htmlFor="moneyAmount" className="font-bold">
-                {t('moneyAmount')} <small className="text-500">({tCommon('optional')})</small>
+                {t('amount')}
               </label>
               <InputText
                 id="moneyAmount"
                 name="moneyAmount"
                 type="number"
-                value={formData.moneyAmount}
+                min={0}
+                value={formData.moneyAmount.toString()}
                 onChange={handleInputChange}
                 disabled={isSubmitting}
               />
             </div>
 
-            {/* Property Link */}
+            {/* Property */}
             <div className="field">
               <label htmlFor="propertyId" className="font-bold">
-                {tProperties('property')} <small className="text-500">({tCommon('optional')})</small>
+                {t('property')} <small className="text-500">({tCommon('optional')})</small>
               </label>
               <Dropdown
                 id="propertyId"
@@ -382,13 +480,14 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
                 value={formData.propertyId}
                 options={propertyOptions}
                 onChange={handleDropdownChange}
+                placeholder={tProperties('selectProperty') || 'Select a property'}
                 filter
                 showClear
-                placeholder={tCommon('selectProperty') || 'Select a property'}
-                disabled={isSubmitting || loadingProperties}
-                emptyMessage={tCommon('noAvailableProperties') || 'No available properties'}
+                loading={loadingProperties}
+                emptyMessage={tCommon('noData') || 'No properties available'}
+                disabled={isSubmitting}
               />
-              <small className="text-500">
+              <small className="text-gray-500">
                 {tCommon('propertyLinkHint') || 'Link this client to an existing property'}
               </small>
             </div>
@@ -408,6 +507,92 @@ const EditClientDialog: React.FC<EditClientDialogProps> = ({ visible, client, on
               />
             </div>
           </div>
+        </div>
+        {/* Representative Section Accordion at the bottom */}
+        <div className="mt-4">
+          <Button
+            type="button"
+            label={showRepresentative ? t('hideRepresentative') || 'Sakrij zastupnika' : t('showRepresentative') || 'Prikaži zastupnika'}
+            icon={showRepresentative ? 'pi pi-minus' : 'pi pi-plus'}
+            className="p-button-secondary mb-2 rounded-full px-4 py-2 shadow-md transition-colors duration-150 hover:bg-blue-600 hover:text-white"
+            style={{ borderRadius: '2rem', fontWeight: 500, fontSize: '1rem' }}
+            onClick={() => setShowRepresentative(v => !v)}
+            disabled={isSubmitting}
+          />
+          {showRepresentative && (
+            <div className="p-accordion-content border p-3 rounded bg-gray-50 mt-2">
+              <div className="p-field py-2">
+                <label htmlFor="representative.name">{t('representativeName') || 'Ime zastupnika'}</label>
+                <InputText
+                  id="representative.name"
+                  name="representative.name"
+                  value={formData.representative?.name || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representative.address">{t('representativeAddress') || 'Adresa zastupnika'}</label>
+                <InputText
+                  id="representative.address"
+                  name="representative.address"
+                  value={formData.representative?.address || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representative.phone">{t('representativePhone') || 'Telefon zastupnika'}</label>
+                <InputText
+                  id="representative.phone"
+                  name="representative.phone"
+                  value={formData.representative?.phone || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representative.jmbg">{t('representativeJmbg') || 'JMBG zastupnika'}</label>
+                <InputText
+                  id="representative.jmbg"
+                  name="representative.jmbg"
+                  value={formData.representative?.jmbg || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representative.birthplace">{t('representativeBirthplace') || 'Mesto rođenja zastupnika'}</label>
+                <InputText
+                  id="representative.birthplace"
+                  name="representative.birthplace"
+                  value={formData.representative?.birthplace || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representative.idCardNumber">{t('representativeIdCardNumber') || 'Broj lične karte zastupnika'}</label>
+                <InputText
+                  id="representative.idCardNumber"
+                  name="representative.idCardNumber"
+                  value={formData.representative?.idCardNumber || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="p-field py-2">
+                <label htmlFor="representative.idCardIssuePlace">{t('representativeIdCardIssuePlace') || 'Mesto izdavanja LK zastupnika'}</label>
+                <InputText
+                  id="representative.idCardIssuePlace"
+                  name="representative.idCardIssuePlace"
+                  value={formData.representative?.idCardIssuePlace || ''}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </Dialog>
     </>

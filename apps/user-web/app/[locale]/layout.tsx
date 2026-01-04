@@ -5,10 +5,11 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
-import "../globals.css";
+import { FavouritesProvider } from '@/app/contexts/FavouritesContext';
+import { GoogleMapsProvider } from '@/app/components/GoogleMapsProvider';
 
 export const metadata: Metadata = {
-  title: "Real Estate - Pronađite Svoj Dom",
+  title: "Olymp Nekretnine - Pronađite Svoj Dom",
   description: "Najbolja platforma za kupovinu i iznajmljivanje nekretnina",
 };
 
@@ -34,14 +35,14 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider messages={messages}>
+      <GoogleMapsProvider>
+        <FavouritesProvider>
           <Header />
           {children}
           <Footer />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+        </FavouritesProvider>
+      </GoogleMapsProvider>
+    </NextIntlClientProvider>
   );
 }

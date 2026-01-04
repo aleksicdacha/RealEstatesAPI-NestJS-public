@@ -14,10 +14,11 @@ export function Footer() {
           {/* Logo and Social */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">O</span>
-              </div>
-              <span className="text-xl font-bold">Olymp Nekretnine</span>
+              <img 
+                src="/assets/images/olymp_logo.png" 
+                alt="Olymp Nekretnine" 
+                className="h-10 w-auto"
+              />
             </div>
             <div className="flex gap-4 mb-6">
               <button className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">

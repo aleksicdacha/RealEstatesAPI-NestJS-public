@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
@@ -6,12 +6,14 @@ import { PropertyStatus } from '@src/entities/property/enums/property-status.enu
 
 @Injectable()
 export class PropertyRepository extends Repository<Property> {
+  private readonly logger = new Logger(PropertyRepository.name);
+
   constructor(private readonly dataSource: DataSource) {
     super(Property, dataSource.createEntityManager());
   }
 
   async findFilteredProperties(options: FilterPropertyDto): Promise<[Property[], number]> {
-    console.log('🔍 Backend received filter options:', JSON.stringify(options, null, 2));
+    this.logger.debug(`Filtering properties with options: ${JSON.stringify(options)}`);
     
     const queryBuilder = this.createQueryBuilder('property');
     queryBuilder.leftJoinAndSelect('property.client', 'client');
@@ -33,6 +35,11 @@ export class PropertyRepository extends Repository<Property> {
       if (statusArray.length > 0) {
         queryBuilder.andWhere('property.status IN (:...statuses)', { statuses: statusArray });
       }
+    }
+
+    // Client transaction type filter (prodaja/izdavanje)
+    if (options.clientTransactionType) {
+      queryBuilder.andWhere('client.transactionType = :clientTransactionType', { clientTransactionType: options.clientTransactionType });
     }
 
     // Property type filter - handle both single value and array

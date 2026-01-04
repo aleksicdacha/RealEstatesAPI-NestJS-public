@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -6,6 +6,8 @@ import { UserService } from '@src/entities/user/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
+
   constructor(
     private userService: UserService,
     private configService: ConfigService,
@@ -18,16 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-
-    console.log('Payload: ', payload);
     const user = await this.userService.findByUsername(payload.username);
     if (!user) {
       throw new UnauthorizedException('Invalid token');
     }
 
-    // Ensure the user role is extracted correctly from the payload
     if (!payload.role) {
-      console.error('Role is missing from JWT payload');
+      this.logger.warn(`Role missing from JWT payload for user: ${payload.username}`);
     }
 
     // Validate against lastLogoutTime

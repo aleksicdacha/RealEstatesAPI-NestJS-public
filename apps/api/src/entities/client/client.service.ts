@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { CreateClientDTO } from './dto/create-client.dto';
 import { UpdateClientDTO } from './dto/update-client.dto';
 import { FilterClientDto } from './dto/filter-client.dto';
@@ -10,6 +10,8 @@ import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class ClientService {
+  private readonly logger = new Logger(ClientService.name);
+
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly propertyRepository: PropertyRepository
@@ -46,7 +48,11 @@ export class ClientService {
   }
 
   async update(id: string, updateClientDTO: UpdateClientDTO): Promise<Client> {
+    this.logger.debug(`Updating client ${id}`);
     const { email, phone, propertyId, ...clientData } = updateClientDTO;
+    if (updateClientDTO.transactionType && !['seller','buyer','rents','rents-out'].includes(updateClientDTO.transactionType)) {
+      throw new Error(`Invalid transactionType: ${updateClientDTO.transactionType}`);
+    }
 
     // Find the client to update
     const client = await this.clientRepository.findOne({ where: { id }, relations: ['property'] });

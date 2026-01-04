@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,6 +12,8 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
@@ -48,29 +50,37 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    try {
-      console.log('[UserService] Creating user:', createUserDto);
-      console.log('[UserService] About to generate salt...');
-      const salt = await bcrypt.genSalt();
-      console.log('[UserService] Salt generated successfully');
-      console.log('[UserService] About to hash password...');
-      const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
-      console.log('[UserService] Password hashed successfully');
+    this.logger.debug(`Creating user: ${createUserDto.username}`);
 
-      console.log('[UserService] About to create user entity...');
+    try {
+      // Check if user already exists
+      const existingUser = await this.userRepository.findOne({
+        where: { username: createUserDto.username },
+      });
+
+      if (existingUser) {
+        this.logger.warn(`User creation failed: Username already exists - ${createUserDto.username}`);
+        throw new BadRequestException('User with this username already exists');
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
       const user = this.userRepository.create({
         ...createUserDto,
         password: hashedPassword,
       });
-      console.log('[UserService] User entity created:', user);
 
-      console.log('[UserService] About to save user to database...');
       const savedUser = await this.userRepository.save(user);
-      console.log('[UserService] User saved to database successfully:', savedUser);
+      this.logger.log(`User created successfully: ${savedUser.id} - ${savedUser.username}`);
+      
       return savedUser;
     } catch (error) {
-      console.error('[UserService] Error creating user:', error);
-      throw error;
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      this.logger.error(`Failed to create user: ${createUserDto.username}`, error.stack);
+      throw new InternalServerErrorException('Failed to create user');
     }
   }
 
