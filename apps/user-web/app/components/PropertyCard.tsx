@@ -58,10 +58,58 @@ function getPropertyTypeName(type: string): string {
 export function PropertyCard({ property, onHover, priority = false }: PropertyCardProps) {
   const { toggleFavourite, isFavourite } = useFavourites();
   const pathname = usePathname();
-  const locale = pathname.split('/')[1] || 'sr'; // Extract locale from path
+  const locale = pathname.split('/')[1] || 'sr';
   const t = useTranslations('Favourites');
+  const tProps = useTranslations('Properties');
   const favoriteImage = getFavoriteImage(property.images);
   const imageUrl = favoriteImage ? getImageUrl(favoriteImage.url) : null;
+
+  // Translate property type
+  const getTranslatedPropertyType = (type: string): string => {
+    const typeMap: { [key: string]: string } = {
+      'Apartment': 'apartment',
+      'House': 'house',
+      'ApartmentInHouse': 'apartmentInHouse',
+      'Office': 'office',
+      'CommercialSpace': 'commercial',
+      'Land': 'land',
+      'VacationHome': 'vacationHome',
+      'Duplex': 'duplex',
+    };
+    return tProps(typeMap[type] || 'apartment');
+  };
+
+  // Translate heating type
+  const getTranslatedHeating = (heating: string): string => {
+    const heatingMap: { [key: string]: string } = {
+      'Central': 'centralHeating',
+      'Gas central': 'gasHeating',
+      'Electric central': 'electricHeating',
+      'Central heating with solid fuel': 'solidFuel',
+      'Floor': 'floorHeating',
+      'Independently on gas': 'independentGas',
+      'Independently on solid fuel': 'independentSolidFuel',
+      'Independently on electricity': 'independentElectricity',
+      'Fireplace': 'fireplace',
+      'Air conditioner': 'airConditioner',
+      'The rest types': 'otherHeating',
+    };
+    return tProps(heatingMap[heating] || heating);
+  };
+
+  // Translate room structure
+  const getTranslatedRoomStructure = (roomStructure: string): string => {
+    const roomMap: { [key: string]: string } = {
+      'garsonjera': 'studio',
+      'jednosoban': 'oneRoom',
+      'dvosoban': 'twoRoom',
+      'trosoban': 'threeRoom',
+      'četvorosoban': 'fourRoom',
+      'petosoban i veci': 'fivePlusRoom',
+    };
+    const key = roomMap[roomStructure.toLowerCase()];
+    return key ? tProps(key) : roomStructure;
+  };
 
   // Create URL-friendly slug from property data (use neighborhood instead of address)
   const locationSlug = property.neighborhood ? property.neighborhood.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'nis';
@@ -138,7 +186,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
         {/* Transaction type and property type */}
         <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
           {getPropertyTypeIcon(property.propertyType)}
-          <span>{getPropertyTypeName(property.propertyType)}</span>
+          <span>{getTranslatedPropertyType(property.propertyType)}</span>
           <span className="text-gray-400">·</span>
           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -165,7 +213,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span className="text-xs font-medium">{property.floor}. sp.</span>
+                <span className="text-xs font-medium">{property.floor}. {tProps('floorLabel')}</span>
               </div>
             </>
           )}
@@ -178,7 +226,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                <span className="text-xs font-medium">{property.roomStructure}</span>
+                <span className="text-xs font-medium">{getTranslatedRoomStructure(property.roomStructure)}</span>
               </div>
             </>
           )}
@@ -191,7 +239,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
             </svg>
-            <span className="truncate">{property.heating}</span>
+            <span className="truncate">{getTranslatedHeating(property.heating)}</span>
           </div>
         )}
       </Link>

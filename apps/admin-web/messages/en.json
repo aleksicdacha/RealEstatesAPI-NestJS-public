@@ -85,7 +85,8 @@
     "sendResetLink": "Send Reset Link",
     "checkEmail": "Check your email for reset instructions",
     "invalidCredentials": "Invalid username or password",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "devCredentials": "Development Credentials"
   },
   "navigation": {
     "dashboard": "Dashboard",

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 export interface ApiResponse<T = unknown> {
   data: T;
@@ -16,6 +16,11 @@ export interface PaginatedResponse<T> {
 
 class ApiClient {
   private client: AxiosInstance;
+  private isRefreshing = false;
+  private failedQueue: Array<{
+    resolve: (value?: unknown) => void;
+    reject: (reason?: unknown) => void;
+  }> = [];
 
   constructor() {
     this.client = axios.create({
@@ -27,6 +32,43 @@ class ApiClient {
     });
 
     this.setupInterceptors();
+  }
+
+  private processQueue(error: Error | null, token: string | null = null) {
+    this.failedQueue.forEach(prom => {
+      if (error) {
+        prom.reject(error);
+      } else {
+        prom.resolve(token);
+      }
+    });
+    
+    this.failedQueue = [];
+  }
+
+  private async refreshAccessToken(): Promise<string | null> {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) {
+        return null;
+      }
+
+      const response = await axios.post('http://localhost:3000/v1/auth/refresh', {
+        refreshToken,
+      });
+
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+      
+      localStorage.setItem('accessToken', accessToken);
+      if (newRefreshToken) {
+        localStorage.setItem('refreshToken', newRefreshToken);
+      }
+
+      return accessToken;
+    } catch (error) {
+      console.error('[API Client] Token refresh failed:', error);
+      return null;
+    }
   }
 
   private setupInterceptors() {
@@ -44,20 +86,68 @@ class ApiClient {
       (error) => Promise.reject(error)
     );
 
-    // Response interceptor
+    // Response interceptor with automatic token refresh
     this.client.interceptors.response.use(
       (response: AxiosResponse) => {
         return response;
       },
-      (error) => {
-        if (error.response?.status === 401) {
-          console.error('[API Client] 401 Unauthorized - Token may be invalid or missing');
-          localStorage.removeItem('accessToken'); // Changed from 'access_token' to 'accessToken'
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('user');
-          // Don't auto-redirect - let the app handle it
-          // The error will propagate and UI can show appropriate message
+      async (error) => {
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          if (this.isRefreshing) {
+            // Queue this request while refresh is in progress
+            return new Promise((resolve, reject) => {
+              this.failedQueue.push({ resolve, reject });
+            })
+              .then(token => {
+                if (originalRequest.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${token}`;
+                }
+                return this.client(originalRequest);
+              })
+              .catch(err => Promise.reject(err));
+          }
+
+          originalRequest._retry = true;
+          this.isRefreshing = true;
+
+          try {
+            const newToken = await this.refreshAccessToken();
+            
+            if (newToken) {
+              console.log('[API Client] Token refreshed, retrying request');
+              this.processQueue(null, newToken);
+              
+              if (originalRequest.headers) {
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              }
+              
+              return this.client(originalRequest);
+            } else {
+              console.error('[API Client] Token refresh failed, logging out');
+              this.processQueue(new Error('Token refresh failed'), null);
+              
+              // Clear storage and redirect to login
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+              localStorage.removeItem('user');
+              
+              if (typeof window !== 'undefined') {
+                window.location.href = '/sr/login';
+              }
+              
+              return Promise.reject(error);
+            }
+          } catch (refreshError) {
+            console.error('[API Client] Error during token refresh:', refreshError);
+            this.processQueue(refreshError as Error, null);
+            return Promise.reject(refreshError);
+          } finally {
+            this.isRefreshing = false;
+          }
         }
+
         return Promise.reject(error);
       }
     );

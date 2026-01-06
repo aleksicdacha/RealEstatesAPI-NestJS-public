@@ -85,7 +85,8 @@
     "sendResetLink": "Pošalji link za resetovanje",
     "checkEmail": "Proverite email za instrukcije",
     "invalidCredentials": "Neispravno korisničko ime ili lozinka",
-    "passwordMismatch": "Lozinke se ne poklapaju"
+    "passwordMismatch": "Lozinke se ne poklapaju",
+    "devCredentials": "Razvojni kredencijali"
   },
   "navigation": {
     "dashboard": "Kontrolna tabla",

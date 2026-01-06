@@ -71,11 +71,22 @@ export class PropertyRepository extends Repository<Property> {
       queryBuilder.andWhere('property.area <= :maxArea', { maxArea: options.maxArea });
     }
 
+    if (options.elevator !== undefined) {
+      queryBuilder.andWhere('property.elevator = :elevator', { elevator: options.elevator });
+    }
+
     // City filter
     if (options.city) {
-      queryBuilder.andWhere('LOWER(property.address) LIKE LOWER(:city)', { 
-        city: `%${options.city}%` 
-      });
+      if (options.city === 'Niš') {
+        // For Niš, include all neighborhoods except Beograd ones
+        queryBuilder.andWhere('property.neighborhood NOT IN (:...beogradNeighborhoods)', { 
+          beogradNeighborhoods: ['Beograd mala', 'Beverli Hils', 'MZ Dedinje']
+        });
+      } else if (options.city === 'Beograd') {
+        queryBuilder.andWhere('property.neighborhood IN (:...beogradNeighborhoods)', { 
+          beogradNeighborhoods: ['Beograd mala', 'Beverli Hils', 'MZ Dedinje']
+        });
+      }
     }
 
     // Neighborhood filter
@@ -122,27 +133,71 @@ export class PropertyRepository extends Repository<Property> {
       });
     }
 
-    // Floor filter
+    // Floor filter - handle both arrays and single values
     if (options.floors && options.floors.length > 0) {
-      const floorConditions = options.floors.map((floor, index) => {
-        if (floor === '2-4') {
+      const floorConditions = options.floors.map((floor) => {
+        const floorStr = String(floor).trim();
+        
+        // Handle special values
+        if (floorStr === 'SU' || floorStr.toLowerCase() === 'suteren') {
+          return `property.floor = -1`;
+        } else if (floorStr === 'VPR' || floorStr.toLowerCase() === 'visoko prizemlje') {
+          return `property.floor = 0`;
+        } else if (floorStr === 'PR' || floorStr.toLowerCase() === 'prizemlje') {
+          return `property.floor = 0`;
+        } else if (floorStr === 'PTK' || floorStr.toLowerCase() === 'potkrovlje') {
+          return `property.floor >= 10`; // Assume PTK is high floor
+        } else if (floorStr === '2-4') {
           return `(property.floor >= 2 AND property.floor <= 4)`;
-        } else if (floor === '5-10') {
+        } else if (floorStr === '5-10') {
           return `(property.floor >= 5 AND property.floor <= 10)`;
-        } else if (floor === '11+') {
+        } else if (floorStr === '11+') {
           return `property.floor >= 11`;
         } else {
-          return `property.floor = ${parseInt(floor) || 0}`;
+          // Try to parse as number
+          const floorNum = parseInt(floorStr);
+          if (!isNaN(floorNum)) {
+            return `property.floor = ${floorNum}`;
+          }
+          return null;
         }
-      });
-      queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
+      }).filter(Boolean); // Remove null conditions
+      
+      if (floorConditions.length > 0) {
+        queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
+      }
     }
 
-    // Room structure filter
+    // Room structure filter - handle both numeric (1, 2, 3) and Serbian names
     if (options.roomStructure && options.roomStructure.length > 0) {
-      queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', { 
-        roomStructures: options.roomStructure 
+      const roomStructureMap: { [key: string]: string[] } = {
+        'garsonjera': ['garsonjera', '0.5', '0,5'],
+        '1': ['jednosoban', '1'],
+        '1.5': ['jednoiposoban', '1.5', '1,5'],
+        '2': ['dvosoban', '2'],
+        '2.5': ['dvoiposoban', '2.5', '2,5'],
+        '3': ['trosoban', '3'],
+        '3.5': ['troiposoban', '3.5', '3,5'],
+        '4': ['cetvorosoban', 'četvorosoban', 'cetvoroiposoban', '4', '4.5', '4,5'],
+        '5': ['petosoban', '5'],
+      };
+
+      const mappedStructures: string[] = [];
+      options.roomStructure.forEach(rs => {
+        // If it's a number, get mapped values
+        if (roomStructureMap[rs]) {
+          mappedStructures.push(...roomStructureMap[rs]);
+        } else {
+          // Otherwise use the value as-is (for direct Serbian names)
+          mappedStructures.push(rs);
+        }
       });
+
+      if (mappedStructures.length > 0) {
+        queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', { 
+          roomStructures: [...new Set(mappedStructures)] // Remove duplicates
+        });
+      }
     }
 
     // Heating filter

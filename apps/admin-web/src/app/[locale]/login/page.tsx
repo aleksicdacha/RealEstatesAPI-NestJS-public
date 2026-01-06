@@ -54,6 +54,23 @@ export default function LoginPage() {
             <Message severity="error" text={error} className="w-full mb-3" />
           )}
 
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-3 border-round" style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe' }}>
+              <div className="flex align-items-center mb-2">
+                <i className="pi pi-info-circle text-blue-500 mr-2"></i>
+                <strong className="text-blue-800">{t('devCredentials') || 'Development Credentials'}</strong>
+              </div>
+              <div className="text-sm text-blue-700">
+                <div className="mb-1">
+                  <strong>{t('username')}:</strong> admin@google.com
+                </div>
+                <div>
+                  <strong>{t('password')}:</strong> admin123
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="field mb-4">
             <label htmlFor="username" className="block text-900 font-medium mb-2">
               {t('username')}

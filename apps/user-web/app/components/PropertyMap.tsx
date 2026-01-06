@@ -9,7 +9,7 @@ import Image from 'next/image';
 interface PropertyMapProps {
   properties: Property[];
   onPropertyClick?: (property: Property) => void;
-  selectedPropertyId?: string; // Add selected property ID prop
+  selectedPropertyId?: string;
   hideInfoWindow?: boolean;
 }
 

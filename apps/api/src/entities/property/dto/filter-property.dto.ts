@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEnum, Min, IsNumber, IsArray } from 'class-validator';
+import { IsOptional, IsString, IsEnum, Min, IsNumber, IsArray, IsBoolean } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 export class FilterPropertyDto {
@@ -77,6 +77,10 @@ export class FilterPropertyDto {
   @IsOptional()
   @Type(() => Number)
   maxLongitude?: number;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  elevator?: boolean;
 
   // Advanced filters
   @IsOptional()
