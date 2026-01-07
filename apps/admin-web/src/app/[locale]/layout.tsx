@@ -10,6 +10,7 @@ import { Providers } from "../../providers/query-provider";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { useLocale, useTranslations } from 'next-intl';
+import { io, Socket } from 'socket.io-client';
 
 // PrimeReact CSS
 import "primereact/resources/themes/mira/theme.css";
@@ -25,11 +26,43 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { logout, user } = useAuth();
   const t = useTranslations('navigation');
   const tAuth = useTranslations('auth');
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Don't show header/footer on auth pages
   const isAuthPage = pathname?.includes('/login') || 
                      pathname?.includes('/forgot-password') || 
                      pathname?.includes('/reset-password');
+
+  // WebSocket connection for agent chat notifications
+  useEffect(() => {
+    if (!user || isAuthPage) return;
+
+    const socket: Socket = io(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/agent-chat`, {
+      auth: {
+        token: localStorage.getItem('accessToken')
+      }
+    });
+
+    socket.on('connect', () => {
+      console.log('Connected to agent-chat namespace for notifications');
+    });
+
+    socket.on('new-conversation-request', (data: { conversationId: number }) => {
+      console.log('New conversation request:', data);
+      setUnreadCount(prev => prev + 1);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user, isAuthPage]);
+
+  // Reset counter when navigating to agent-chat page
+  useEffect(() => {
+    if (pathname?.includes('/agent-chat')) {
+      setUnreadCount(0);
+    }
+  }, [pathname]);
 
   const menuItems = [
     { 
@@ -51,6 +84,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       label: t('users'), 
       icon: "pi pi-user", 
       command: () => router.push(`/${locale}/users`) 
+    },
+    { 
+      label: t('agentChat'), 
+      icon: "pi pi-comments", 
+      command: () => router.push(`/${locale}/agent-chat`),
+      badge: unreadCount > 0 ? unreadCount.toString() : undefined,
+      badgeClassName: 'p-badge-danger'
     },
   ];
 

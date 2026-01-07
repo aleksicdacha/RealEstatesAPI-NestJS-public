@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,6 +38,17 @@ interface ChartProps {
 }
 
 const ChartComponent: React.FC<ChartProps> = ({ data, labels, type, cardColor }) => {
+  const chartRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Cleanup on unmount to prevent tooltip errors
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+      }
+    };
+  }, []);
+
   const getChartOptions = () => {
     const baseColor = getColorFromCardColor(cardColor);
     
@@ -61,6 +72,12 @@ const ChartComponent: React.FC<ChartProps> = ({ data, labels, type, cardColor })
             borderWidth: 1,
             displayColors: true,
             cornerRadius: 4,
+            callbacks: {
+              label: function(context: any) {
+                if (!context || !context.parsed) return '';
+                return `Value: ${context.parsed}`;
+              }
+            }
           },
         },
         cutout: '35%',
@@ -104,7 +121,8 @@ const ChartComponent: React.FC<ChartProps> = ({ data, labels, type, cardColor })
             title: function() {
               return '';
             },
-            label: function(context: { parsed: number | { y?: number } }) {
+            label: function(context: any) {
+              if (!context || !context.parsed) return '';
               const value = typeof context.parsed === 'number' ? context.parsed : context.parsed.y || 0;
               return `Value: ${value}`;
             }
@@ -222,11 +240,11 @@ const ChartComponent: React.FC<ChartProps> = ({ data, labels, type, cardColor })
   return (
     <div className="w-full h-full flex items-center justify-center bg-white bg-opacity-15 rounded-md border border-white border-opacity-20" style={{minHeight: '64px', minWidth: '96px'}}>
       {type === 'line' ? (
-        <Line data={getChartData()} options={getChartOptions()} />
+        <Line ref={chartRef} data={getChartData()} options={getChartOptions()} />
       ) : type === 'doughnut' ? (
-        <Doughnut data={getChartData()} options={getChartOptions()} />
+        <Doughnut ref={chartRef} data={getChartData()} options={getChartOptions()} />
       ) : (
-        <Bar data={getChartData()} options={getChartOptions()} />
+        <Bar ref={chartRef} data={getChartData()} options={getChartOptions()} />
       )}
     </div>
   );

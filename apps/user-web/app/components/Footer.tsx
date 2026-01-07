@@ -68,11 +68,7 @@ export function Footer() {
           <div>
             <h3 className="font-bold mb-4">Prodaja stanova</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link href={`/${locale}/prodaja-nekretnina/beograd`} className="hover:text-white">Prodaja stanova Beograd</Link></li>
-              <li><Link href={`/${locale}/prodaja-nekretnina/novi-sad`} className="hover:text-white">Prodaja stanova Novi Sad</Link></li>
               <li><Link href={`/${locale}/prodaja-nekretnina/nis`} className="hover:text-white">Prodaja stanova Niš</Link></li>
-              <li><Link href={`/${locale}/izdavanje-stanova/beograd`} className="hover:text-white">Izdavanje stanova Beograd</Link></li>
-              <li><Link href={`/${locale}/izdavanje-stanova/novi-sad`} className="hover:text-white">Izdavanje stanova Novi Sad</Link></li>
               <li><Link href={`/${locale}/izdavanje-stanova/nis`} className="hover:text-white">Izdavanje stanova Niš</Link></li>
             </ul>
           </div>
@@ -82,7 +78,6 @@ export function Footer() {
             <h3 className="font-bold mb-4">Novogradnja</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href={`/${locale}/novogradnja`} className="hover:text-white">Novogradnja</Link></li>
-              <li><Link href={`/${locale}/beograd-na-vodi`} className="hover:text-white">Beograd na vodi</Link></li>
               <li><Link href={`/${locale}/luksuzni-stanovi-za-izdavanje`} className="hover:text-white">Luksuzni stanovi za izdavanje</Link></li>
               <li><Link href={`/${locale}/luksuzni-stanovi-za-prodaju`} className="hover:text-white">Luksuzni stanovi za prodaju</Link></li>
               <li><Link href={`/${locale}/trazite-nekretninu`} className="hover:text-white">Tražite nekretninu</Link></li>

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
+import { Chatbot } from '@/app/components/Chatbot';
 import { FavouritesProvider } from '@/app/contexts/FavouritesContext';
 import { GoogleMapsProvider } from '@/app/components/GoogleMapsProvider';
 
@@ -41,6 +42,7 @@ export default async function LocaleLayout({
           <Header />
           {children}
           <Footer />
+          <Chatbot />
         </FavouritesProvider>
       </GoogleMapsProvider>
     </NextIntlClientProvider>
