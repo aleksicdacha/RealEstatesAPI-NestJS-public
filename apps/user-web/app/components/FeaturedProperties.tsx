@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { fetchFeaturedProperties } from '@/lib/featured-api';
-import { Property } from '@/lib/api';
+import { Property, getImageUrl, getFavoriteImage } from '@/lib/api';
 
 interface FeaturedPropertiesProps {
   locale: string;
@@ -70,20 +71,11 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
   };
 
   const getMainImage = (property: Property) => {
-    const favoriteImage = property.images?.find(img => img.isFavorite);
-    const mainImage = favoriteImage?.url || property.images?.[0]?.url;
-    
-    // Return Unsplash placeholder if no image
-    if (!mainImage) {
-      return `https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop&auto=format`;
+    const favoriteImage = getFavoriteImage(property.images || []);
+    if (!favoriteImage) {
+      return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop&auto=format';
     }
-    
-    // Add API URL prefix if path is relative
-    if (mainImage.startsWith('uploads/')) {
-      return `${process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '')}/${mainImage}`;
-    }
-    
-    return mainImage;
+    return getImageUrl(favoriteImage.url);
   };
 
   const formatPrice = (price: number) => {
@@ -180,10 +172,12 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                   <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                     {/* Image */}
                     <div className="relative h-64 overflow-hidden bg-gray-200">
-                      <img
+                      <Image
                         src={getMainImage(property)}
                         alt={property.code}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                       {/* ID Badge */}
                       <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-700">
