@@ -74,7 +74,16 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
     const mainImage = favoriteImage?.url || property.images?.[0]?.url;
     
     // Return Unsplash placeholder if no image
-    return mainImage || `https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop&auto=format`;
+    if (!mainImage) {
+      return `https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop&auto=format`;
+    }
+    
+    // Add API URL prefix if path is relative
+    if (mainImage.startsWith('uploads/')) {
+      return `${process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '')}/${mainImage}`;
+    }
+    
+    return mainImage;
   };
 
   const formatPrice = (price: number) => {
@@ -214,12 +223,6 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                           </div>
                         )}
                       </div>
-
-                      {property.description && (
-                        <p className="mt-3 text-gray-600 line-clamp-2 text-sm">
-                          {property.description}
-                        </p>
-                      )}
                     </div>
                   </div>
                 </Link>
