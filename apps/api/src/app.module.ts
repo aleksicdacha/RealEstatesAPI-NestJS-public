@@ -13,6 +13,8 @@ import { PropertyModule } from '@src/entities/property/property.module';
 import { PropertyImageModule } from '@src/entities/property-image/property-image.module';
 import { UploadModule } from '@src/entities/upload/upload.module';
 import { ClientModule } from '@src/entities/client/client.module';
+import { ChatbotModule } from '@src/entities/chatbot/chatbot.module';
+import { AgentChatModule } from '@src/entities/agent-chat/agent-chat.module';
 import { EmailModule } from './email/email.module';
 import { ContactModule } from './contact/contact.module';
 
@@ -102,6 +104,8 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
     PropertyImageModule,
     UploadModule,
     ClientModule,
+    ChatbotModule,
+    AgentChatModule,
     EmailModule,
     ContactModule,
   ],

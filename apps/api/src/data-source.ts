@@ -4,6 +4,8 @@ import { Property } from '@src/entities/property/property.entity';
 import { PropertyImage } from '@src/entities/property-image/property-image.entity';
 import { Client } from '@src/entities/client/client.entity';
 import { Representative } from '@src/entities/representative/representative.entity';
+import { AgentConversation } from '@src/entities/agent-chat/agent-conversation.entity';
+import { AgentMessage } from '@src/entities/agent-chat/agent-message.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -14,6 +16,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'estates',
   synchronize: false,
   logging: true,
-  entities: [User, Property, PropertyImage, Client, Representative],
+  entities: [User, Property, PropertyImage, Client, Representative, AgentConversation, AgentMessage],
   migrations: [__dirname + '/migrations/*.js'],
 });

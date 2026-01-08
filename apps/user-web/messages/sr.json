@@ -76,7 +76,7 @@
     "from": "Od",
     "to": "Do",
     "areaRange": "Površina",
-    "rooms": "Broj soba",
+    "rooms": "Soba",
     "room": "soba",
     "studio": "Garsonjera",
     "room": "soba",
@@ -276,5 +276,29 @@
     "results": "rezultata",
     "noResults": "Nema rezultata",
     "tryDifferentFilters": "Pokušajte sa drugim filterima"
+  },
+  "Chatbot": {
+    "title": "Pomoć",
+    "subtitle": "Postavite nam pitanje",
+    "placeholder": "Unesite poruku...",
+    "send": "Pošalji",
+    "clearHistory": "Obriši istoriju",
+    "talkToAgent": "Razgovaraj sa agentom",
+    "agentFormTitle": "Kontakt sa agentom",
+    "agentFormSubtitle": "Popunite formu i naš agent će vas kontaktirati",
+    "name": "Ime i prezime",
+    "email": "Email adresa",
+    "phone": "Telefon (opciono)",
+    "message": "Vaša poruka",
+    "submit": "Pošalji",
+    "cancel": "Otkaži",
+    "successMessage": "Uspešno poslato! Agent će vas kontaktirati uskoro.",
+    "errorMessage": "Greška. Pokušajte ponovo.",
+    "typing": "Piše...",
+    "closeChat": "Zatvori chat",
+    "openChat": "Otvori chat",
+    "welcomeMessage": "Zdravo! 👋 Ja sam AI asistent za Olymp Nekretnine. Kako mogu da vam pomognem danas?",
+    "apiErrorMessage": "Izvините, došlo je do greške. Molim vas pokušajte ponovo.",
+    "agentJoined": "🎉 Agent se priključio razgovoru! Sada možete direktno komunicirati sa našim agentom."
   }
 }
