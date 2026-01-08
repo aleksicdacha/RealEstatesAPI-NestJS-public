@@ -4,7 +4,7 @@ import LandingStats from '../components/LandingStats';
 import ValuePropositions from '../components/ValuePropositions';
 import FeaturedProperties from '../components/FeaturedProperties';
 import ParallaxSection from '../components/ParallaxSection';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 interface LandingPageProps {
   params: Promise<{
@@ -14,7 +14,7 @@ interface LandingPageProps {
 
 export default async function LandingPage({ params }: LandingPageProps) {
   const { locale } = await params;
-  const t = useTranslations('Landing');
+  const t = await getTranslations('Landing');
 
   return (
     <main className="min-h-screen">
