@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import HeroSearch from '../components/HeroSearch';
+import HeroSection from '../components/HeroSection';
 import LandingStats from '../components/LandingStats';
 import ValuePropositions from '../components/ValuePropositions';
 import FeaturedProperties from '../components/FeaturedProperties';
@@ -7,62 +7,19 @@ import ParallaxSection from '../components/ParallaxSection';
 import { useTranslations } from 'next-intl';
 
 interface LandingPageProps {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
-export default function LandingPage({ params: { locale } }: LandingPageProps) {
+export default async function LandingPage({ params }: LandingPageProps) {
+  const { locale } = await params;
   const t = useTranslations('Landing');
 
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-orange-600 via-orange-700 to-orange-800 text-white overflow-hidden min-h-[85vh] flex items-center">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-          }} />
-        </div>
-
-        <div className="relative container mx-auto px-4 py-16 lg:py-24">
-          <div className="text-center max-w-5xl mx-auto mb-12">
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-              {t('heroTitle')} <br />
-              <span className="text-yellow-300">{t('heroHighlight')}</span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-orange-100 max-w-3xl mx-auto">
-              {t('heroSubtitle')}
-            </p>
-          </div>
-
-          {/* Search Component */}
-          <HeroSearch locale={locale} />
-
-          {/* Quick Links */}
-          <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm">
-            <div className="flex items-center gap-2 text-orange-100">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              {t('noCosts')}
-            </div>
-            <div className="flex items-center gap-2 text-orange-100">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              {t('verifiedProperties')}
-            </div>
-            <div className="flex items-center gap-2 text-orange-100">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              {t('support247')}
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection locale={locale} />
 
       {/* Stats Section */}
       <LandingStats />

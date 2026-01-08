@@ -181,7 +181,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
   };
 
   // Toggle dropdown
-  const toggleDropdown = (dropdownType: string) => {
+  const toggleDropdown = (dropdownType: keyof DropdownState) => {
     const newOpenDropdown = openDropdown === dropdownType ? null : dropdownType;
     setOpenDropdown(newOpenDropdown);
     

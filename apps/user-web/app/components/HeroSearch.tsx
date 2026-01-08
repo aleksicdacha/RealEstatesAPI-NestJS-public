@@ -6,9 +6,10 @@ import { useTranslations } from 'next-intl';
 
 interface HeroSearchProps {
   locale: string;
+  onCityChange?: (city: string) => void;
 }
 
-export default function HeroSearch({ locale }: HeroSearchProps) {
+export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
   const t = useTranslations('HeroSearch');
   const router = useRouter();
   const [transactionType, setTransactionType] = useState<'prodaja' | 'izdavanje'>('prodaja');
@@ -20,6 +21,13 @@ export default function HeroSearch({ locale }: HeroSearchProps) {
     { value: 'Niš', labelSr: 'Niš', labelEn: 'Niš' },
     { value: 'Kragujevac', labelSr: 'Kragujevac', labelEn: 'Kragujevac' },
   ];
+
+  const handleCityChange = (newCity: string) => {
+    setCity(newCity);
+    if (onCityChange) {
+      onCityChange(newCity);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,12 +92,18 @@ export default function HeroSearch({ locale }: HeroSearchProps) {
           <select
             id="city"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white cursor-pointer"
+            onChange={(e) => handleCityChange(e.target.value)}
+            className="w-full px-4 py-4 text-lg text-gray-900 font-medium border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white cursor-pointer hover:border-orange-400"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 1rem center',
+              paddingRight: '3rem'
+            }}
           >
-            <option value="">{t('selectCity')}</option>
+            <option value="" className="text-gray-900 font-medium">{t('selectCity')}</option>
             {cities.map((c) => (
-              <option key={c.value} value={c.value}>
+              <option key={c.value} value={c.value} className="text-gray-900 font-medium">
                 {locale === 'sr' ? c.labelSr : c.labelEn}
               </option>
             ))}
