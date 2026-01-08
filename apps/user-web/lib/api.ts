@@ -26,6 +26,7 @@ export interface Property {
   elevator?: boolean;
   additionalEquipment?: string[];
   constructionYear?: number;
+  specialOffer?: number;
   images: PropertyImage[];
   // Explicitly excluded from public API:
   // - address (exact address hidden, only neighborhood shown)
