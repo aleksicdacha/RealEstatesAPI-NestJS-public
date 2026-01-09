@@ -62,10 +62,10 @@ export default function LandingStats() {
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 text-orange-600 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-100 text-brand-600 rounded-full mb-4">
                 {stat.icon}
               </div>
-              <div className="text-4xl font-bold text-orange-600 mb-2">{stat.value}</div>
+              <div className="text-4xl font-bold text-brand-600 mb-2">{stat.value}</div>
               <div className="text-gray-600 font-medium">{stat.label}</div>
             </div>
           ))}

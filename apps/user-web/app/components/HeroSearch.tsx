@@ -17,9 +17,7 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
 
   const cities = [
     { value: 'Beograd', labelSr: 'Beograd', labelEn: 'Belgrade' },
-    { value: 'Novi Sad', labelSr: 'Novi Sad', labelEn: 'Novi Sad' },
     { value: 'Niš', labelSr: 'Niš', labelEn: 'Niš' },
-    { value: 'Kragujevac', labelSr: 'Kragujevac', labelEn: 'Kragujevac' },
   ];
 
   const handleCityChange = (newCity: string) => {
@@ -51,9 +49,9 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
           <button
             type="button"
             onClick={() => setTransactionType('prodaja')}
-            className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
               transactionType === 'prodaja'
-                ? 'bg-orange-600 text-white shadow-lg'
+                ? 'bg-brand-600 text-white shadow-lg'
                 : 'text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -65,9 +63,9 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
           <button
             type="button"
             onClick={() => setTransactionType('izdavanje')}
-            className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
               transactionType === 'izdavanje'
-                ? 'bg-orange-600 text-white shadow-lg'
+                ? 'bg-brand-600 text-white shadow-lg'
                 : 'text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -82,7 +80,7 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
         <div className="relative">
           <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -93,12 +91,11 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
             id="city"
             value={city}
             onChange={(e) => handleCityChange(e.target.value)}
-            className="w-full px-4 py-4 text-lg text-gray-900 font-medium border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white cursor-pointer hover:border-orange-400"
+            className="w-full px-4 py-4 pr-12 text-lg text-gray-900 font-medium border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-white cursor-pointer hover:border-brand-400 appearance-none"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 1rem center',
-              paddingRight: '3rem'
+              backgroundPosition: 'right 1rem center'
             }}
           >
             <option value="" className="text-gray-900 font-medium">{t('selectCity')}</option>
@@ -113,7 +110,7 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
         {/* Search Button */}
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg"
+          className="w-full bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

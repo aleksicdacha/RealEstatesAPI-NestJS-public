@@ -40,7 +40,7 @@ export default function ValuePropositions() {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
             {t('whyTitle')}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -54,7 +54,7 @@ export default function ValuePropositions() {
               key={index}
               className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
             >
-              <div className="text-orange-600 mb-6">{benefit.icon}</div>
+              <div className="text-brand-600 mb-6">{benefit.icon}</div>
               <h3 className="text-2xl font-bold mb-4 text-gray-800">{benefit.title}</h3>
               <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
             </div>

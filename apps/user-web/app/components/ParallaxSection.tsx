@@ -71,7 +71,7 @@ export default function ParallaxSection({ locale, type }: ParallaxSectionProps) 
           <div className="space-y-4 mb-10">
             {section.features.map((feature, index) => (
               <div key={index} className="flex items-start gap-3 text-white">
-                <div className="flex-shrink-0 w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center mt-1">
+                <div className="flex-shrink-0 w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center mt-1">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
@@ -87,9 +87,9 @@ export default function ParallaxSection({ locale, type }: ParallaxSectionProps) 
               <Link
                 key={index}
                 href={button.href}
-                className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-xl ${
+                className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 shadow-xl ${
                   button.primary
-                    ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                    ? 'bg-brand-600 hover:bg-brand-700 text-white'
                     : 'bg-white/20 backdrop-blur-md hover:bg-white/30 text-white border-2 border-white/50'
                 }`}
               >

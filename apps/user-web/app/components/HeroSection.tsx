@@ -8,15 +8,13 @@ interface HeroSectionProps {
   locale: string;
 }
 
-// City background images mapping
+// City background images mapping (from public/assets/images/cities/)
 const cityBackgrounds: Record<string, string> = {
-  'Beograd': 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=1920&h=1080&fit=crop&auto=format',
-  'Novi Sad': 'https://images.unsplash.com/photo-1555117636-bca6f54314f7?w=1920&h=1080&fit=crop&auto=format',
-  'Niš': 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1920&h=1080&fit=crop&auto=format',
-  'Kragujevac': 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&h=1080&fit=crop&auto=format',
+  'Beograd': '/assets/images/cities/belgrade.jpg',
+  'Niš': '/assets/images/cities/nis.jpg',
 };
 
-const defaultBackground = 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1920&h=1080&fit=crop&auto=format';
+const defaultBackground = '/assets/images/cities/nis.jpg';
 
 export default function HeroSection({ locale }: HeroSectionProps) {
   const t = useTranslations('Landing');
@@ -35,7 +33,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
         }}
       >
         {/* Dark Gradient Overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-orange-900/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-brand-900/70" />
       </div>
 
       {/* Content */}

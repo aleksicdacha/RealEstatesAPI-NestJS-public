@@ -119,17 +119,17 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
         </div>
 
         {/* Slider Container */}
-        <div className="relative max-w-7xl mx-auto">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 py-8">
           {/* Navigation Buttons */}
           {properties.length > itemsPerView && (
             <>
               <button
                 onClick={prev}
                 disabled={currentIndex === 0}
-                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 -translate-x-4 lg:-translate-x-12 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 ${
+                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 -translate-x-4 lg:-translate-x-12 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
                   currentIndex === 0
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-orange-600 hover:text-white'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-brand-600 text-white hover:bg-brand-700 hover:shadow-xl'
                 }`}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,10 +139,10 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
               <button
                 onClick={next}
                 disabled={currentIndex >= maxIndex}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 translate-x-4 lg:translate-x-12 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 ${
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 translate-x-4 lg:translate-x-12 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
                   currentIndex >= maxIndex
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-orange-600 hover:text-white'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-brand-600 text-white hover:bg-brand-700 hover:shadow-xl'
                 }`}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,10 +155,10 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
           {/* Properties Grid/Slider */}
           <div
             ref={scrollRef}
-            className="overflow-hidden"
+            className="overflow-hidden py-16 px-4"
           >
             <div
-              className="flex gap-6 transition-transform duration-500 ease-out"
+              className="flex gap-4 md:gap-6 transition-transform duration-500 ease-out"
               style={{
                 transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
               }}
@@ -167,11 +167,11 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                 <Link
                   key={property.id}
                   href={`/${locale}/properties/${property.id}`}
-                  className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] group"
+                  className="flex-shrink-0 w-[calc(100%-1rem)] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] group"
                 >
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
                     {/* Image */}
-                    <div className="relative h-64 overflow-hidden bg-gray-200">
+                    <div className="relative h-52 overflow-hidden bg-gray-200">
                       <Image
                         src={getMainImage(property)}
                         alt={property.code}
@@ -184,7 +184,7 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                         ID {property.code}
                       </div>
                       {/* Price Badge */}
-                      <div className="absolute bottom-4 left-4 bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-lg shadow-lg">
+                      <div className="absolute bottom-4 left-4 bg-brand-600 text-white px-4 py-2 rounded-lg font-bold text-lg shadow-lg">
                         {formatPrice(property.price)}
                       </div>
                     </div>
@@ -202,7 +202,7 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                       <div className="flex items-center gap-4 text-gray-700">
                         {property.area && (
                           <div className="flex items-center gap-1">
-                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                             </svg>
                             <span className="font-semibold">{property.area} m²</span>
@@ -210,7 +210,7 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                         )}
                         {property.roomStructure && (
                           <div className="flex items-center gap-1">
-                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
                             <span className="font-semibold">{property.roomStructure}</span>
@@ -233,7 +233,7 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                   onClick={() => scrollTo(index)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     currentIndex === index
-                      ? 'bg-orange-600 w-8'
+                      ? 'bg-brand-600 w-8'
                       : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
@@ -247,7 +247,7 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
         <div className="text-center mt-12">
           <Link
             href={`/${locale}/prodaja`}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             {t('viewAll')}
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

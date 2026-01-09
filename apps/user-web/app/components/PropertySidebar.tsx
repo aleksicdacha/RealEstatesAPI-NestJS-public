@@ -115,8 +115,8 @@ export function PropertySidebar() {
                 onClick={() => handleClick(id)}
                 className={`w-full flex items-center justify-center py-4 px-3 rounded-md transition-all ${
                   activeSection === id
-                    ? 'bg-orange-600 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-orange-600'
+                    ? 'bg-brand-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-brand-600'
                 }`}
                 title={id}
               >

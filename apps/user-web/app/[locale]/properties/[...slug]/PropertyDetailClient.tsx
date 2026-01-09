@@ -43,7 +43,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
             <div className="text-sm text-gray-600 mb-4">{/* Breadcrumb here if needed */}</div>
             <div className="max-w-4xl">
               {/* Main Info Section */}
-              <div id="informacije" className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-lg mb-6 relative">
+              <div id="informacije" className="bg-gradient-to-r from-brand-50 to-brand-100 p-6 rounded-lg mb-6 relative">
                 {/* Favorite button */}
                 <button 
                   className="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
@@ -60,7 +60,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </button>
-                <div className="text-4xl font-bold text-orange-600 mb-2">
+                <div className="text-4xl font-bold text-brand-600 mb-2">
                   {new Intl.NumberFormat('sr-RS', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(property.price)}
                 </div>
                 <div className="flex items-center gap-4 text-sm text-gray-700">
@@ -136,7 +136,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
                           key={image.id}
                           onClick={() => setSelectedImageIndex(index)}
                           className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                            index === selectedImageIndex ? 'border-orange-500' : 'border-gray-200 hover:border-gray-300'
+                            index === selectedImageIndex ? 'border-brand-500' : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
                           <Image
@@ -243,15 +243,15 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
             <div className="hidden lg:block w-80 flex-shrink-0">
               <div className="bg-white rounded-lg border p-6 sticky top-4">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Zakažite razgledanje</h3>
-                <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-semibold mb-3 transition-colors">
+                <button className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 px-6 rounded-full font-semibold mb-3 transition-colors">
                   Zakažite gledanje
                 </button>
-                <button className="w-full border-2 border-orange-600 text-orange-600 hover:bg-orange-50 py-3 px-6 rounded-lg font-semibold transition-colors">
+                <button className="w-full border-2 border-brand-600 text-brand-600 hover:bg-brand-50 py-3 px-6 rounded-full font-semibold transition-colors">
                   Kontaktirajte nas
                 </button>
                 <div className="mt-6 pt-6 border-t">
                   <div className="text-sm text-gray-600 mb-2">Pozovite nas</div>
-                  <a href="tel:+381114425000" className="text-lg font-semibold text-orange-600 hover:text-orange-700">
+                  <a href="tel:+381114425000" className="text-lg font-semibold text-brand-600 hover:text-brand-700">
                     +381 18 277 181
                   </a>
                 </div>
@@ -263,12 +263,12 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                       </svg>
                     </button>
-                    <button className="flex-1 border rounded-lg p-2 hover:bg-gray-50 transition-colors">
+                    <button className="flex-1 border rounded-full p-2 hover:bg-gray-50 transition-colors">
                       <svg className="w-5 h-5 mx-auto text-gray-700" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                       </svg>
                     </button>
-                    <button className="flex-1 border rounded-lg p-2 hover:bg-gray-50 transition-colors">
+                    <button className="flex-1 border rounded-full p-2 hover:bg-gray-50 transition-colors">
                       <svg className="w-5 h-5 mx-auto text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                       </svg>

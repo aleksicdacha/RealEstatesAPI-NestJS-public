@@ -162,7 +162,7 @@ export function Chatbot() {
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-orange-600 hover:text-orange-700 underline break-all"
+            className="text-brand-600 hover:text-brand-700 underline break-all"
           >
             {part}
           </a>
@@ -251,7 +251,7 @@ export function Chatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full shadow-2xl hover:shadow-orange-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center z-[9999] group"
+          className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-brand-500 to-brand-600 rounded-full shadow-2xl hover:shadow-brand-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center z-[9999] group"
           aria-label={t('openChat')}
         >
           <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +265,7 @@ export function Chatbot() {
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-[380px] h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4 flex items-center justify-between text-white">
+          <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-4 flex items-center justify-between text-white">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                 <span className="text-2xl">🏠</span>
@@ -296,14 +296,14 @@ export function Chatbot() {
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                     message.role === 'user'
-                      ? 'bg-orange-600 text-white rounded-tr-none'
+                      ? 'bg-brand-600 text-white rounded-tr-none'
                       : 'bg-white text-gray-800 shadow-sm border border-gray-200 rounded-tl-none'
                   }`}
                 >
                   <div className="text-sm whitespace-pre-wrap break-words">
                     {parseMessageWithLinks(String(message.content))}
                   </div>
-                  <p className={`text-xs mt-1 ${message.role === 'user' ? 'text-orange-100' : 'text-gray-400'}`}>
+                  <p className={`text-xs mt-1 ${message.role === 'user' ? 'text-brand-100' : 'text-gray-400'}`}>
                     {new Date(message.timestamp).toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -335,7 +335,7 @@ export function Chatbot() {
                     name="name"
                     placeholder={t('name')}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -345,7 +345,7 @@ export function Chatbot() {
                     name="email"
                     placeholder={t('email')}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -354,7 +354,7 @@ export function Chatbot() {
                     type="tel"
                     name="phone"
                     placeholder={t('phone')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -364,13 +364,13 @@ export function Chatbot() {
                     placeholder={t('message')}
                     rows={2}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="flex-1 bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors"
+                    className="flex-1 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
                   >
                     {t('submit')}
                   </button>
@@ -415,13 +415,13 @@ export function Chatbot() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={t('placeholder')}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-full text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                 disabled={isLoading}
               />
               <button
                 onClick={sendMessage}
                 disabled={isLoading || !inputValue.trim()}
-                className="bg-orange-600 text-white p-2 rounded-full hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-brand-600 text-white p-2 rounded-full hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title={t('send')}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

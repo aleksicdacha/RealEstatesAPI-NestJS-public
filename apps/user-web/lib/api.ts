@@ -156,6 +156,11 @@ export function getImageUrl(imageUrl: string): string {
   if (imageUrl.startsWith('/uploads/')) {
     return `http://localhost:3000${imageUrl}`;
   }
+
+   // If URL starts with /assets/, prepend the API URL
+  if (imageUrl.startsWith('/assets/')) {
+    return `http://localhost:3000${imageUrl}`;
+  }
   
   // Otherwise, add /uploads/ prefix
   return `http://localhost:3000/uploads/${imageUrl}`;

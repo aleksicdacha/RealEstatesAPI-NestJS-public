@@ -121,6 +121,27 @@ See `documentation/SECURITY-PUBLIC-API.md` for implementation details.
 
 ## Frontend (Next.js) Patterns
 
+### Color Configuration (user-web)
+**Centralized brand color system** in `tailwind.config.ts`:
+```typescript
+colors: {
+  brand: {
+    50: '#fff7ed',   // Lightest shade
+    600: '#ea580c',  // Primary (buttons, icons)
+    700: '#c2410c',  // Hover states
+    // ... full palette
+  }
+}
+```
+
+**To change brand colors:**
+1. Open `apps/user-web/tailwind.config.ts`
+2. Edit hex values in `theme.extend.colors.brand`
+3. Restart dev server (changes apply automatically)
+4. Use Tailwind classes: `bg-brand-600`, `text-brand-700`, `hover:bg-brand-700`
+
+**Font configuration** in `app/config/fonts.ts` using next/font/google (Inter).
+
 ### User-Web (apps/user-web)
 **Next.js 15 App Router** with React Server Components:
 - **Internationalization**: next-intl with `middleware.ts` routing (`matcher: ['/', '/(sr|en)/:path*']`)
@@ -128,7 +149,11 @@ See `documentation/SECURITY-PUBLIC-API.md` for implementation details.
 - **API client**: `lib/api.ts` - ONLY uses `/properties/public` endpoints
 - **Google Maps**: `@react-google-maps/api` with `@googlemaps/markerclusterer`
 - **Forms**: React Hook Form + Zod validation
-- **Styling**: Tailwind CSS 4.0 (PostCSS config)
+- **Styling**: Tailwind CSS v3 with PostCSS
+- **Color System**: Brand colors defined in `tailwind.config.ts` as hex values
+  - Change main brand color: Edit `brand` object in `tailwind.config.ts`
+  - Uses `brand-*` utility classes (brand-50, brand-600, brand-700, etc.)
+- **Font System**: Centralized in `app/config/fonts.ts` using next/font/google
 
 **Never call admin endpoints** from user-web - use public API or face security vulnerabilities.
 

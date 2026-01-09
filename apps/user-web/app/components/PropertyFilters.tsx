@@ -232,7 +232,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.city = el; }}>
           <button
             onClick={() => toggleDropdown('city')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -263,7 +263,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
                 <button 
                   key={city}
                   onClick={() => { handleFilterChange('city', city); setOpenDropdown(null); }} 
-                  className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 last:border-b-0 ${filters.city === city ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}
+                  className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 last:border-b-0 ${filters.city === city ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}
                 >
                   {city}
                 </button>
@@ -276,7 +276,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.location = el; }}>
           <button
             onClick={() => toggleDropdown('location')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -308,7 +308,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
                 <button 
                   key={neighborhood}
                   onClick={() => { handleFilterChange('location', neighborhood); setOpenDropdown(null); }} 
-                  className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 last:border-b-0 ${filters.location === neighborhood ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}
+                  className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 last:border-b-0 ${filters.location === neighborhood ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}
                 >
                   {neighborhood}
                 </button>
@@ -321,7 +321,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.propertyType = el; }}>
           <button
             onClick={() => toggleDropdown('propertyType')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -352,7 +352,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
                 <button 
                   key={type.value}
                   onClick={() => { handleFilterChange('propertyType', type.value); setOpenDropdown(null); }} 
-                  className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 last:border-b-0 ${filters.propertyType === type.value ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}
+                  className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 last:border-b-0 ${filters.propertyType === type.value ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}
                 >
                   {t(type.label)}
                 </button>
@@ -365,7 +365,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.price = el; }}>
           <button
             onClick={() => toggleDropdown('price')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -413,7 +413,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.area = el; }}>
           <button
             onClick={() => toggleDropdown('area')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
@@ -461,7 +461,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.rooms = el; }}>
           <button
             onClick={() => toggleDropdown('rooms')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -483,14 +483,14 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
               }}
             >
               <button onClick={() => { handleFilterChange('numberOfRooms', ''); setOpenDropdown(null); }} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors border-b border-gray-100 font-medium">{t('all')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', 'garsonjera'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === 'garsonjera' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>{t('studio')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '1'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '1' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>1 {t('room')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '1.5'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '1.5' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>1.5 {t('rooms')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '2'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '2' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>2 {t('rooms')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '2.5'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '2.5' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>2.5 {t('rooms')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '3'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '3' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>3 {t('rooms')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '3.5'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '3.5' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>3.5 {t('rooms')}</button>
-              <button onClick={() => { handleFilterChange('numberOfRooms', '4'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors ${filters.numberOfRooms === '4' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'}`}>4+ {t('rooms')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', 'garsonjera'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === 'garsonjera' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>{t('studio')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '1'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '1' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>1 {t('room')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '1.5'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '1.5' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>1.5 {t('rooms')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '2'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '2' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>2 {t('rooms')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '2.5'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '2.5' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>2.5 {t('rooms')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '3'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '3' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>3 {t('rooms')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '3.5'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors border-b border-gray-100 ${filters.numberOfRooms === '3.5' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>3.5 {t('rooms')}</button>
+              <button onClick={() => { handleFilterChange('numberOfRooms', '4'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors ${filters.numberOfRooms === '4' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'}`}>4+ {t('rooms')}</button>
             </div>
           )}
         </div>
@@ -499,7 +499,7 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
         <div className="relative flex-shrink-0" ref={el => { dropdownRefs.current.more = el; }}>
           <button
             onClick={() => toggleDropdown('more')}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors whitespace-nowrap text-sm text-gray-700"
           >
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />

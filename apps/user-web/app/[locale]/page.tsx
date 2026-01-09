@@ -48,7 +48,7 @@ export default async function LandingPage({ params }: LandingPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             {/* For Buyers/Renters */}
             <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
+              <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -79,7 +79,7 @@ export default async function LandingPage({ params }: LandingPageProps) {
               </div>
               <Link
                 href={`/${locale}/prodaja`}
-                className="block text-center bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:from-orange-700 hover:to-orange-800 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="block text-center bg-gradient-to-r from-brand-600 to-brand-700 text-white hover:from-brand-700 hover:to-brand-800 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 {t('viewProperties')}
               </Link>
@@ -118,7 +118,7 @@ export default async function LandingPage({ params }: LandingPageProps) {
               </div>
               <Link
                 href={`/${locale}/kontakt`}
-                className="block text-center bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="block text-center bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 {t('offerProperty')}
               </Link>
@@ -128,7 +128,7 @@ export default async function LandingPage({ params }: LandingPageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-orange-600 via-orange-700 to-orange-800 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
@@ -138,13 +138,13 @@ export default async function LandingPage({ params }: LandingPageProps) {
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             {t('ctaTitle')}
           </h2>
-          <p className="text-xl md:text-2xl mb-10 text-orange-100 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl mb-10 text-brand-100 max-w-3xl mx-auto">
             {t('ctaSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href={`/${locale}/prodaja`}
-              className="bg-white text-orange-600 hover:bg-gray-100 px-10 py-5 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl inline-flex items-center justify-center gap-2"
+              className="bg-white text-brand-600 hover:bg-gray-100 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl inline-flex items-center justify-center gap-2"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -153,7 +153,7 @@ export default async function LandingPage({ params }: LandingPageProps) {
             </Link>
             <Link
               href={`/${locale}/kontakt`}
-              className="border-2 border-white text-white hover:bg-white hover:text-orange-600 px-10 py-5 rounded-xl font-bold text-lg transition-all duration-300 inline-flex items-center justify-center gap-2"
+              className="border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 inline-flex items-center justify-center gap-2"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
