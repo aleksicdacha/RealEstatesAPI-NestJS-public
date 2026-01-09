@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { mainFont } from '@/app/config/fonts';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 import { Chatbot } from '@/app/components/Chatbot';

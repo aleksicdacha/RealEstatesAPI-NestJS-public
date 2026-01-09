@@ -87,7 +87,7 @@ export function FavouritePropertyCard({ property, priority = false }: FavouriteP
         </Link>
 
         {/* Property ID badge */}
-        <div className="absolute top-2 left-2 bg-orange-600 text-white px-2 py-1 rounded text-xs font-semibold">
+        <div className="absolute top-2 left-2 bg-brand-600 text-white px-2 py-1 rounded text-xs font-semibold">
           ID {property.code}
         </div>
       </div>
@@ -96,7 +96,7 @@ export function FavouritePropertyCard({ property, priority = false }: FavouriteP
       <Link href={propertyUrl} className="block p-3">
         {/* Price */}
         <div className="mb-1">
-          <p className="text-lg font-bold text-orange-600">
+          <p className="text-lg font-bold text-brand-600">
             {new Intl.NumberFormat('sr-RS', {
               style: 'currency',
               currency: 'EUR',

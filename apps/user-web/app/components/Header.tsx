@@ -44,9 +44,9 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-6">
           <Link 
             href={`/${locale}/prodaja`} 
-            className={`relative text-gray-700 hover:text-orange-600 transition-colors font-medium py-2 ${
+            className={`relative text-gray-700 hover:text-brand-600 transition-colors font-medium py-2 ${
               pathname.includes('/prodaja') 
-                ? 'text-orange-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-orange-600 after:animate-pulse' 
+                ? 'text-brand-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 after:animate-pulse' 
                 : ''
             }`}
           >
@@ -54,9 +54,9 @@ export function Header() {
           </Link>
           <Link 
             href={`/${locale}/izdavanje`} 
-            className={`relative text-gray-700 hover:text-orange-600 transition-colors font-medium py-2 ${
+            className={`relative text-gray-700 hover:text-brand-600 transition-colors font-medium py-2 ${
               pathname.includes('/izdavanje') 
-                ? 'text-orange-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-orange-600 after:animate-pulse' 
+                ? 'text-brand-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 after:animate-pulse' 
                 : ''
             }`}
           >
@@ -64,9 +64,9 @@ export function Header() {
           </Link>
           <Link 
             href={`/${locale}/kontakt`} 
-            className={`relative text-gray-700 hover:text-orange-600 transition-colors font-medium py-2 ${
+            className={`relative text-gray-700 hover:text-brand-600 transition-colors font-medium py-2 ${
               pathname.includes('/kontakt') 
-                ? 'text-orange-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-orange-600 after:animate-pulse' 
+                ? 'text-brand-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 after:animate-pulse' 
                 : ''
             }`}
           >
@@ -74,9 +74,9 @@ export function Header() {
           </Link>
           <Link 
             href={`/${locale}/o-nama`} 
-            className={`relative text-gray-700 hover:text-orange-600 transition-colors font-medium py-2 ${
+            className={`relative text-gray-700 hover:text-brand-600 transition-colors font-medium py-2 ${
               pathname.includes('/o-nama') 
-                ? 'text-orange-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-orange-600 after:animate-pulse' 
+                ? 'text-brand-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 after:animate-pulse' 
                 : ''
             }`}
           >
@@ -88,7 +88,7 @@ export function Header() {
         <div className="hidden md:block ml-auto relative" ref={langMenuRef}>
           <button
             onClick={() => setLangMenuOpen(!langMenuOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200"
+            className="flex items-center gap-2 px-3 py-2 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200"
           >
             <span className="font-semibold text-gray-700 text-sm uppercase">{locale}</span>
             <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +107,7 @@ export function Header() {
                   setLangMenuOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
-                  locale === 'sr' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+                  locale === 'sr' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'
                 }`}
               >
                 Srpski
@@ -119,7 +119,7 @@ export function Header() {
                   setLangMenuOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
-                  locale === 'en' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+                  locale === 'en' ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-700'
                 }`}
               >
                 English
@@ -148,28 +148,28 @@ export function Header() {
             <nav className="flex flex-col gap-4">
               <Link 
                 href={`/${locale}/prodaja`} 
-                className={`text-gray-700 hover:text-orange-600 py-2 ${pathname.includes('/prodaja') ? 'text-orange-600 font-semibold border-l-4 border-orange-600 pl-2' : ''}`}
+                className={`text-gray-700 hover:text-brand-600 py-2 ${pathname.includes('/prodaja') ? 'text-brand-600 font-semibold border-l-4 border-brand-600 pl-2' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('forSale')}
               </Link>
               <Link 
                 href={`/${locale}/izdavanje`} 
-                className={`text-gray-700 hover:text-orange-600 py-2 ${pathname.includes('/izdavanje') ? 'text-orange-600 font-semibold border-l-4 border-orange-600 pl-2' : ''}`}
+                className={`text-gray-700 hover:text-brand-600 py-2 ${pathname.includes('/izdavanje') ? 'text-brand-600 font-semibold border-l-4 border-brand-600 pl-2' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('forRent')}
               </Link>
               <Link 
                 href={`/${locale}/kontakt`} 
-                className={`text-gray-700 hover:text-orange-600 py-2 ${pathname.includes('/kontakt') ? 'text-orange-600 font-semibold border-l-4 border-orange-600 pl-2' : ''}`}
+                className={`text-gray-700 hover:text-brand-600 py-2 ${pathname.includes('/kontakt') ? 'text-brand-600 font-semibold border-l-4 border-brand-600 pl-2' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('contact')}
               </Link>
               <Link 
                 href={`/${locale}/o-nama`} 
-                className={`text-gray-700 hover:text-orange-600 py-2 ${pathname.includes('/o-nama') ? 'text-orange-600 font-semibold border-l-4 border-orange-600 pl-2' : ''}`}
+                className={`text-gray-700 hover:text-brand-600 py-2 ${pathname.includes('/o-nama') ? 'text-brand-600 font-semibold border-l-4 border-brand-600 pl-2' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('about')}
@@ -183,8 +183,8 @@ export function Header() {
                       router.push(newPath);
                       setMobileMenuOpen(false);
                     }}
-                    className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
-                      locale === 'sr' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    className={`flex-1 py-2 px-4 rounded-full transition-colors ${
+                      locale === 'sr' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     Srpski
@@ -195,8 +195,8 @@ export function Header() {
                       router.push(newPath);
                       setMobileMenuOpen(false);
                     }}
-                    className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
-                      locale === 'en' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    className={`flex-1 py-2 px-4 rounded-full transition-colors ${
+                      locale === 'en' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     English

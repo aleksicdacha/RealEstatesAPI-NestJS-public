@@ -99,14 +99,14 @@ export function Footer() {
                 placeholder="Unesite vašu email adresu"
                 className="flex-1 px-4 py-3 rounded-lg bg-white text-gray-900"
               />
-              <button className="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-lg font-semibold transition-colors">
+              <button className="bg-brand-600 hover:bg-brand-700 px-6 py-3 rounded-full font-semibold transition-colors">
                 →
               </button>
             </div>
             <div className="mt-3 text-xs text-gray-400">
               <label className="flex items-center gap-2">
                 <input type="checkbox" className="rounded" />
-                <span>Prihvatam <Link href="/uslove-koriscenja" className="text-orange-600 hover:underline">uslove korišćenja i politiku privatnosti</Link></span>
+                <span>Prihvatam <Link href="/uslove-koriscenja" className="text-brand-600 hover:underline">uslove korišćenja i politiku privatnosti</Link></span>
               </label>
             </div>
           </div>

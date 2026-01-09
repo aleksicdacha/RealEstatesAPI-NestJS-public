@@ -26,6 +26,7 @@ export interface Property {
   elevator?: boolean;
   additionalEquipment?: string[];
   constructionYear?: number;
+  specialOffer?: number;
   images: PropertyImage[];
   // Explicitly excluded from public API:
   // - address (exact address hidden, only neighborhood shown)
@@ -153,6 +154,11 @@ export function getImageUrl(imageUrl: string): string {
   
   // If URL starts with /uploads/, prepend the API URL
   if (imageUrl.startsWith('/uploads/')) {
+    return `http://localhost:3000${imageUrl}`;
+  }
+
+   // If URL starts with /assets/, prepend the API URL
+  if (imageUrl.startsWith('/assets/')) {
     return `http://localhost:3000${imageUrl}`;
   }
   

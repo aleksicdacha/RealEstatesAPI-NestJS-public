@@ -164,7 +164,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
         </button>
         
         {/* Property ID badge */}
-        <div className="absolute top-3 left-3 bg-orange-600 text-white px-3 py-1 rounded-md text-sm font-semibold">
+        <div className="absolute top-3 left-3 bg-brand-600 text-white px-3 py-1 rounded-md text-sm font-semibold">
           ID {property.code}
         </div>
       </div>
@@ -173,7 +173,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
       <Link href={propertyUrl} className="block p-4">
         {/* Price */}
         <div className="mb-2">
-          <p className="text-xl font-bold text-orange-600">
+          <p className="text-xl font-bold text-brand-600">
             {new Intl.NumberFormat('sr-RS', { 
               style: 'currency', 
               currency: 'EUR',

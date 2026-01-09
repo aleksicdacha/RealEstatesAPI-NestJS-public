@@ -8,7 +8,25 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-main)', 'system-ui', 'sans-serif'],
+      },
       colors: {
+        // Glavna boja brenda - za promenu boja edituj hex vrednosti ovde
+        brand: {
+          '50': '#fdf4f3',
+          '100': '#fbeae8',
+          '200': '#f6d8d5',
+          '300': '#efb7b2',
+          '400': '#e58e87',
+          '500': '#d7625c',
+          '600': '#c74d4d',
+          '700': '#a22e31',
+          '800': '#88292e',
+          '900': '#75262d',
+          '950': '#401114',
+        },
+        // Legacy primary (može se obrisati kasnije)
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -25,4 +43,5 @@ export default {
       },
     },
   },
+  plugins: [],
 } satisfies Config;
