@@ -268,7 +268,7 @@ export function Chatbot() {
           <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-4 flex items-center justify-between text-white">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <span className="text-2xl">🏠</span>
+                {/* <span className="text-2xl">🏠</span> */}
               </div>
               <div>
                 <h3 className="font-bold">{t('title')}</h3>

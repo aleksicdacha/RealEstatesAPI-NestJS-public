@@ -4,7 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Property, getFavoriteImage, getImageUrl } from '@/lib/api';
 import { usePathname } from 'next/navigation';
-import type { ReactElement } from 'react';
+import { useTranslations } from 'next-intl';
+import type { ReactElement }from 'react';
 
 function getPropertyTypeIcon(type: string): ReactElement {
   const icons: { [key: string]: ReactElement } = {
@@ -33,21 +34,6 @@ function getPropertyTypeIcon(type: string): ReactElement {
   return icons[type] || icons['Apartment'];
 }
 
-function getPropertyTypeName(type: string): string {
-  const names: { [key: string]: string } = {
-    'Apartment': 'Stan',
-    'House': 'Kuća',
-    'ApartmentInHouse': 'Stan u kući',
-    'Office': 'Poslovni prostor',
-    'CommercialSpace': 'Lokal',
-    'Land': 'Plac',
-    'VacationHome': 'Vikendica',
-    'Duplex': 'Duplex',
-  };
-
-  return names[type] || type;
-}
-
 interface FavouritePropertyCardProps {
   property: Property;
   priority?: boolean;
@@ -56,8 +42,30 @@ interface FavouritePropertyCardProps {
 export function FavouritePropertyCard({ property, priority = false }: FavouritePropertyCardProps) {
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr';
+  const tProps = useTranslations('Properties');
   const favoriteImage = getFavoriteImage(property.images);
   const imageUrl = favoriteImage ? getImageUrl(favoriteImage.url) : null;
+
+  // Translate property type
+  const getTranslatedPropertyType = (type: string): string => {
+    const typeMap: { [key: string]: string } = {
+      'Apartment': 'apartment',
+      'House': 'house',
+      'ApartmentInHouse': 'apartmentInHouse',
+      'Office': 'office',
+      'CommercialSpace': 'commercial',
+      'Land': 'land',
+      'VacationHome': 'vacationHome',
+      'Duplex': 'duplex',
+      'Garage': 'garage',
+    };
+    const key = typeMap[type];
+    if (!key) {
+      console.warn(`Missing translation for property type: ${type}`);
+      return type;
+    }
+    return tProps(key);
+  };
 
   const locationSlug = property.neighborhood ? property.neighborhood.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'nis';
   const slug = `${property.propertyType.toLowerCase()}-${locationSlug}`
@@ -109,7 +117,7 @@ export function FavouritePropertyCard({ property, priority = false }: FavouriteP
         {/* Type and location */}
         <div className="mb-2 flex items-center gap-1 text-xs text-gray-600">
           {getPropertyTypeIcon(property.propertyType)}
-          <span>{getPropertyTypeName(property.propertyType)}</span>
+          <span>{getTranslatedPropertyType(property.propertyType)}</span>
           <span className="text-gray-400">·</span>
           <span className="line-clamp-1">{property.neighborhood || 'Niš'}</span>
         </div>
