@@ -7,6 +7,7 @@ import { mainFont } from '@/app/config/fonts';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 import { Chatbot } from '@/app/components/Chatbot';
+import CookieConsent from '@/app/components/CookieConsent';
 import { FavouritesProvider } from '@/app/contexts/FavouritesContext';
 import { GoogleMapsProvider } from '@/app/components/GoogleMapsProvider';
 
@@ -44,6 +45,7 @@ export default async function LocaleLayout({
           {children}
           <Footer />
           <Chatbot />
+          <CookieConsent />
         </FavouritesProvider>
       </GoogleMapsProvider>
     </NextIntlClientProvider>

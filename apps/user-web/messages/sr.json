@@ -13,7 +13,9 @@
     "forRent": "Izdavanje",
     "contact": "Kontakt",
     "about": "O nama",
-    "language": "Jezik"
+    "language": "Jezik",
+    "privacyPolicy": "Politika privatnosti",
+    "termsOfUse": "Uslovi korišćenja"
   },
   "HeroSearch": {
     "sale": "Prodaja",
@@ -403,5 +405,145 @@
     "welcomeMessage": "Zdravo! 👋 Ja sam AI asistent za Olymp Nekretnine. Kako mogu da vam pomognem danas?",
     "apiErrorMessage": "Izvините, došlo je do greške. Molim vas pokušajte ponovo.",
     "agentJoined": "🎉 Agent se priključio razgovoru! Sada možete direktno komunicirati sa našim agentom."
+  },
+  "CookieConsent": {
+    "message": "Koristimo kolačiće da poboljšamo vaše iskustvo na našem sajtu. Prihvatanjem pristajete na upotrebu kolačića.",
+    "acceptAll": "Prihvati sve",
+    "decline": "Odbij",
+    "privacyPolicy": "Politika privatnosti",
+    "customize": "Prilagodi",
+    "saveSettings": "Sačuvaj podešavanja",
+    "basicCookies": "Osnovni kolačići",
+    "basicCookiesDesc": "Neophodni za osnovno funkcionisanje sajta",
+    "analyticsCookies": "Analitički kolačići",
+    "analyticsCookiesDesc": "Pomažu nam da razumemo kako koristite sajt",
+    "advertisingCookies": "Reklamni kolačići",
+    "advertisingCookiesDesc": "Koriste se za personalizovane reklame"
+  },
+  "PrivacyPolicy": {
+    "title": "Politika Privatnosti",
+    "lastUpdated": "Poslednje ažuriranje",
+    "introduction": {
+      "title": "Uvod",
+      "content": "Olymp Nekretnine poštuje vašu privatnost i posvećeni smo zaštiti vaših ličnih podataka. Ova Politika privatnosti objašnjava kako prikupljamo, koristimo i štitimo vaše informacije kada koristite našu platformu za nekretnine."
+    },
+    "dataCollection": {
+      "title": "Prikupljanje podataka",
+      "content": "Prikupljamo sledeće vrste podataka:",
+      "personalData": "Lični podaci koje nam dobrovoljno dostavite (ime, email, telefon) prilikom kontaktiranja ili registracije",
+      "usageData": "Podaci o korišćenju sajta kroz kolačiće i analitičke alate",
+      "propertyData": "Informacije o nekretninama koje pregledate ili tražite"
+    },
+    "dataUsage": {
+      "title": "Korišćenje podataka",
+      "content": "Vaše podatke koristimo za:",
+      "services": "Pružanje naših usluga oglašavanja i pretrage nekretnina",
+      "communication": "Komunikaciju sa vama o vašim upitima i interesovanjima",
+      "improvement": "Poboljšanje naših usluga i korisničkog iskustva",
+      "marketing": "Slanje relevantnih informacija o nekretninama (samo uz vašu saglasnost)"
+    },
+    "cookies": {
+      "title": "Kolačići",
+      "content": "Koristimo sledeće vrste kolačića:",
+      "basic": {
+        "title": "Osnovni kolačići",
+        "content": "Neophodni za funkcionisanje sajta. Ne mogu se isključiti."
+      },
+      "analytics": {
+        "title": "Analitički kolačići",
+        "content": "Pomažu nam da razumemo kako koristite sajt i poboljšamo njegovu funkcionalnost."
+      },
+      "advertising": {
+        "title": "Reklamni kolačići",
+        "content": "Koriste se za prikazivanje personalizovanih oglasa i merenje njihove efikasnosti."
+      }
+    },
+    "dataSharing": {
+      "title": "Deljenje podataka",
+      "content": "Vaše podatke ne prodajemo trećim stranama. Delimo ih samo kada je to neophodno za pružanje usluga ili kada to zahteva zakon."
+    },
+    "userRights": {
+      "title": "Vaša prava",
+      "content": "Imate pravo na:",
+      "access": "Pristup vašim ličnim podacima",
+      "correction": "Ispravku netačnih podataka",
+      "deletion": "Brisanje vaših podataka",
+      "portability": "Prenos podataka drugom pružaocu usluga",
+      "objection": "Prigovor na obradu podataka"
+    },
+    "dataSecurity": {
+      "title": "Bezbednost podataka",
+      "content": "Implementiramo tehničke i organizacione mere za zaštitu vaših podataka od neovlašćenog pristupa, gubitka ili uništenja."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "content": "Za sva pitanja vezana za privatnost kontaktirajte nas na:",
+      "email": "Email: olymp.nis@gmail.com",
+      "phone": "Telefon: +381 18 277 181",
+      "address": "Adresa: Vizantijski bulevar 86 - Niš"
+    },
+    "changes": {
+      "title": "Izmene politike",
+      "content": "Ovu Politiku privatnosti možemo povremeno ažurirati. Sve promene će biti objavljene na ovoj stranici."
+    }
+  },
+  "TermsOfUse": {
+    "title": "Uslovi Korišćenja",
+    "lastUpdated": "Poslednje ažuriranje",
+    "introduction": {
+      "title": "Uvod",
+      "content": "Dobrodošli na Olymp Nekretnine. Ovi Uslovi korišćenja regulišu vaše korišćenje naše platforme za nekretnine. Molimo vas da pažljivo pročitate ove uslove pre korišćenja naših usluga."
+    },
+    "acceptance": {
+      "title": "Prihvatanje uslova",
+      "content": "Korišćenjem naše platforme, automatski prihvatate ove uslove korišćenja. Ako se ne slažete sa ovim uslovima, molimo vas da ne koristite naše usluge."
+    },
+    "services": {
+      "title": "Naše usluge",
+      "content": "Olymp Nekretnine pruža platformu za:",
+      "advertising": "Oglašavanje nekretnina za prodaju i izdavanje",
+      "search": "Pretragu i pregled nekretnina",
+      "communication": "Komunikaciju između prodavaca, zakupodavaca i kupaca/zakupaca",
+      "consulting": "Konsultantske usluge u vezi sa nekretninama"
+    },
+    "userObligations": {
+      "title": "Obaveze korisnika",
+      "content": "Kao korisnik naše platforme, obavezujete se da:",
+      "accuracy": "Dostavljate tačne i ažurirane informacije",
+      "legality": "Koristite platformu samo u legalne svrhe",
+      "respect": "Poštujete prava drugih korisnika",
+      "security": "Ne ugrožavate bezbednost platforme"
+    },
+    "prohibitedActivities": {
+      "title": "Zabranjene aktivnosti",
+      "content": "Sledeće aktivnosti su strogo zabranjene:",
+      "fraud": "Obmanjivanje ili pružanje lažnih informacija",
+      "spam": "Slanje neželjenih poruka ili spam-a",
+      "harassment": "Zlostavljanje ili uznemiravanje drugih korisnika",
+      "illegal": "Oglašavanje ili promovisanje ilegalnih aktivnosti",
+      "copyright": "Kršenje autorskih prava ili prava intelektualne svojine"
+    },
+    "intellectualProperty": {
+      "title": "Intelektualna svojina",
+      "content": "Sav sadržaj na našoj platformi (tekstovi, slike, logotipi, softver) je zaštićen autorskim pravima. Ne smete kopirati, distribuirati ili koristiti ovaj sadržaj bez naše pisane dozvole."
+    },
+    "liability": {
+      "title": "Ograničenje odgovornosti",
+      "content": "Olymp Nekretnine ne može biti odgovorna za eventualne štete nastale korišćenjem naše platforme. Koristite naše usluge na sopstveni rizik."
+    },
+    "termination": {
+      "title": "Prekid usluga",
+      "content": "Zadržavamo pravo da u bilo kom trenutku prekinemo vaše korišćenje naše platforme ako prekršite ove uslove."
+    },
+    "changes": {
+      "title": "Izmene uslova",
+      "content": "Ove uslove možemo povremeno ažurirati. Sve promene će biti objavljene na ovoj stranici."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "content": "Za sva pitanja vezana za ove uslove kontaktirajte nas na:",
+      "email": "Email: olymp.nis@gmail.com",
+      "phone": "Telefon: +381 18 277 181"
+    }
   }
 }

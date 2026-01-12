@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export function Footer() {
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr';
+  const t = useTranslations('Navigation');
 
   return (
     <footer className="bg-black text-white py-12">
@@ -57,6 +59,8 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href={`/${locale}/kontakt`} className="hover:text-white">Kontakt</Link></li>
               <li><Link href={`/${locale}/o-nama`} className="hover:text-white">O nama</Link></li>
+              <li><Link href={`/${locale}/politika-privatnosti`} className="hover:text-white">{t('privacyPolicy')}</Link></li>
+              <li><Link href={`/${locale}/uslove-koriscenja`} className="hover:text-white">{t('termsOfUse')}</Link></li>
               <li><Link href={`/${locale}/cenovnik`} className="hover:text-white">Cenovnik</Link></li>
               <li><Link href={`/${locale}/karijera`} className="hover:text-white">Karijera</Link></li>
               <li><Link href={`/${locale}/cesto-postavljana-pitanja`} className="hover:text-white">Često postavljana pitanja</Link></li>
@@ -106,7 +110,7 @@ export function Footer() {
             <div className="mt-3 text-xs text-gray-400">
               <label className="flex items-center gap-2">
                 <input type="checkbox" className="rounded" />
-                <span>Prihvatam <Link href="/uslove-koriscenja" className="text-brand-600 hover:underline">uslove korišćenja i politiku privatnosti</Link></span>
+                <span>Prihvatam <Link href={`/${locale}/uslove-koriscenja`} className="text-brand-600 hover:underline">uslove korišćenja i politiku privatnosti</Link></span>
               </label>
             </div>
           </div>
