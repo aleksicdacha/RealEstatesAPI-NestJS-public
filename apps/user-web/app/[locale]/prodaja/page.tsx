@@ -14,6 +14,8 @@ export const dynamic = 'force-dynamic';
 
 export default function ProdajaPage() {
   const t = useTranslations('Properties');
+  const tFav = useTranslations('Favourites');
+  const tWhy = useTranslations('WhyChooseUs');
   const [properties, setProperties] = useState<Property[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
@@ -223,10 +225,10 @@ export default function ProdajaPage() {
           <div className="px-2">
             <div className="mb-8">
               <h2 className="text-3xl font-bold mb-6 text-center">
-                Omiljene Nekretnine
+                {tFav('favouriteProperties')}
               </h2>
               <p className="text-center text-gray-600">
-                Vaše sačuvane nekretnine ({favourites.length})
+                {tFav('savedPropertiesCount', { count: favourites.length })}
               </p>
             </div>
 
@@ -249,29 +251,29 @@ export default function ProdajaPage() {
       <section className="py-16">
         <div className="px-4">
           <h2 className="text-3xl font-bold mb-12 text-center">
-            Zašto Izabrati Olymp Nekretnine?
+            {tWhy('title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-primary-600 text-2xl">🏠</span>
+                {/* <span className="text-primary-600 text-2xl">🏠</span> */}
               </div>
-              <h3 className="font-bold text-xl mb-2">Velika Ponuda</h3>
-              <p className="text-gray-600">Hiljade verifikovanih oglasa za prodaju</p>
+              <h3 className="font-bold text-xl mb-2">{tWhy('forSale.feature1Title')}</h3>
+              <p className="text-gray-600">{tWhy('forSale.feature1Description')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-primary-600 text-2xl">🗺️</span>
+                {/* <span className="text-primary-600 text-2xl">🗺️</span> */}
               </div>
-              <h3 className="font-bold text-xl mb-2">Interaktivna Mapa</h3>
-              <p className="text-gray-600">Pronađite nekretninu po lokaciji</p>
+              <h3 className="font-bold text-xl mb-2">{tWhy('forSale.feature2Title')}</h3>
+              <p className="text-gray-600">{tWhy('forSale.feature2Description')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-primary-600 text-2xl">✓</span>
+                {/* <span className="text-primary-600 text-2xl">✓</span> */}
               </div>
-              <h3 className="font-bold text-xl mb-2">3% Provizije</h3>
-              <p className="text-gray-600">Direktan kontakt sa vlasnicima</p>
+              <h3 className="font-bold text-xl mb-2">{tWhy('forSale.feature3Title')}</h3>
+              <p className="text-gray-600">{tWhy('forSale.feature3Description')}</p>
             </div>
           </div>
         </div>

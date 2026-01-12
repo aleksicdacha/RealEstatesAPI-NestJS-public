@@ -40,21 +40,6 @@ function getPropertyTypeIcon(type: string): ReactElement {
   return icons[type] || icons['Apartment'];
 }
 
-function getPropertyTypeName(type: string): string {
-  const names: { [key: string]: string } = {
-    'Apartment': 'Stan',
-    'House': 'Kuća',
-    'ApartmentInHouse': 'Stan u kući',
-    'Office': 'Poslovni prostor',
-    'CommercialSpace': 'Lokal',
-    'Land': 'Plac',
-    'VacationHome': 'Vikendica',
-    'Duplex': 'Duplex',
-  };
-  
-  return names[type] || type;
-}
-
 export function PropertyCard({ property, onHover, priority = false }: PropertyCardProps) {
   const { toggleFavourite, isFavourite } = useFavourites();
   const pathname = usePathname();
@@ -75,8 +60,14 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
       'Land': 'land',
       'VacationHome': 'vacationHome',
       'Duplex': 'duplex',
+      'Garage': 'garage',
     };
-    return tProps(typeMap[type] || 'apartment');
+    const key = typeMap[type];
+    if (!key) {
+      console.warn(`Missing translation for property type: ${type}`);
+      return type;
+    }
+    return tProps(key);
   };
 
   // Translate heating type

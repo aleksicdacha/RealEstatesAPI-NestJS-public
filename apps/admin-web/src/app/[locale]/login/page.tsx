@@ -41,10 +41,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex align-items-center justify-content-center min-h-screen" 
-         style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+         style={{ backgroundColor: '#764ba2 100%)' }}>
       <Card className="w-full max-w-30rem shadow-8">
         <div className="text-center mb-5">
-          <div className="text-900 text-4xl font-bold mb-2">🏡</div>
           <div className="text-900 text-3xl font-bold mb-3">Real Estate Admin</div>
           <span className="text-600 font-medium">{t('login')}</span>
         </div>

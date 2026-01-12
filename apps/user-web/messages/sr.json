@@ -62,7 +62,7 @@
   },
   "Landing": {
     "heroTitle": "Kupite ili iznajmite nekretninu",
-    "heroHighlight": "bez provizije",
+    "heroHighlight": "bez rizika",
     "heroSubtitle": "Pronađite savršenu nekretninu u najtraženijim gradovima Srbije",
     "noCosts": "Bez provizije",
     "verification": "Verifikovane nekretnine",
@@ -93,7 +93,29 @@
     "removeFromFavourites": "Ukloni iz omiljenih",
     "yourFavourites": "Vaši omiljeni",
     "noFavourites": "Nemate omiljenih nekretnina",
-    "addSome": "Dodajte nekretnine u omiljene da biste ih lakše pratili"
+    "addSome": "Dodajte nekretnine u omiljene da biste ih lakše pratili",
+    "favouriteProperties": "Omiljene Nekretnine",
+    "savedProperties": "Vaše sačuvane nekretnine",
+    "savedPropertiesCount": "Vaše sačuvane nekretnine ({count})"
+  },
+  "WhyChooseUs": {
+    "title": "Zašto Izabrati Olymp Nekretnine?",
+    "forSale": {
+      "feature1Title": "Velika Ponuda",
+      "feature1Description": "Hiljade verifikovanih oglasa za prodaju",
+      "feature2Title": "Interaktivna Mapa",
+      "feature2Description": "Pronađite nekretninu po lokaciji",
+      "feature3Title": "3% Provizije",
+      "feature3Description": "Direktan kontakt sa vlasnicima"
+    },
+    "forRent": {
+      "feature1Title": "Fleksibilni Ugovori",
+      "feature1Description": "Iznajmljivanje sa fleksibilnim uslovima i rokovima",
+      "feature2Title": "Interaktivna Mapa",
+      "feature2Description": "Pronađite nekretninu po lokaciji",
+      "feature3Title": "Brza Verifikacija",
+      "feature3Description": "Svi oglasi su verifikovani i pouzdani"
+    }
   },
   "Properties": {
     "forSale": "Nekretnine na prodaju",
@@ -317,6 +339,46 @@
     "results": "rezultata",
     "noResults": "Nema rezultata",
     "tryDifferentFilters": "Pokušajte sa drugim filterima"
+  },
+  "AboutUs": {
+    "title": "O nama",
+    "heroTitle": "Olymp Nekretnine",
+    "heroSubtitle": "Niš u Evropi, Evropa u Nišu",
+    "heroDescription": "Vaš pouzdan partner za kupovinu, prodaju i izdavanje nekretnina",
+    "whoWeAreTitle": "Ko smo mi?",
+    "whoWeAreText1": "Preduzeće OLYMP NEKRETNINE, formirano je od strane grupe iskusnih, stručnih ljudi iz oblasti nekretnina. Ideja je bila ponuditi niškom i srpskom tržištu noviji, kvalitetniji, sadržajniji i savremeniji pristup iz oblasti posredovanja u prometu nekretnina.",
+    "whoWeAreText2": "Uspeli smo da napravimo nešto novo na našem tržištu, uspeli smo da napravimo pomak u prihvatanju našeg mesta i naše uloge u prometu nekretnina. Paralelno sa posredovanjem u prometu nekretnina preduzeće može izaći u susret sa izradom projekata adaptacija, nadogradnji, dogradnji, a formirali smo i stručnu ekipu visokokvalifikovanih ljudi iz oblasti građevinsko-zanatskih radova i time zaokružili našu ponudu.",
+    "ourMissionTitle": "Naša misija",
+    "ourMissionText": "To znači da je preduzeće OLYMP NEKRETNINE u mogućnosti da ponudi svojim poslovnim partnerima različite nekretnine (stanove, kuće, lokale...), usluge stručno-konsultativne službe u vidu svake vrste stručne pomoći, kao i izvođenje radova na samim nekretninama.",
+    "ourVisionTitle": "Naša vizija",
+    "ourVisionText": "Sledeći korak u našom radu je izgradnja ili investiranje u stambene objekte, odnosno izgradnja stanova za tržište po evropskim normativima, a sa srpskom tradicijom i vrednoćom koju su naši ljudi pokazali u celom svetu. Pri svim ovim poslovnim zahvatima osnovna misao i pravac delovanja je potpuna pravna sigurnost naših klijenata.",
+    "ourValuesTitle": "Naše vrednosti",
+    "value1Title": "Profesionalnost",
+    "value1Description": "Stručan tim sa godinama iskustva u oblasti nekretnina",
+    "value2Title": "Transparentnost",
+    "value2Description": "Potpuna otvorenost i jasnoća u svim poslovnim transakcijama",
+    "value3Title": "Pouzdanost",
+    "value3Description": "Pravna sigurnost i zaštita interesa naših klijenata",
+    "value4Title": "Inovacija",
+    "value4Description": "Savremeni pristup i evropski standardi u poslovanju",
+    "whyChooseUsTitle": "Zašto odabrati nas?",
+    "reason1": "Iskusni i stručni tim posrednika",
+    "reason2": "Potpuna pravna sigurnost svih transakcija",
+    "reason3": "Kompletna usluga - od pronalaženja nekretnine do preseljenja",
+    "reason4": "Profesionalno fotografisanje i prezentacija nekretnina",
+    "reason5": "Procena vrednosti i konsultantske usluge",
+    "reason6": "Građevinsko-zanatski radovi i adaptacije",
+    "companyInfoTitle": "Informacije o preduzeću",
+    "registeredAs": "Radnja za promet nekretnina i izvođenje radova u građevinarstvu",
+    "registryNumber": "Upisani u registar posrednika pod brojem",
+    "taxNumber": "PIB",
+    "activityCode": "Šifra delatnosti",
+    "activityDescription": "Agencije za nekretnine",
+    "ctaTitle": "Spremni da pronađete dom svojih snova?",
+    "ctaDescription": "Kontaktirajte nas danas i dozvolite nam da vam pomognemo u pronalaženju savršene nekretnine.",
+    "ctaButton": "Kontaktirajte nas",
+    "ctaButton2": "Pogledajte našu ponudu",
+    "motto": "Ne prepuštamo ništa slučaju, želimo da radimo, stvaramo i hoćemo da radimo kvalitetnije i bolje od drugih."
   },
   "Chatbot": {
     "title": "Pomoć",
