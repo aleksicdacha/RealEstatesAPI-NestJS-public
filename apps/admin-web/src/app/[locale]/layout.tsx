@@ -92,6 +92,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       badge: unreadCount > 0 ? unreadCount.toString() : undefined,
       badgeClassName: 'p-badge-danger'
     },
+    { 
+      label: t('newsletter'), 
+      icon: "pi pi-envelope", 
+      command: () => router.push(`/${locale}/newsletter`) 
+    },
   ];
 
   const switchLanguage = (newLocale: string) => {

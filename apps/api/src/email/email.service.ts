@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { I18nContext, I18nService } from 'nestjs-i18n';
+import * as sanitizeHtml from 'sanitize-html';
 
 @Injectable()
 export class EmailService {
@@ -348,6 +349,167 @@ export class EmailService {
           <div class="footer">
             <p>Ova poruka je poslata sa kontakt forme vaše web stranice.</p>
             <p>&copy; ${new Date().getFullYear()} Real Estate. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  async sendNewsletterEmail(to: string, subject: string, content: string, unsubscribeToken: string): Promise<void> {
+    const unsubscribeUrl = `${this.configService.get<string>('USER_WEB_URL', 'http://localhost:3002')}/sr/newsletter/unsubscribe?token=${unsubscribeToken}`;
+
+    const mailOptions = {
+      from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
+      to,
+      subject,
+      html: this.getNewsletterTemplate(content, unsubscribeUrl),
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
+
+  private getNewsletterTemplate(content: string, unsubscribeUrl: string): string {
+    // Sanitize HTML content while allowing safe tags and attributes
+    const sanitizedContent = sanitizeHtml(content, {
+      allowedTags: [
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'p', 'br', 'hr', 'div', 'span',
+        'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+        'ul', 'ol', 'li',
+        'a', 'img',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'blockquote', 'pre', 'code'
+      ],
+      allowedAttributes: {
+        'a': ['href', 'title', 'target'],
+        'img': ['src', 'alt', 'title', 'width', 'height'],
+        '*': ['style', 'class']
+      },
+      allowedStyles: {
+        '*': {
+          'color': [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
+          'background-color': [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
+          'font-size': [/^\d+(?:px|em|%)$/],
+          'font-weight': [/^bold$/, /^normal$/, /^\d+$/],
+          'text-align': [/^left$/, /^right$/, /^center$/, /^justify$/],
+          'margin': [/^\d+(?:px|em|%)$/],
+          'padding': [/^\d+(?:px|em|%)$/]
+        }
+      },
+      allowedSchemes: ['http', 'https', 'mailto'],
+      transformTags: {
+        'a': (tagName, attribs) => {
+          return {
+            tagName: 'a',
+            attribs: {
+              ...attribs,
+              target: '_blank',
+              rel: 'noopener noreferrer'
+            }
+          };
+        }
+      }
+    });
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+          }
+          .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+          }
+          .content {
+            color: #555;
+            margin-bottom: 30px;
+          }
+          .newsletter-content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+          }
+          .newsletter-content h1,
+          .newsletter-content h2,
+          .newsletter-content h3 {
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 10px;
+          }
+          .newsletter-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px 0;
+          }
+          .newsletter-content a {
+            color: #007bff;
+            text-decoration: none;
+          }
+          .newsletter-content a:hover {
+            text-decoration: underline;
+          }
+          .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+          }
+          .unsubscribe {
+            color: #666;
+            font-size: 11px;
+            margin-top: 20px;
+          }
+          .unsubscribe a {
+            color: #007bff;
+            text-decoration: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">🏠 Real Estate Newsletter</div>
+            <p>Novosti iz sveta nekretnina</p>
+          </div>
+
+          <div class="newsletter-content">
+            ${sanitizedContent}
+          </div>
+
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Real Estate. All rights reserved.</p>
+            <div class="unsubscribe">
+              <a href="${unsubscribeUrl}">Odjavite se sa newsletter-a</a>
+            </div>
           </div>
         </div>
       </body>

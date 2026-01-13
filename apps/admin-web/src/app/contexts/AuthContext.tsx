@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      const response = await fetch('http://localhost:3000/v1/auth/refresh', {
+      const response = await fetch('http://localhost:3000/v1/auth/refresh-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

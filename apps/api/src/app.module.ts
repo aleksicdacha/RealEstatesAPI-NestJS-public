@@ -17,6 +17,7 @@ import { ChatbotModule } from '@src/entities/chatbot/chatbot.module';
 import { AgentChatModule } from '@src/entities/agent-chat/agent-chat.module';
 import { EmailModule } from './email/email.module';
 import { ContactModule } from './contact/contact.module';
+import { NewsletterSubscriberModule } from '@src/entities/newsletter-subscriber/newsletter-subscriber.module';
 
 // Configuration
 import { databaseConfig } from '@src/common/config/database.config';
@@ -108,6 +109,7 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
     AgentChatModule,
     EmailModule,
     ContactModule,
+    NewsletterSubscriberModule,
   ],
   providers: [
     {

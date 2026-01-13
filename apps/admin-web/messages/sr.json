@@ -94,7 +94,58 @@
     "users": "Korisnici",
     "clients": "Klijenti",
     "agentChat": "Agent Chat",
+    "newsletter": "Newsletter",
     "settings": "Podešavanja"
+  },
+  "Newsletter": {
+    "title": "Newsletter",
+    "subtitle": "Upravljajte pretplatnicima i slanjem",
+    "sendButton": "Pošalji newsletter",
+    "empty": "Nema pretplatnika",
+    "status": {
+      "active": "Aktivan",
+      "inactive": "Neaktivan"
+    },
+    "columns": {
+      "email": "Email",
+      "status": "Status",
+      "subscribedAt": "Pretplaćen",
+      "updatedAt": "Ažuriran"
+    },
+    "filters": {
+      "title": "Filteri",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Pretraži email",
+      "statusLabel": "Status",
+      "statusAll": "Svi statusi",
+      "subscribedFrom": "Pretplaćen od",
+      "subscribedTo": "Pretplaćen do",
+      "apply": "Primeni filtere",
+      "clear": "Poništi filtere"
+    },
+    "selection": {
+      "selected": "{count} izabranih pretplatnika",
+      "none": "Nema izabranih pretplatnika"
+    },
+    "toast": {
+      "success": "Uspeh",
+      "error": "Greška",
+      "warning": "Upozorenje",
+      "loadError": "Nije moguće učitati pretplatnike",
+      "validation": "Molimo popunite sva polja",
+      "sendError": "Nije moguće poslati newsletter",
+      "sendSuccess": "Newsletter poslat za {count} pretplatnika"
+    },
+    "sendDialog": {
+      "title": "Pošalji newsletter",
+      "send": "Pošalji",
+      "sending": "Šalje se...",
+      "subjectLabel": "Predmet",
+      "subjectPlaceholder": "Unesite predmet newsletter-a",
+      "contentLabel": "Sadržaj",
+      "contentPlaceholder": "Unesite sadržaj newsletter-a",
+      "selectionInfo": "Slanje ka {count} izabranih"
+    }
   },
   "properties": {
     "title": "Nekretnine",

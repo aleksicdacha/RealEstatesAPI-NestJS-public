@@ -94,7 +94,58 @@
     "users": "Users",
     "clients": "Clients",
     "agentChat": "Agent Chat",
+    "newsletter": "Newsletter",
     "settings": "Settings"
+  },
+  "Newsletter": {
+    "title": "Newsletter",
+    "subtitle": "Manage subscribers and send updates",
+    "sendButton": "Send Newsletter",
+    "empty": "No subscribers",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "email": "Email",
+      "status": "Status",
+      "subscribedAt": "Subscribed",
+      "updatedAt": "Updated"
+    },
+    "filters": {
+      "title": "Filters",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Search email",
+      "statusLabel": "Status",
+      "statusAll": "All statuses",
+      "subscribedFrom": "Subscribed from",
+      "subscribedTo": "Subscribed to",
+      "apply": "Apply filters",
+      "clear": "Clear filters"
+    },
+    "selection": {
+      "selected": "{count} subscriber(s) selected",
+      "none": "No subscribers selected"
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "loadError": "Unable to load subscribers",
+      "validation": "Please fill all fields",
+      "sendError": "Unable to send newsletter",
+      "sendSuccess": "Newsletter sent to {count} subscriber(s)"
+    },
+    "sendDialog": {
+      "title": "Send Newsletter",
+      "send": "Send",
+      "sending": "Sending...",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Enter newsletter subject",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Enter newsletter content",
+      "selectionInfo": "Sending to {count} selected subscriber(s)"
+    }
   },
   "properties": {
     "title": "Properties",

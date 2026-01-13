@@ -18,77 +18,51 @@
 ```bash
 # Run all apps (from workspace root)
 npm run dev              # Turborepo runs all apps in parallel
-
-# Individual apps
-npm run dev:api          # NestJS on :3000
-npm run dev:admin        # Admin panel on :3001
-npm run dev:user         # Public site on :3002
-
 # Docker services (PostgreSQL + Redis)
 npm run docker:up
 npm run docker:down
 npm run docker:logs      # View logs
 ```
 
-### Database Operations (CRITICAL)
-**Must run from `apps/api` directory** - migrations use TypeORM CLI, NOT NestJS CLI:
 ```bash
 cd apps/api
 
-# Migrations
 npm run migration:generate -- src/migrations/MigrationName
 npm run migration:run
 npm run migration:revert
-
-# Seeding
-npm run seed             # Runs seeds/final-seed.ts
 npm run seed:users       # Individual seed scripts
 ```
 
-**Never use** `nest generate` for migrations - it won't work.
 
 ## Backend (NestJS) Patterns
-
 ### Custom Repository Pattern
 **Critical**: Repositories extend TypeORM's `Repository<Entity>` and inject `DataSource`:
-```typescript
 // property.repository.ts
 @Injectable()
 export class PropertyRepository extends Repository<Property> {
-  constructor(private readonly dataSource: DataSource) {
     super(Property, dataSource.createEntityManager());
   }
-  
   async findFilteredProperties(options: FilterPropertyDto): Promise<[Property[], number]> {
     const qb = this.createQueryBuilder('property');
     // Custom queries here
   }
-}
 
 // property.module.ts
 @Module({
   imports: [TypeOrmModule.forFeature([Property, PropertyImage])],
   providers: [PropertyService, PropertyRepository, PropertyImageRepository],
   exports: [PropertyService, PropertyRepository]
-})
 ```
 
 **Do NOT** use `@InjectRepository(Property)` - provide custom repository as service directly.
 
 ### Module Structure
-All feature modules follow this pattern:
-```
-entities/
-  property/
-    property.entity.ts        # @Entity('properties') with TypeORM decorators
     property.module.ts        # Feature module with TypeOrmModule.forFeature()
     property.service.ts       # Business logic, uses repositories
     property.controller.ts    # Routes, DTOs, guards
-    property.repository.ts    # Custom queries extending Repository<T>
     dto/                      # CreatePropertyDto, UpdatePropertyDto, etc.
     enums/                    # PropertyType, PropertyStatus, etc.
 ```
-
 See: `apps/api/src/entities/property/` for canonical example.
 
 ### Public vs Admin API Split ⚠️
@@ -104,21 +78,10 @@ See: `apps/api/src/entities/property/` for canonical example.
 - `createdAt`, `updatedAt` (metadata)
 
 See `documentation/SECURITY-PUBLIC-API.md` for implementation details.
-
-### Authentication & Authorization
-- JWT with Passport: `JwtAuthGuard`, `LocalAuthGuard`, `RolesGuard`
-- Role enum: `Role.ADMIN`, `Role.USER` in `auth/enums/role.enum.ts`
-- **Many routes are unprotected** - guards exist but some are NOT applied (check controllers)
-- Pattern: `@UseGuards(JwtAuthGuard, RolesGuard)` + `@Roles(Role.ADMIN)`
-
-### Configuration & Modules
 `apps/api/src/app.module.ts` shows critical setup:
 - ConfigModule with Joi validation (`common/config/validation.schema.ts`)
 - TypeORM async configuration from environment
-- I18n module (`nestjs-i18n`) with SR/EN support
-- ThrottlerModule for rate limiting
 - Feature modules: Property, Client, User, Chatbot, AgentChat, Upload, Email, Contact
-
 ## Frontend (Next.js) Patterns
 
 ### Color Configuration (user-web)
@@ -179,6 +142,22 @@ const response = await fetch(url);
 - See `documentation/CHATBOT_GUIDE.md` for test cases
 
 Environment variable: `GEMINI_API_KEY` (optional - has fallback system)
+
+### Newsletter Feature
+- Lives in `apps/api/src/entities/newsletter-subscriber/`
+- **HTML Support**: Content field accepts HTML that is sanitized before sending
+- **Sanitization**: Uses `sanitize-html` library to prevent XSS attacks
+- **Allowed tags**: h1-h6, p, div, span, strong, em, ul, ol, li, a, img, table, etc.
+- **Email service**: Nodemailer with HTML templates
+- See `documentation/NEWSLETTER_HTML_GUIDE.md` for examples and allowed tags
+
+Example newsletter content:
+```html
+<h1>Mesečne Novosti</h1>
+<p>Predstavljamo <strong>3 nove nekretnine</strong>.</p>
+<img src="url" alt="slika">
+<a href="link">Pogledaj više</a>
+```
 
 ## Data Model Quirks ⚠️
 

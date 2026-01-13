@@ -8,6 +8,7 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,6 +17,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3000;
   const nodeEnv = configService.get<string>('NODE_ENV') || 'development';
+
+  // Increase body size limits to allow rich newsletter HTML payloads
+  app.use(bodyParser.json({ limit: '2mb' }));
+  app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
 
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import NewsletterSection from './NewsletterSection';
 
 export function Footer() {
   const pathname = usePathname();
@@ -92,28 +93,7 @@ export function Footer() {
 
         {/* Newsletter */}
         <div className="border-t border-gray-800 pt-8 mb-8">
-          <div className="max-w-2xl">
-            <h3 className="font-bold text-xl mb-2">Newsletter</h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Prijavite se besplatno za newsletter i budite u toku sa najnovijim dešavanjima.
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Unesite vašu email adresu"
-                className="flex-1 px-4 py-3 rounded-lg bg-white text-gray-900"
-              />
-              <button className="bg-brand-600 hover:bg-brand-700 px-6 py-3 rounded-full font-semibold transition-colors">
-                →
-              </button>
-            </div>
-            <div className="mt-3 text-xs text-gray-400">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span>Prihvatam <Link href={`/${locale}/uslove-koriscenja`} className="text-brand-600 hover:underline">uslove korišćenja i politiku privatnosti</Link></span>
-              </label>
-            </div>
-          </div>
+          <NewsletterSection locale={locale} variant="footer" />
         </div>
 
         {/* Bottom */}

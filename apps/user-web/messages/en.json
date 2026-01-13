@@ -542,5 +542,14 @@
       "email": "Email: olymp.nis@gmail.com",
       "phone": "Phone: +381 18 277 181"
     }
+  },
+  "Newsletter": {
+    "title": "Stay Updated",
+    "subtitle": "Subscribe to our newsletter and be the first to know about new properties and exclusive offers.",
+    "emailPlaceholder": "Your email address",
+    "subscribe": "Subscribe",
+    "submitting": "Submitting...",
+    "acceptTerms": "I accept the terms of use and privacy policy",
+    "privacyNote": "We respect your privacy. You can unsubscribe at any time."
   }
 }

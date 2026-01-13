@@ -545,5 +545,14 @@
       "email": "Email: olymp.nis@gmail.com",
       "phone": "Telefon: +381 18 277 181"
     }
+  },
+  "Newsletter": {
+    "title": "Ostanite u toku",
+    "subtitle": "Pretplatite se na naš newsletter i budite prvi koji će saznati za nove nekretnine i ekskluzivne ponude.",
+    "emailPlaceholder": "Vaša email adresa",
+    "subscribe": "Pretplati se",
+    "submitting": "Šalje se...",
+    "acceptTerms": "Prihvatam uslove korišćenja i politiku privatnosti",
+    "privacyNote": "Poštujemo vašu privatnost. Možete se odjaviti u bilo kom trenutku."
   }
 }
