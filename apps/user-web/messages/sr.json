@@ -96,7 +96,7 @@
     "yourFavourites": "Vaši omiljeni",
     "noFavourites": "Nemate omiljenih nekretnina",
     "addSome": "Dodajte nekretnine u omiljene da biste ih lakše pratili",
-    "favouriteProperties": "Omiljene Nekretnine",
+    "favouriteProperties": "Sačuvane Nekretnine",
     "savedProperties": "Vaše sačuvane nekretnine",
     "savedPropertiesCount": "Vaše sačuvane nekretnine ({count})"
   },
@@ -199,10 +199,16 @@
     "room": "soba",
     "clearFilters": "Obriši filtere",
     "floorLabel": "sp.",
+    "studio": "Garsonjera",
     "oneRoom": "Jednosoban",
+    "oneHalfRoom": "Jednoiposoban",
     "twoRoom": "Dvosoban",
+    "twoHalfRoom": "Dvoiposoban",
     "threeRoom": "Trosoban",
+    "threeHalfRoom": "Troiposoban",
     "fourRoom": "Četvorosoban",
+    "fourHalfRoom": "Četvoroiposoban",
+    "fiveRoom": "Petosoban",
     "fivePlusRoom": "Petosoban i veći"
   },
   "PropertyDetail": {

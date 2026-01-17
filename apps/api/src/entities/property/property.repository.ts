@@ -3,6 +3,12 @@ import { DataSource, Repository } from 'typeorm';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyStatus } from '@src/entities/property/enums/property-status.enum';
+import {
+  FloorFilterMapper,
+  NeighborhoodMapper,
+  RoomStructureMapper,
+  BEOGRAD_NEIGHBORHOODS
+} from './utils/filter-mappers.util';
 
 @Injectable()
 export class PropertyRepository extends Repository<Property> {
@@ -80,48 +86,19 @@ export class PropertyRepository extends Repository<Property> {
       if (options.city === 'Niš') {
         // For Niš, include all neighborhoods except Beograd ones
         queryBuilder.andWhere('property.neighborhood NOT IN (:...beogradNeighborhoods)', { 
-          beogradNeighborhoods: ['Beograd mala', 'Beverli Hils', 'MZ Dedinje']
+          beogradNeighborhoods: BEOGRAD_NEIGHBORHOODS
         });
       } else if (options.city === 'Beograd') {
         queryBuilder.andWhere('property.neighborhood IN (:...beogradNeighborhoods)', { 
-          beogradNeighborhoods: ['Beograd mala', 'Beverli Hils', 'MZ Dedinje']
+          beogradNeighborhoods: BEOGRAD_NEIGHBORHOODS
         });
       }
     }
 
-    // Neighborhood filter
+    // Neighborhood filter - use mapper utility
     if (options.neighborhoods && options.neighborhoods.length > 0) {
-      // Map UI values to actual neighborhood names and make case-insensitive
-      const neighborhoodMap: { [key: string]: string } = {
-        'medijana': 'Medijana',
-        'palilula': 'Palilula',
-        'pantelej': 'Pantelej',
-        'crveni-krst': 'Crveni Krst',
-        'niska-banja': 'Niška Banja',
-        'bubanj': 'Bubanj',
-        'duvaniste': 'Duvanjište',
-        'cair': 'Čair',
-        'bulevar': 'Bulevar',
-        'vrezina': 'Vrežina',
-        'durlan': 'Durlan',
-        'beverly-hills': 'Beverly Hills',
-        'jagodin-mala': 'Jagodin mala',
-        'marger': 'Marger',
-        'brzi-brod': 'Brzi Brod',
-        'centar': 'Centar',
-        'klinicki-centar': 'Klinički centar',
-        'calije': 'Čalije',
-        'pantelijmon': 'Pantelijmon',
-        'vidriste': 'Vidrište',
-        'pevac': 'Pevac',
-        'cele-kula': 'Čele kula',
-      };
-
-      const mappedNeighborhoods = options.neighborhoods.map(n => 
-        neighborhoodMap[n.toLowerCase()] || n
-      );
-
-      queryBuilder.andWhere('property.neighborhood IN (:...neighborhoods)', { 
+      const mappedNeighborhoods = NeighborhoodMapper.mapBatch(options.neighborhoods);
+      queryBuilder.andWhere('property.neighborhood IN (:...neighborhoods)', {
         neighborhoods: mappedNeighborhoods 
       });
     }
@@ -133,69 +110,22 @@ export class PropertyRepository extends Repository<Property> {
       });
     }
 
-    // Floor filter - handle both arrays and single values
+    // Floor filter - use mapper utility
     if (options.floors && options.floors.length > 0) {
-      const floorConditions = options.floors.map((floor) => {
-        const floorStr = String(floor).trim();
-        
-        // Handle special values
-        if (floorStr === 'SU' || floorStr.toLowerCase() === 'suteren') {
-          return `property.floor = -1`;
-        } else if (floorStr === 'VPR' || floorStr.toLowerCase() === 'visoko prizemlje') {
-          return `property.floor = 0`;
-        } else if (floorStr === 'PR' || floorStr.toLowerCase() === 'prizemlje') {
-          return `property.floor = 0`;
-        } else if (floorStr === 'PTK' || floorStr.toLowerCase() === 'potkrovlje') {
-          return `property.floor >= 10`; // Assume PTK is high floor
-        } else if (floorStr === '2-4') {
-          return `(property.floor >= 2 AND property.floor <= 4)`;
-        } else if (floorStr === '5-10') {
-          return `(property.floor >= 5 AND property.floor <= 10)`;
-        } else if (floorStr === '11+') {
-          return `property.floor >= 11`;
-        } else {
-          // Try to parse as number
-          const floorNum = parseInt(floorStr);
-          if (!isNaN(floorNum)) {
-            return `property.floor = ${floorNum}`;
-          }
-          return null;
-        }
-      }).filter(Boolean); // Remove null conditions
-      
+      const floorConditions = FloorFilterMapper.mapFloors(options.floors);
+
       if (floorConditions.length > 0) {
         queryBuilder.andWhere(`(${floorConditions.join(' OR ')})`);
       }
     }
 
-    // Room structure filter - handle both numeric (1, 2, 3) and Serbian names
+    // Room structure filter - use mapper utility
     if (options.roomStructure && options.roomStructure.length > 0) {
-      const roomStructureMap: { [key: string]: string[] } = {
-        'garsonjera': ['garsonjera', '0.5', '0,5'],
-        '1': ['jednosoban', '1'],
-        '1.5': ['jednoiposoban', '1.5', '1,5'],
-        '2': ['dvosoban', '2'],
-        '2.5': ['dvoiposoban', '2.5', '2,5'],
-        '3': ['trosoban', '3'],
-        '3.5': ['troiposoban', '3.5', '3,5'],
-        '4': ['cetvorosoban', 'četvorosoban', 'cetvoroiposoban', '4', '4.5', '4,5'],
-        '5': ['petosoban', '5'],
-      };
-
-      const mappedStructures: string[] = [];
-      options.roomStructure.forEach(rs => {
-        // If it's a number, get mapped values
-        if (roomStructureMap[rs]) {
-          mappedStructures.push(...roomStructureMap[rs]);
-        } else {
-          // Otherwise use the value as-is (for direct Serbian names)
-          mappedStructures.push(rs);
-        }
-      });
+      const mappedStructures = RoomStructureMapper.mapBatch(options.roomStructure);
 
       if (mappedStructures.length > 0) {
         queryBuilder.andWhere('property.roomStructure IN (:...roomStructures)', { 
-          roomStructures: [...new Set(mappedStructures)] // Remove duplicates
+          roomStructures: mappedStructures
         });
       }
     }

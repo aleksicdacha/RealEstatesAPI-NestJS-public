@@ -66,29 +66,47 @@ export function PropertySidebar() {
   const [activeSection, setActiveSection] = useState('galerija');
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let currentActive = activeSection;
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            currentActive = entry.target.id;
-          }
-        });
-        setActiveSection(currentActive);
-      },
-      { 
-        threshold: 0.1, 
-        rootMargin: '-80px 0px -80px 0px',
-        root: null
-      }
-    );
+    // IntersectionObserver approach
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      // Find all visible entries
+      const visibleEntries = entries.filter((entry) => entry.isIntersecting);
 
-    menuItems.forEach(({ id }) => {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
+      if (visibleEntries.length === 0) return;
+
+      // Sort by position on screen (top to bottom)
+      const sortedEntries = visibleEntries.sort((a, b) => {
+        const aRect = a.target.getBoundingClientRect();
+        const bRect = b.target.getBoundingClientRect();
+        return aRect.top - bRect.top;
+      });
+
+      // Get the first visible section (topmost)
+      const topSection = sortedEntries[0];
+
+      if (topSection) {
+        setActiveSection(topSection.target.id);
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+      rootMargin: '-20% 0px -60% 0px', // Only consider sections in top 40% of viewport
     });
 
-    return () => observer.disconnect();
+    // Observe all sections
+    const sections: HTMLElement[] = [];
+    menuItems.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (element) {
+        sections.push(element);
+        observer.observe(element);
+      }
+    });
+
+    // Cleanup
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   const handleClick = (id: string) => {

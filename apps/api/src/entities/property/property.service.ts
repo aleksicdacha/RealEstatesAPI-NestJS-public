@@ -6,60 +6,22 @@ import { FilterPropertyDto } from './dto/filter-property.dto';
 import { PropertyStatsQueryDto, PropertyStatsDto } from './dto/property-stats.dto';
 import { PublicPropertyDto } from './dto/public-property.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { DataSource, Between, Not, IsNull } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { PropertyRepository } from '@src/entities/property/property.repository';
 import { PropertyImageRepository } from '@src/entities/property-image/property-image.repository';
+import { SpecialOfferManager } from './utils/special-offer.manager';
+import { TextNormalizer } from './utils/text-normalizer.util';
 
 @Injectable()
 export class PropertyService {
   private readonly logger = new Logger(PropertyService.name);
 
   constructor(
-    private readonly propertyRepository: PropertyRepository, // No @InjectRepository here
-    private readonly propertyImageRepository: PropertyImageRepository, // Direct injection
+    private readonly propertyRepository: PropertyRepository,
+    private readonly propertyImageRepository: PropertyImageRepository,
     private readonly dataSource: DataSource,
+    private readonly specialOfferManager: SpecialOfferManager,
   ) {}
-
-  /**
-   * Reorganizes special offers when a new value is set
-   * If the desired value already exists, shifts that property and all higher values by 1
-   * Properties with specialOffer > 20 get set to null
-   */
-  private async reorganizeSpecialOffers(newSpecialOffer: number, excludePropertyId?: string): Promise<void> {
-    if (!newSpecialOffer || newSpecialOffer < 1 || newSpecialOffer > 20) {
-      return; // Nothing to reorganize if value is invalid or null
-    }
-
-    // Find all properties with specialOffer >= newSpecialOffer (excluding the current property being updated)
-    const whereCondition: any = {
-      specialOffer: Not(IsNull()),
-    };
-    
-    if (excludePropertyId) {
-      whereCondition.id = Not(excludePropertyId);
-    }
-
-    const affectedProperties = await this.propertyRepository.find({
-      where: whereCondition,
-      order: { specialOffer: 'DESC' }, // Start from highest to avoid conflicts
-    });
-
-    // Filter properties with specialOffer >= newSpecialOffer
-    const toShift = affectedProperties.filter(p => p.specialOffer >= newSpecialOffer);
-
-    // Shift each property's specialOffer by 1
-    for (const property of toShift) {
-      const newValue = property.specialOffer + 1;
-      
-      if (newValue > 20) {
-        // Set to null if exceeds 20
-        await this.propertyRepository.update(property.id, { specialOffer: null });
-      } else {
-        // Increment by 1
-        await this.propertyRepository.update(property.id, { specialOffer: newValue });
-      }
-    }
-  }
 
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
     const { code, images, specialOffer, ...propertyData } = createPropertyDto;
@@ -70,9 +32,10 @@ export class PropertyService {
       throw new ConflictException(`Property with code "${code}" already exists.`);
     }
 
-    // Reorganize special offers if a new value is being set
-    if (specialOffer && specialOffer >= 1 && specialOffer <= 20) {
-      await this.reorganizeSpecialOffers(specialOffer);
+    // Reorganize special offers if a new value is being set (using extracted manager)
+    const normalizedSpecialOffer = this.specialOfferManager.normalizeSpecialOffer(specialOffer);
+    if (normalizedSpecialOffer !== null) {
+      await this.specialOfferManager.reorganize(normalizedSpecialOffer);
     }
 
     // Create the property
@@ -80,7 +43,7 @@ export class PropertyService {
       const property = this.propertyRepository.create({ 
         code, 
         ...propertyData,
-        specialOffer: (specialOffer && specialOffer >= 1 && specialOffer <= 20) ? specialOffer : null,
+        specialOffer: normalizedSpecialOffer,
       });
       const savedProperty = await this.propertyRepository.save(property);
 
@@ -125,10 +88,11 @@ export class PropertyService {
       }
     }
 
-    // Reorganize special offers if the value is being changed
+    // Reorganize special offers if the value is being changed (using extracted manager)
     if (specialOffer !== undefined && specialOffer !== property.specialOffer) {
-      if (specialOffer && specialOffer >= 1 && specialOffer <= 20) {
-        await this.reorganizeSpecialOffers(specialOffer, id);
+      const normalizedSpecialOffer = this.specialOfferManager.normalizeSpecialOffer(specialOffer);
+      if (normalizedSpecialOffer !== null) {
+        await this.specialOfferManager.reorganize(normalizedSpecialOffer, id);
       }
     }
 
@@ -137,7 +101,7 @@ export class PropertyService {
       ...propertyData,
       code,
       additionalEquipment: additionalEquipment ?? null,
-      specialOffer: (specialOffer && specialOffer >= 1 && specialOffer <= 20) ? specialOffer : null,
+      specialOffer: this.specialOfferManager.normalizeSpecialOffer(specialOffer),
     };
 
     // Update the property fields
@@ -427,23 +391,6 @@ export class PropertyService {
   }
 
   async getFilterOptions() {
-    // Helper function to convert Cyrillic to Latin
-    const cyrillicToLatin = (text: string): string => {
-      const cyrillicToLatinMap: { [key: string]: string } = {
-        'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v',
-        'Г': 'G', 'г': 'g', 'Д': 'D', 'д': 'd', 'Ђ': 'Đ', 'ђ': 'đ',
-        'Е': 'E', 'е': 'e', 'Ж': 'Ž', 'ж': 'ž', 'З': 'Z', 'з': 'z',
-        'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j', 'К': 'K', 'к': 'k',
-        'Л': 'L', 'л': 'l', 'Љ': 'Lj', 'љ': 'lj', 'М': 'M', 'м': 'm',
-        'Н': 'N', 'н': 'n', 'Њ': 'Nj', 'њ': 'nj', 'О': 'O', 'о': 'o',
-        'П': 'P', 'п': 'p', 'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's',
-        'Т': 'T', 'т': 't', 'Ћ': 'Ć', 'ћ': 'ć', 'У': 'U', 'у': 'u',
-        'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
-        'Ч': 'Č', 'ч': 'č', 'Џ': 'Dž', 'џ': 'dž', 'Ш': 'Š', 'š': 'š'
-      };
-      return text.split('').map(char => cyrillicToLatinMap[char] || char).join('');
-    };
-
     // Extract unique cities from address field (second part: "Street, City, Country")
     const citiesRaw = await this.propertyRepository
       .createQueryBuilder('property')
@@ -459,17 +406,15 @@ export class PropertyService {
           // Get the second part (City or "City PostalCode")
           const cityPart = parts[1].trim();
           // Remove postal code if exists (e.g., "Beograd 11000" -> "Beograd")
-          // Postal codes are typically numeric, so remove trailing numbers
-          const cityName = cityPart.replace(/\s+\d+.*$/, '').trim();
-          // Convert Cyrillic to Latin
-          return cyrillicToLatin(cityName);
+          return cityPart.replace(/\s+\d+.*$/, '').trim();
         }
         return null;
       })
       .filter(c => c && c.length > 0);
 
-    // Get unique cities
-    const uniqueCities = [...new Set(cities)].sort();
+    // Normalize and get unique cities
+    const normalizedCities = TextNormalizer.normalizeBatch(cities);
+    const uniqueCities = [...new Set(normalizedCities)].sort();
 
     // Extract unique neighborhoods
     const neighborhoods = await this.propertyRepository
@@ -479,15 +424,14 @@ export class PropertyService {
       .orderBy('property.neighborhood', 'ASC')
       .getRawMany();
 
+    // Normalize neighborhoods
+    const normalizedNeighborhoods = neighborhoods
+      .map(n => n.neighborhood)
+      .filter(n => n && n.trim().length > 0);
+
     return {
       cities: uniqueCities,
-      neighborhoods: neighborhoods
-        .map(n => {
-          const trimmed = n.neighborhood?.trim();
-          // Convert Cyrillic to Latin for neighborhoods too
-          return trimmed ? cyrillicToLatin(trimmed) : null;
-        })
-        .filter(n => n && n.length > 0),
+      neighborhoods: TextNormalizer.normalizeBatch(normalizedNeighborhoods),
     };
   }
 }

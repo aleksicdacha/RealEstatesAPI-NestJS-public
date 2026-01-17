@@ -1,10 +1,9 @@
 'use client';
 
-import { GoogleMap, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap } from '@react-google-maps/api';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { Property } from '@/lib/api';
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 
 interface PropertyMapProps {
   properties: Property[];
@@ -169,8 +168,12 @@ function getMarkerIcon(propertyType: string): string {
   return iconBase + btoa(svg);
 }
 
-export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, hideInfoWindow = false }: PropertyMapProps) {
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+export function PropertyMap({
+  properties,
+  onPropertyClick,
+  selectedPropertyId,
+  hideInfoWindow = false,
+}: PropertyMapProps) {
   const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const clustererRef = useRef<MarkerClusterer | null>(null);
@@ -181,19 +184,38 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
     setMapReady(true);
   };
 
-  const [isAnimating, setIsAnimating] = useState(false);
   const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const bounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const previouslySelectedMarkerRef = useRef<string | null>(null);
 
-  // Pan to selected property when selectedPropertyId changes
+  // Pan to selected property when selectedPropertyId changes AND animate ONLY that marker
   useEffect(() => {
     if (!mapRef.current || !mapReady) return;
 
+    // Wait for markers to be created
+    if (markersRef.current.size === 0) return;
+
+    // Clear any pending timeouts
+    if (animationTimeoutRef.current) {
+      clearTimeout(animationTimeoutRef.current);
+      animationTimeoutRef.current = null;
+    }
+    if (bounceTimeoutRef.current) {
+      clearTimeout(bounceTimeoutRef.current);
+      bounceTimeoutRef.current = null;
+    }
+
+    // STOP ALL ANIMATIONS first to ensure clean state
+    markersRef.current.forEach((marker) => {
+      marker.setAnimation(null);
+    });
+
     // If no property is selected, zoom out to show all markers
     if (!selectedPropertyId) {
+      previouslySelectedMarkerRef.current = null;
       const markers = Array.from(markersRef.current.values());
       if (markers.length > 0 && mapRef.current) {
         if (markers.length === 1) {
-          // For single property, center on it
           const marker = markers[0];
           const position = marker.getPosition();
           if (position) {
@@ -201,22 +223,19 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
             mapRef.current.setZoom(15);
           }
         } else {
-          // For multiple properties, fit bounds to show all
           const bounds = new google.maps.LatLngBounds();
-          markers.forEach(marker => {
+          markers.forEach((marker) => {
             const position = marker.getPosition();
             if (position) bounds.extend(position);
           });
           mapRef.current.fitBounds(bounds);
-
-          // Add padding for better visibility
-          setTimeout(() => {
+          animationTimeoutRef.current = setTimeout(() => {
             if (mapRef.current && markers.length > 1) {
               mapRef.current.fitBounds(bounds, {
                 top: 50,
                 right: 50,
                 bottom: 50,
-                left: 50
+                left: 50,
               });
             }
           }, 100);
@@ -225,44 +244,36 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
       return;
     }
 
-    // Prevent multiple animations from running simultaneously
-    if (isAnimating) {
-      if (animationTimeoutRef.current) {
-        clearTimeout(animationTimeoutRef.current);
-      }
-      setIsAnimating(false);
-    }
-
     const selectedMarker = markersRef.current.get(selectedPropertyId);
+
     if (selectedMarker) {
       const position = selectedMarker.getPosition();
       if (position) {
         const map = mapRef.current;
-        setIsAnimating(true);
+        previouslySelectedMarkerRef.current = selectedPropertyId;
 
-        // Force smooth animation with guaranteed completion
-        const performAnimation = () => {
-          // Use panTo for smooth transition to the property location
-          map.panTo(position);
-          map.setZoom(16);
+        // Pan and zoom to marker
+        map.panTo(position);
+        map.setZoom(16);
 
-          // Set timeout to mark animation as complete
-          animationTimeoutRef.current = setTimeout(() => {
-            setIsAnimating(false);
-          }, 1250); // Slightly longer than animation duration
-        };
+        // Animate ONLY this marker with BOUNCE
+        selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
 
-        // Small delay to ensure any previous animation is cancelled
-        setTimeout(performAnimation, 50);
+        // Stop bounce after 2 seconds
+        bounceTimeoutRef.current = setTimeout(() => {
+          if (selectedMarker) {
+            selectedMarker.setAnimation(null);
+          }
+        }, 2000);
       }
     }
-  }, [selectedPropertyId, mapReady, isAnimating]);
+  }, [selectedPropertyId, mapReady]);
 
   useEffect(() => {
     if (!mapReady || !mapRef.current || properties.length === 0) return;
 
     // Clear existing markers and any previous clusterer
-    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current.clear();
 
     if (clustererRef.current) {
@@ -270,13 +281,13 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
       clustererRef.current = null;
     }
 
-    // Create new markers - ensure map is set directly on marker
+    // Create new markers
     const markers = properties
-      .filter(property => property.lat && property.lon)
-      .map(property => {
+      .filter((property) => property.lat && property.lon)
+      .map((property) => {
         const marker = new google.maps.Marker({
           position: { lat: property.lat, lng: property.lon },
-          map: mapRef.current!, // Directly set map on marker
+          map: mapRef.current!,
           title: property.code,
           icon: {
             url: getMarkerIcon(property.propertyType),
@@ -284,19 +295,19 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
             anchor: new google.maps.Point(16, 42),
           },
           optimized: false,
-          zIndex: 100, // Ensure markers are on top
+          zIndex: 100,
         });
 
+        // Marker click handler - navigate to property detail page
         marker.addListener('click', () => {
-          // Always notify parent that a property was clicked (for navigation)
-          if (onPropertyClick) {
-            onPropertyClick(property);
-          }
+          const locationSlug = property.neighborhood
+            ? property.neighborhood.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+            : 'nis';
+          const slug = `${property.propertyType.toLowerCase()}-${locationSlug}`
+            .replace(/^-+|-+$/g, '')
+            .substring(0, 80);
 
-          // Only open the InfoWindow when not explicitly hidden
-          if (!hideInfoWindow) {
-            setSelectedProperty(property);
-          }
+          window.location.href = `/properties/${property.id}/${slug}`;
         });
 
         markersRef.current.set(property.id, marker);
@@ -356,9 +367,7 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
         clustererRef.current = null;
       }
     };
-  }, [properties, onPropertyClick, mapReady]);
-
-  const favoriteImage = selectedProperty?.images.find(img => img.isFavorite) || selectedProperty?.images[0];
+  }, [properties, mapReady]); // Removed onPropertyClick - not used in this effect
 
   return (
     <GoogleMap
@@ -368,43 +377,7 @@ export function PropertyMap({ properties, onPropertyClick, selectedPropertyId, h
       options={mapOptions}
       onLoad={handleMapLoad}
     >
-      {selectedProperty && !hideInfoWindow && (
-        <InfoWindow
-          position={{ lat: selectedProperty.lat, lng: selectedProperty.lon }}
-          onCloseClick={() => setSelectedProperty(null)}
-          options={{
-            pixelOffset: new google.maps.Size(0, -40),
-          }}
-        >
-          <div style={{ width: '240px' }}>
-            {favoriteImage && (
-              <div style={{ marginBottom: '12px', position: 'relative', height: '160px', borderRadius: '4px', overflow: 'hidden' }}>
-                <Image
-                  src={`http://localhost:3000${favoriteImage.url}`}
-                  alt={selectedProperty.code}
-                  fill
-                  className="object-cover"
-                  sizes="240px"
-                />
-              </div>
-            )}
-            <div style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '8px' }}>
-              {new Intl.NumberFormat('sr-RS', { 
-                style: 'currency', 
-                currency: 'EUR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }).format(selectedProperty.price)}
-            </div>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-              {selectedProperty.propertyType} • {selectedProperty.area} m²
-            </div>
-            <div style={{ fontSize: '13px', color: '#888' }}>
-              {selectedProperty.neighborhood || 'Niš'}
-            </div>
-          </div>
-        </InfoWindow>
-      )}
+      {/* InfoWindow removed - not needed on sale/rent pages */}
     </GoogleMap>
   );
 }

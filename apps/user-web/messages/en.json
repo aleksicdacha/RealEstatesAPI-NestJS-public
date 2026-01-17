@@ -197,10 +197,16 @@
     "room": "room",
     "clearFilters": "Clear Filters",
     "floorLabel": "fl.",
+    "studio": "Studio",
     "oneRoom": "One room",
+    "oneHalfRoom": "One and a half rooms",
     "twoRoom": "Two rooms",
+    "twoHalfRoom": "Two and a half rooms",
     "threeRoom": "Three rooms",
+    "threeHalfRoom": "Three and a half rooms",
     "fourRoom": "Four rooms",
+    "fourHalfRoom": "Four and a half rooms",
+    "fiveRoom": "Five rooms",
     "fivePlusRoom": "Five+ rooms"
   },
   "PropertyDetail": {

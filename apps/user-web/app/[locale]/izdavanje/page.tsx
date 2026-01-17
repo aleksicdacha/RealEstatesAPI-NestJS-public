@@ -107,7 +107,7 @@ export default function IzdavanjePage() {
   return (
     <main className="min-h-screen overflow-visible">
       {/* Filters */}
-      <PropertyFilters 
+      <PropertyFilters
         onFilterChange={handleFilterChange}
         transactionType="rent"
       />
@@ -119,7 +119,9 @@ export default function IzdavanjePage() {
           <div className="flex items-center justify-between mb-6">
             {/* Showing count */}
             <h2 className="text-lg font-medium text-gray-600">
-              {loading ? 'Loading...' : `${t('showing')} ${properties.length} ${t('properties')}`}
+              {loading
+                ? 'Loading...'
+                : `${t('showing')} ${properties.length} ${t('properties')}`}
             </h2>
 
             {/* Sort and Map Toggle */}
@@ -130,12 +132,32 @@ export default function IzdavanjePage() {
                   onClick={() => setSortOpen(!sortOpen)}
                   className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-full bg-white hover:bg-gray-50 transition-colors text-gray-700 min-h-[36px]"
                 >
-                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                  <svg
+                    className="w-4 h-4 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+                    />
                   </svg>
                   <span>{currentSortLabel}</span>
-                  <svg className={`w-3 h-3 text-gray-500 transition-transform ${sortOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className={`w-3 h-3 text-gray-500 transition-transform ${sortOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
                 {sortOpen && (
@@ -143,7 +165,10 @@ export default function IzdavanjePage() {
                     {sortOptions.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => { handleSortChange(option.value); setSortOpen(false); }}
+                        onClick={() => {
+                          handleSortChange(option.value);
+                          setSortOpen(false);
+                        }}
                         className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${currentSort === option.value ? 'bg-primary-50 text-primary-600 font-medium' : 'text-gray-700'}`}
                       >
                         {option.label}
@@ -155,11 +180,15 @@ export default function IzdavanjePage() {
 
               {/* Map Toggle Switch */}
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-700">{t('showMap')}</span>
+                <span className="text-sm font-medium text-gray-700">
+                  {t('showMap')}
+                </span>
                 <button
                   onClick={() => setShowMap(!showMap)}
                   className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-sm ${
-                    showMap ? 'bg-primary-600 hover:bg-primary-700' : 'bg-gray-400 hover:bg-gray-500'
+                    showMap
+                      ? 'bg-primary-600 hover:bg-primary-700'
+                      : 'bg-gray-400 hover:bg-gray-500'
                   }`}
                   role="switch"
                   aria-checked={showMap}
@@ -175,9 +204,11 @@ export default function IzdavanjePage() {
           </div>
 
           {/* Split layout: 65% Properties List, 35% Map */}
-          <div className={`grid gap-6 transition-all duration-500 ease-in-out ${
-            showMap ? 'lg:grid-cols-[2fr_1fr]' : 'grid-cols-1'
-          }`}>
+          <div
+            className={`grid gap-6 transition-all duration-500 ease-in-out ${
+              showMap ? 'lg:grid-cols-[2fr_1fr]' : 'grid-cols-1'
+            }`}
+          >
             {/* Properties List */}
             <div>
               {loading ? (
@@ -224,7 +255,7 @@ export default function IzdavanjePage() {
         <section key={favourites.length} className="py-16 bg-white">
           <div className="px-2">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold mb-6 text-center">
+              <h2 className="text-3xl font-bold text-gray-600 mb-6 text-center">
                 {tFav('favouriteProperties')}
               </h2>
               <p className="text-center text-gray-600">
@@ -234,7 +265,7 @@ export default function IzdavanjePage() {
 
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {properties
-                .filter(property => favourites.includes(property.id))
+                .filter((property) => favourites.includes(property.id))
                 .map((property, index) => (
                   <FavouritePropertyCard
                     key={property.id}
@@ -258,22 +289,34 @@ export default function IzdavanjePage() {
               <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                 {/* <span className="text-blue-600 text-2xl">🏠</span> */}
               </div>
-              <h3 className="font-bold text-xl mb-2">{tWhy('forRent.feature1Title')}</h3>
-              <p className="text-gray-600">{tWhy('forRent.feature1Description')}</p>
+              <h3 className="font-bold text-xl mb-2">
+                {tWhy('forRent.feature1Title')}
+              </h3>
+              <p className="text-gray-600">
+                {tWhy('forRent.feature1Description')}
+              </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                 {/* <span className="text-blue-600 text-2xl">🗺️</span> */}
               </div>
-              <h3 className="font-bold text-xl mb-2">{tWhy('forRent.feature2Title')}</h3>
-              <p className="text-gray-600">{tWhy('forRent.feature2Description')}</p>
+              <h3 className="font-bold text-xl mb-2">
+                {tWhy('forRent.feature2Title')}
+              </h3>
+              <p className="text-gray-600">
+                {tWhy('forRent.feature2Description')}
+              </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                 {/* <span className="text-blue-600 text-2xl">✓</span> */}
               </div>
-              <h3 className="font-bold text-xl mb-2">{tWhy('forRent.feature3Title')}</h3>
-              <p className="text-gray-600">{tWhy('forRent.feature3Description')}</p>
+              <h3 className="font-bold text-xl mb-2">
+                {tWhy('forRent.feature3Title')}
+              </h3>
+              <p className="text-gray-600">
+                {tWhy('forRent.feature3Description')}
+              </p>
             </div>
           </div>
         </div>

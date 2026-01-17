@@ -1,3 +1,6 @@
+/* Google Fonts - Quicksand */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 /*@tailwind base;*/
 /*@tailwind components;*/
 /*@tailwind utilities;*/
@@ -5,6 +8,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-main: 'Quicksand', system-ui, -apple-system, sans-serif;
 }
 
 /*@media (prefers-color-scheme: dark) {*/
@@ -21,38 +25,111 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Lato, Helvetica, sans-serif;
-  font-size: 13px; /* Reduced from default 14px */
+  font-family: 'Quicksand', var(--font-main), system-ui, -apple-system, sans-serif;
+  font-size: 14px; /* Increased by 1px */
 }
 
-/* Global font size reduction */
+/* Global font size */
 html {
-  font-size: 13px; /* Base font size */
+  font-size: 14px; /* Base font size - increased by 1px */
 }
 
-/* Override PrimeReact component font sizes */
+/* ============================================
+   FONT OVERRIDE - Quicksand za celu aplikaciju
+   ============================================ */
+
+/* Override PrimeReact default font */
+html, body,
+.p-component,
+.p-menubar,
+.p-datatable,
+.p-dialog,
+.p-button,
+.p-inputtext,
+.p-dropdown,
+.p-multiselect,
+.p-toast,
+.p-sidebar,
+.p-toolbar,
+.p-card,
+.p-panel,
+.p-tabview,
+.p-accordion,
+.p-breadcrumb,
+.p-paginator,
+.p-confirm-dialog,
+.p-fileupload {
+  font-family: 'Quicksand', var(--font-main), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Override PrimeReact component fonts - EXCLUDING PrimeIcons (pi-*) */
+/* PrimeIcons need 'primeicons' font-family to display correctly */
+[class^="p-"]:not([class*="pi-"]):not(.pi),
+[class*=" p-"]:not([class*=" pi-"]):not(.pi) {
+  font-family: 'Quicksand', var(--font-main), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Ensure PrimeIcons use their correct font */
+.pi, [class^="pi-"], [class*=" pi-"] {
+  font-family: 'primeicons' !important;
+}
+
+/* ============================================
+   Menubar & Navigation - Quicksand font
+   ============================================ */
+.p-menubar {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+.p-menubar .p-menuitem-text {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+  font-weight: 500;
+}
+
+.p-menubar .p-menuitem-link {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+/* ============================================
+   Buttons - Quicksand font with icons
+   ============================================ */
+.p-button {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+.p-button .p-button-label {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+/* Ensure button icons display correctly */
+.p-button .pi,
+.p-button [class^="pi-"] {
+  font-family: 'primeicons' !important;
+}
+
+/* Override PrimeReact component font sizes - increased by 1px */
 .p-component {
-  font-size: 0.95rem;
+  font-size: 14px; /* was 0.95rem (12.35px @ 13px base), now 14px */
 }
 
 .p-datatable {
-  font-size: 0.9rem;
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
 }
 
 .p-datatable .p-datatable-thead > tr > th {
-  font-size: 0.85rem;
+  font-size: 12px; /* was 0.85rem (11.05px @ 13px base), now 12px */
 }
 
 .p-button {
-  font-size: 0.9rem;
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
 }
 
 .p-inputtext {
-  font-size: 0.9rem;
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
 }
 
 .p-dropdown {
-  font-size: 0.9rem;
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
 }
 
 /*Client form*/
@@ -150,7 +227,7 @@ html {
 
 .additional-equipment-multiselect .p-multiselect-token {
   margin: 2px;
-  font-size: 0.9rem;
+  font-size: 13px; /* increased by 1px */
   max-width: none;
   flex-shrink: 0;
 }

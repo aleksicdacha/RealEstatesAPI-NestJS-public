@@ -1,44 +1,38 @@
 /**
  * Font Configuration
  * 
- * Ovde možete promeniti font za celu aplikaciju.
- * Podržani fontovi iz next/font/google: Inter, Poppins, Roboto, Open_Sans, Montserrat, itd.
- * 
+ * NAPOMENA: Font se učitava direktno preko CSS @import u globals.css
+ * Ovaj fajl služi za Next.js layout integraciju.
+ *
  * Za promenu fonta:
- * 1. Promenite import (npr. import { Poppins } from 'next/font/google')
- * 2. Promenite konfiguraciju ispod
+ * 1. Promenite @import URL u globals.css
+ * 2. Promenite font-family vrednosti u globals.css
+ * 3. Opciono: Promenite fontName ispod
+ *
+ * Trenutni font: Quicksand
  */
 
-import { Quicksand } from 'next/font/google';
-
-// Glavni font za aplikaciju
-export const mainFont = Quicksand({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700'],
+// Font configuration object (CSS-based, not next/font)
+// Font se učitava preko @import u globals.css
+export const mainFont = {
+  // CSS variable name
   variable: '--font-main',
-  display: 'swap',
-});
+  // Class to apply to body (empty since CSS handles it)
+  className: '',
+  // Font name for reference
+  fontName: 'Quicksand',
+};
 
-// Alternativno, možete koristiti drugi font (npr. Poppins):
 /*
-import { Poppins } from 'next/font/google';
-
-export const mainFont = Poppins({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-main',
-  display: 'swap',
-});
-*/
-
-// Ili Montserrat:
-/*
-import { Montserrat } from 'next/font/google';
-
-export const mainFont = Montserrat({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-main',
-  display: 'swap',
-});
-*/
+ * ALTERNATIVA: Ako želite da koristite next/font/google
+ * (može imati probleme sa TypeScript):
+ *
+ * import { Quicksand } from 'next/font/google';
+ *
+ * export const mainFont = Quicksand({
+ *   subsets: ['latin', 'latin-ext'],
+ *   weight: ['300', '400', '500', '600', '700'],
+ *   variable: '--font-main',
+ *   display: 'swap',
+ * });
+ */

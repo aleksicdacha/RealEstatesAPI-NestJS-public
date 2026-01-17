@@ -42,6 +42,17 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
           <div className="px-4 py-8">
             <div className="text-sm text-gray-600 mb-4">{/* Breadcrumb here if needed */}</div>
             <div className="max-w-4xl">
+              {/* Property Code/ID */}
+              <div className="mb-4">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+                  <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                  <span className="text-sm font-semibold text-gray-700">ID:</span>
+                  <span className="text-sm font-mono text-brand-600 font-bold">{property.code}</span>
+                </div>
+              </div>
+
               {/* Main Info Section */}
               <div id="informacije" className="bg-gradient-to-r from-brand-50 to-brand-100 p-6 rounded-lg mb-6 relative">
                 {/* Favorite button */}

@@ -1,3 +1,6 @@
+// Font is loaded via CSS @import in globals.css
+// No need for next/font import here
+
 export default function RootLayout({
   children,
 }: {

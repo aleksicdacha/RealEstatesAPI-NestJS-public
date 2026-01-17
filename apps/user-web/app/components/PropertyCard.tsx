@@ -6,8 +6,8 @@ import { Property, getFavoriteImage, getImageUrl } from '@/lib/api';
 import { useFavourites } from '@/app/contexts/FavouritesContext';
 import { usePathname } from 'next/navigation';
 import type { ReactElement } from 'react';
-import { getRoomStructureIcon, getRoomStructureName } from '@/app/utils/roomStructureIcons';
-import { useTranslations } from 'next-intl';
+import { PropertyTranslator } from '@/app/utils/propertyTranslator';
+import { useTranslations, useMessages } from 'next-intl';
 
 interface PropertyCardProps {
   property: Property;
@@ -46,61 +46,44 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
   const locale = pathname.split('/')[1] || 'sr';
   const t = useTranslations('Favourites');
   const tProps = useTranslations('Properties');
+  const messages = useMessages() as any; // Get all messages to check existence
+
   const favoriteImage = getFavoriteImage(property.images);
   const imageUrl = favoriteImage ? getImageUrl(favoriteImage.url) : null;
 
-  // Translate property type
-  const getTranslatedPropertyType = (type: string): string => {
-    const typeMap: { [key: string]: string } = {
-      'Apartment': 'apartment',
-      'House': 'house',
-      'ApartmentInHouse': 'apartmentInHouse',
-      'Office': 'office',
-      'CommercialSpace': 'commercial',
-      'Land': 'land',
-      'VacationHome': 'vacationHome',
-      'Duplex': 'duplex',
-      'Garage': 'garage',
-    };
-    const key = typeMap[type];
-    if (!key) {
-      console.warn(`Missing translation for property type: ${type}`);
-      return type;
+  // Helper to safely translate with fallback
+  // Checks if translation key exists in messages before calling tProps
+  const safeTranslate = (key: string, fallback: string): string => {
+    try {
+      // Check if key exists in Properties namespace
+      const propertiesMessages = messages?.Properties || {};
+
+      if (propertiesMessages[key]) {
+        return tProps(key);
+      }
+
+      // Key doesn't exist, use fallback
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`[Translation] Missing key: Properties.${key}, using fallback: "${fallback}"`);
+      }
+      return fallback;
+    } catch (error) {
+      // Catch any unexpected errors
+      return fallback;
     }
-    return tProps(key);
   };
 
-  // Translate heating type
-  const getTranslatedHeating = (heating: string): string => {
-    const heatingMap: { [key: string]: string } = {
-      'Central': 'centralHeating',
-      'Gas central': 'gasHeating',
-      'Electric central': 'electricHeating',
-      'Central heating with solid fuel': 'solidFuel',
-      'Floor': 'floorHeating',
-      'Independently on gas': 'independentGas',
-      'Independently on solid fuel': 'independentSolidFuel',
-      'Independently on electricity': 'independentElectricity',
-      'Fireplace': 'fireplace',
-      'Air conditioner': 'airConditioner',
-      'The rest types': 'otherHeating',
-    };
-    return tProps(heatingMap[heating] || heating);
-  };
-
-  // Translate room structure
-  const getTranslatedRoomStructure = (roomStructure: string): string => {
-    const roomMap: { [key: string]: string } = {
-      'garsonjera': 'studio',
-      'jednosoban': 'oneRoom',
-      'dvosoban': 'twoRoom',
-      'trosoban': 'threeRoom',
-      'četvorosoban': 'fourRoom',
-      'petosoban i veci': 'fivePlusRoom',
-    };
-    const key = roomMap[roomStructure.toLowerCase()];
-    return key ? tProps(key) : roomStructure;
-  };
+  // Use centralized translation utility with safe fallback
+  const translatedPropertyType = safeTranslate(
+    PropertyTranslator.getPropertyTypeKey(property.propertyType),
+    property.propertyType
+  );
+  const translatedHeating = property.heating
+    ? safeTranslate(PropertyTranslator.getHeatingTypeKey(property.heating), property.heating)
+    : null;
+  const translatedRoomStructure = property.roomStructure
+    ? safeTranslate(PropertyTranslator.getRoomStructureKey(property.roomStructure), property.roomStructure)
+    : null;
 
   // Create URL-friendly slug from property data (use neighborhood instead of address)
   const locationSlug = property.neighborhood ? property.neighborhood.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'nis';
@@ -177,7 +160,7 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
         {/* Transaction type and property type */}
         <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
           {getPropertyTypeIcon(property.propertyType)}
-          <span>{getTranslatedPropertyType(property.propertyType)}</span>
+          <span>{translatedPropertyType}</span>
           <span className="text-gray-400">·</span>
           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -210,27 +193,27 @@ export function PropertyCard({ property, onHover, priority = false }: PropertyCa
           )}
 
           {/* Room Structure */}
-          {property.roomStructure && (
+          {translatedRoomStructure && (
             <>
               <span className="text-gray-300">|</span>
               <div className="flex items-center gap-1 text-gray-600">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                <span className="text-xs font-medium">{getTranslatedRoomStructure(property.roomStructure)}</span>
+                <span className="text-xs font-medium">{translatedRoomStructure}</span>
               </div>
             </>
           )}
         </div>
 
         {/* Additional info - Heating */}
-        {property.heating && (
+        {translatedHeating && (
           <div className="mt-1 pt-2 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-600">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
             </svg>
-            <span className="truncate">{getTranslatedHeating(property.heating)}</span>
+            <span className="truncate">{translatedHeating}</span>
           </div>
         )}
       </Link>
