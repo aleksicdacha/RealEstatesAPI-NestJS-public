@@ -42,38 +42,45 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-4xl mx-auto">
+    <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-4xl mx-auto">
       <form onSubmit={handleSearch} className="space-y-6">
-        {/* Transaction Type Tabs */}
-        <div className="flex gap-2 bg-gray-100 p-2 rounded-xl">
-          <button
-            type="button"
-            onClick={() => setTransactionType('prodaja')}
-            className={`flex-1 py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-              transactionType === 'prodaja'
-                ? 'bg-brand-600 text-white shadow-lg'
-                : 'text-gray-700 hover:bg-gray-200'
+        {/* Transaction Type Toggle */}
+        <div className="relative bg-gray-100 p-2 rounded-full">
+          <div
+            className={`absolute top-2 bottom-2 bg-brand-600 rounded-full transition-all duration-300 ease-in-out shadow-lg ${
+              transactionType === 'prodaja' ? 'left-2 right-[calc(50%+4px)]' : 'left-[calc(50%+4px)] right-2'
             }`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            {t('sale')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setTransactionType('izdavanje')}
-            className={`flex-1 py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-              transactionType === 'izdavanje'
-                ? 'bg-brand-600 text-white shadow-lg'
-                : 'text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-            </svg>
-            {t('rent')}
-          </button>
+          />
+          <div className="relative flex gap-2">
+            <button
+              type="button"
+              onClick={() => setTransactionType('prodaja')}
+              className={`flex-1 py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${
+                transactionType === 'prodaja'
+                  ? 'text-white'
+                  : 'text-gray-700'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              {t('sale')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTransactionType('izdavanje')}
+              className={`flex-1 py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2 relative z-10 ${
+                transactionType === 'izdavanje'
+                  ? 'text-white'
+                  : 'text-gray-700'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+              {t('rent')}
+            </button>
+          </div>
         </div>
 
         {/* City Selection */}
@@ -91,7 +98,7 @@ export default function HeroSearch({ locale, onCityChange }: HeroSearchProps) {
             id="city"
             value={city}
             onChange={(e) => handleCityChange(e.target.value)}
-            className="w-full px-4 py-4 pr-12 text-lg text-gray-900 font-medium border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-white cursor-pointer hover:border-brand-400 appearance-none"
+            className="w-full px-4 py-4 pr-12 text-lg text-gray-900 font-medium border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-white cursor-pointer hover:border-brand-400 appearance-none"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat',

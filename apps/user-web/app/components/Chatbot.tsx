@@ -263,7 +263,7 @@ export function Chatbot() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-[380px] h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden border border-gray-200">
+        <div className="fixed bottom-6 right-6 w-[380px] h-[650px] bg-white rounded-2xl shadow-2xl flex flex-col z-[9999] overflow-hidden border border-gray-200">
           {/* Header */}
           <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-4 flex items-center justify-between text-white">
             <div className="flex items-center gap-3">
@@ -325,64 +325,66 @@ export function Chatbot() {
 
           {/* Agent Form */}
           {showAgentForm && (
-            <div className="p-4 border-t border-gray-200 bg-white">
-              <form onSubmit={submitAgentRequest} className="space-y-3">
-                <h4 className="font-semibold text-sm text-gray-700 mb-2">{t('agentFormTitle')}</h4>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">{t('name')}</label>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder={t('name')}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">{t('email')}</label>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder={t('email')}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">{t('phone')}</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder={t('phone')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">{t('message')}</label>
-                  <textarea
-                    name="message"
-                    placeholder={t('message')}
-                    rows={2}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
-                  >
-                    {t('submit')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowAgentForm(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    {t('cancel')}
-                  </button>
-                </div>
-              </form>
+            <div className="border-t border-gray-200 bg-white max-h-[400px] overflow-y-auto">
+              <div className="p-4">
+                <form onSubmit={submitAgentRequest} className="space-y-3">
+                  <h4 className="font-semibold text-sm text-gray-700 mb-2">{t('agentFormTitle')}</h4>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">{t('name')}</label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder={t('name')}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">{t('email')}</label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder={t('email')}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">{t('phone')}</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder={t('phone')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">{t('message')}</label>
+                    <textarea
+                      name="message"
+                      placeholder={t('message')}
+                      rows={2}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
+                    />
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
+                    >
+                      {t('submit')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAgentForm(false)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      {t('cancel')}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
 

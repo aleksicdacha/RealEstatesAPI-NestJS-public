@@ -46,12 +46,12 @@ export function Header() {
             href={`/${locale}`} 
             className={`relative text-gray-700 hover:text-white transition-colors font-medium py-2 px-3 rounded-md overflow-hidden group ${
               pathname === `/${locale}` || pathname === `/${locale}/`
-                ? 'text-white bg-brand-600/20' 
-                : 'hover:bg-brand-600/20'
+                ? 'text-white bg-brand-600' 
+                : ''
             }`}
           >
             <span className="relative z-10">{t('home')}</span>
-            <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+            <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
               pathname === `/${locale}` || pathname === `/${locale}/`
                 ? 'translate-x-0' 
                 : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -61,12 +61,12 @@ export function Header() {
             href={`/${locale}/prodaja`} 
             className={`relative text-gray-700 hover:text-white transition-colors font-medium py-2 px-3 rounded-md overflow-hidden group ${
               pathname.includes('/prodaja') 
-                ? 'text-white bg-brand-600/20' 
-                : 'hover:bg-brand-600/20'
+                ? 'text-white bg-brand-600' 
+                : ''
             }`}
           >
             <span className="relative z-10">{t('forSale')}</span>
-            <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+            <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
               pathname.includes('/prodaja') 
                 ? 'translate-x-0' 
                 : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -76,12 +76,12 @@ export function Header() {
             href={`/${locale}/izdavanje`} 
             className={`relative text-gray-700 hover:text-white transition-colors font-medium py-2 px-3 rounded-md overflow-hidden group ${
               pathname.includes('/izdavanje') 
-                ? 'text-white bg-brand-600/20' 
-                : 'hover:bg-brand-600/20'
+                ? 'text-white bg-brand-600' 
+                : ''
             }`}
           >
             <span className="relative z-10">{t('forRent')}</span>
-            <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+            <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
               pathname.includes('/izdavanje') 
                 ? 'translate-x-0' 
                 : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -91,12 +91,12 @@ export function Header() {
             href={`/${locale}/kontakt`} 
             className={`relative text-gray-700 hover:text-white transition-colors font-medium py-2 px-3 rounded-md overflow-hidden group ${
               pathname.includes('/kontakt') 
-                ? 'text-white bg-brand-600/20' 
-                : 'hover:bg-brand-600/20'
+                ? 'text-white bg-brand-600' 
+                : ''
             }`}
           >
             <span className="relative z-10">{t('contact')}</span>
-            <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+            <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
               pathname.includes('/kontakt') 
                 ? 'translate-x-0' 
                 : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -106,12 +106,12 @@ export function Header() {
             href={`/${locale}/o-nama`} 
             className={`relative text-gray-700 hover:text-white transition-colors font-medium py-2 px-3 rounded-md overflow-hidden group ${
               pathname.includes('/o-nama') 
-                ? 'text-white bg-brand-600/20' 
-                : 'hover:bg-brand-600/20'
+                ? 'text-white bg-brand-600' 
+                : ''
             }`}
           >
             <span className="relative z-10">{t('about')}</span>
-            <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+            <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
               pathname.includes('/o-nama') 
                 ? 'translate-x-0' 
                 : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -185,13 +185,13 @@ export function Header() {
                 href={`/${locale}`} 
                 className={`relative text-gray-700 hover:text-white transition-colors py-2 px-3 rounded-md overflow-hidden group ${
                   pathname === `/${locale}` || pathname === `/${locale}/` 
-                    ? 'text-white bg-brand-600/20' 
-                    : 'hover:bg-brand-600/20'
+                    ? 'text-white bg-brand-600' 
+                    : ''
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="relative z-10">{t('home')}</span>
-                <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+                <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
                   pathname === `/${locale}` || pathname === `/${locale}/` 
                     ? 'translate-x-0' 
                     : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -201,13 +201,13 @@ export function Header() {
                 href={`/${locale}/prodaja`} 
                 className={`relative text-gray-700 hover:text-white transition-colors py-2 px-3 rounded-md overflow-hidden group ${
                   pathname.includes('/prodaja') 
-                    ? 'text-white bg-brand-600/20' 
-                    : 'hover:bg-brand-600/20'
+                    ? 'text-white bg-brand-600' 
+                    : ''
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="relative z-10">{t('forSale')}</span>
-                <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+                <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
                   pathname.includes('/prodaja') 
                     ? 'translate-x-0' 
                     : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -217,13 +217,13 @@ export function Header() {
                 href={`/${locale}/izdavanje`} 
                 className={`relative text-gray-700 hover:text-white transition-colors py-2 px-3 rounded-md overflow-hidden group ${
                   pathname.includes('/izdavanje') 
-                    ? 'text-white bg-brand-600/20' 
-                    : 'hover:bg-brand-600/20'
+                    ? 'text-white bg-brand-600' 
+                    : ''
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="relative z-10">{t('forRent')}</span>
-                <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+                <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
                   pathname.includes('/izdavanje') 
                     ? 'translate-x-0' 
                     : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -233,13 +233,13 @@ export function Header() {
                 href={`/${locale}/kontakt`} 
                 className={`relative text-gray-700 hover:text-white transition-colors py-2 px-3 rounded-md overflow-hidden group ${
                   pathname.includes('/kontakt') 
-                    ? 'text-white bg-brand-600/20' 
-                    : 'hover:bg-brand-600/20'
+                    ? 'text-white bg-brand-600' 
+                    : ''
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="relative z-10">{t('contact')}</span>
-                <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+                <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
                   pathname.includes('/kontakt') 
                     ? 'translate-x-0' 
                     : 'translate-x-[-100%] group-hover:translate-x-0'
@@ -249,13 +249,13 @@ export function Header() {
                 href={`/${locale}/o-nama`} 
                 className={`relative text-gray-700 hover:text-white transition-colors py-2 px-3 rounded-md overflow-hidden group ${
                   pathname.includes('/o-nama') 
-                    ? 'text-white bg-brand-600/20' 
-                    : 'hover:bg-brand-600/20'
+                    ? 'text-white bg-brand-600' 
+                    : ''
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="relative z-10">{t('about')}</span>
-                <div className={`absolute inset-0 bg-brand-600/20 transform transition-transform duration-300 ease-out ${
+                <div className={`absolute inset-0 bg-brand-600 transform transition-transform duration-300 ease-out ${
                   pathname.includes('/o-nama') 
                     ? 'translate-x-0' 
                     : 'translate-x-[-100%] group-hover:translate-x-0'

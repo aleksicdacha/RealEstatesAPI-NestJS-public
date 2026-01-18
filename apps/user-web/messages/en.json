@@ -66,7 +66,7 @@
     "heroTitle": "Buy or rent a property",
     "heroHighlight": "without risk",
     "heroSubtitle": "Find the perfect property in the most sought-after cities in Serbia",
-    "noCosts": "No commission",    "verification": "Verified properties",
+    "noCosts": "No risk",    "verification": "Verified properties",
     "support": "24/7 Support",    "verifiedProperties": "Verified properties",
     "support247": "24/7 Support",
     "servicesTitle": "Our services",
@@ -303,16 +303,6 @@
     "teamText": "Expert and dedicated team of professionals",
     "support": "Support",
     "supportText": "24/7 support for all your needs"
-  },
-  "Footer": {
-    "aboutUs": "About Us",
-    "services": "Services",
-    "contact": "Contact",
-    "followUs": "Follow Us",
-    "allRightsReserved": "All rights reserved",
-    "privacyPolicy": "Privacy Policy",
-    "terms": "Terms of Use",
-    "sitemap": "Sitemap"
   },
   "Common": {
     "loading": "Loading...",
@@ -557,5 +547,25 @@
     "submitting": "Submitting...",
     "acceptTerms": "I accept the terms of use and privacy policy",
     "privacyNote": "We respect your privacy. You can unsubscribe at any time."
+  },
+  "Footer": {
+    "haveQuestions": "Have questions?",
+    "contactUs": "Contact us",
+    "information": "Information",
+    "contact": "Contact",
+    "aboutUs": "About Us",
+    "priceList": "Price List",
+    "careers": "Careers",
+    "faq": "Frequently Asked Questions",
+    "blog": "Blog",
+    "apartmentSales": "Apartment Sales",
+    "apartmentSalesNis": "Apartment Sales Niš",
+    "apartmentRentalsNis": "Apartment Rentals Niš",
+    "newConstruction": "New Construction",
+    "luxuryRentals": "Luxury Apartments for Rent",
+    "luxurySales": "Luxury Apartments for Sale",
+    "searchProperty": "Search Property",
+    "housingLoans": "Housing Loans",
+    "copyright": "©copyright Olymp Real Estate. All rights reserved."
   }
 }

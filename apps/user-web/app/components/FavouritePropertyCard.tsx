@@ -4,8 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Property, getFavoriteImage, getImageUrl } from '@/lib/api';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import type { ReactElement }from 'react';
+import { useTranslations, useMessages } from 'next-intl';
+import type { ReactElement } from 'react';
+import { PropertyTranslator } from '@/app/utils/propertyTranslator';
 
 function getPropertyTypeIcon(type: string): ReactElement {
   const icons: { [key: string]: ReactElement } = {
@@ -43,28 +44,26 @@ export function FavouritePropertyCard({ property, priority = false }: FavouriteP
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr';
   const tProps = useTranslations('Properties');
+  const messages = useMessages() as any;
   const favoriteImage = getFavoriteImage(property.images);
   const imageUrl = favoriteImage ? getImageUrl(favoriteImage.url) : null;
 
-  // Translate property type
-  const getTranslatedPropertyType = (type: string): string => {
-    const typeMap: { [key: string]: string } = {
-      'Apartment': 'apartment',
-      'House': 'house',
-      'ApartmentInHouse': 'apartmentInHouse',
-      'Office': 'office',
-      'CommercialSpace': 'commercial',
-      'Land': 'land',
-      'VacationHome': 'vacationHome',
-      'Duplex': 'duplex',
-      'Garage': 'garage',
-    };
-    const key = typeMap[type];
-    if (!key) {
-      console.warn(`Missing translation for property type: ${type}`);
-      return type;
+  // Helper to safely translate with fallback
+  const safeTranslate = (key: string, fallback: string): string => {
+    try {
+      const propertiesMessages = messages?.Properties || {};
+      if (propertiesMessages[key]) {
+        return tProps(key);
+      }
+      return fallback;
+    } catch (error) {
+      return fallback;
     }
-    return tProps(key);
+  };
+
+  // Translate property type using PropertyTranslator
+  const getTranslatedPropertyType = (type: string): string => {
+    return safeTranslate(PropertyTranslator.getPropertyTypeKey(type), type);
   };
 
   const locationSlug = property.neighborhood ? property.neighborhood.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'nis';
@@ -126,7 +125,14 @@ export function FavouritePropertyCard({ property, priority = false }: FavouriteP
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <span>{property.area} m²</span>
           <span>·</span>
-          <span>{property.roomStructure}</span>
+          <span>
+            {property.roomStructure
+              ? safeTranslate(
+                  PropertyTranslator.getRoomStructureKey(property.roomStructure),
+                  property.roomStructure
+                )
+              : '-'}
+          </span>
         </div>
       </Link>
     </div>

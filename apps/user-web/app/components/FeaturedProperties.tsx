@@ -3,9 +3,10 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useMessages } from 'next-intl';
 import { fetchFeaturedProperties } from '@/lib/featured-api';
 import { Property, getImageUrl, getFavoriteImage } from '@/lib/api';
+import { PropertyTranslator } from '@/app/utils/propertyTranslator';
 
 interface FeaturedPropertiesProps {
   locale: string;
@@ -13,11 +14,26 @@ interface FeaturedPropertiesProps {
 
 export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) {
   const t = useTranslations('FeaturedProperties');
+  const tProps = useTranslations('Properties');
+  const messages = useMessages() as any;
   const [properties, setProperties] = useState<Property[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [itemsPerView, setItemsPerView] = useState(3);
+
+  // Helper to safely translate with fallback
+  const safeTranslate = (key: string, fallback: string): string => {
+    try {
+      const propertiesMessages = messages?.Properties || {};
+      if (propertiesMessages[key]) {
+        return tProps(key);
+      }
+      return fallback;
+    } catch (error) {
+      return fallback;
+    }
+  };
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -110,7 +126,7 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
             {t('title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -213,7 +229,12 @@ export default function FeaturedProperties({ locale }: FeaturedPropertiesProps) 
                             <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
-                            <span className="font-semibold">{property.roomStructure}</span>
+                            <span className="font-semibold">
+                              {safeTranslate(
+                                PropertyTranslator.getRoomStructureKey(property.roomStructure),
+                                property.roomStructure
+                              )}
+                            </span>
                           </div>
                         )}
                       </div>

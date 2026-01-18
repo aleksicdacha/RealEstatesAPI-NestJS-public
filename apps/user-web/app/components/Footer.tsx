@@ -9,6 +9,7 @@ export function Footer() {
   const pathname = usePathname();
   const locale = pathname.split('/')[1] || 'sr';
   const t = useTranslations('Navigation');
+  const tFooter = useTranslations('Footer');
 
   return (
     <footer className="bg-black text-white py-12">
@@ -49,44 +50,44 @@ export function Footer() {
               </button>
             </div>
             <div className="text-sm text-gray-400">
-              <p className="mb-2">Imate pitanja?</p>
-              <p className="font-semibold text-white">Kontaktirajte nas</p>
+              <p className="mb-2">{tFooter('haveQuestions')}</p>
+              <p className="font-semibold text-white">{tFooter('contactUs')}</p>
             </div>
           </div>
 
           {/* Informacije */}
           <div>
-            <h3 className="font-bold mb-4">Informacije</h3>
+            <h3 className="font-bold mb-4">{tFooter('information')}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link href={`/${locale}/kontakt`} className="hover:text-white">Kontakt</Link></li>
-              <li><Link href={`/${locale}/o-nama`} className="hover:text-white">O nama</Link></li>
+              <li><Link href={`/${locale}/kontakt`} className="hover:text-white">{tFooter('contact')}</Link></li>
+              <li><Link href={`/${locale}/o-nama`} className="hover:text-white">{tFooter('aboutUs')}</Link></li>
               <li><Link href={`/${locale}/politika-privatnosti`} className="hover:text-white">{t('privacyPolicy')}</Link></li>
               <li><Link href={`/${locale}/uslove-koriscenja`} className="hover:text-white">{t('termsOfUse')}</Link></li>
-              <li><Link href={`/${locale}/cenovnik`} className="hover:text-white">Cenovnik</Link></li>
-              <li><Link href={`/${locale}/karijera`} className="hover:text-white">Karijera</Link></li>
-              <li><Link href={`/${locale}/cesto-postavljana-pitanja`} className="hover:text-white">Često postavljana pitanja</Link></li>
-              <li><Link href={`/${locale}/blog`} className="hover:text-white">Blog</Link></li>
+              <li><Link href={`/${locale}/cenovnik`} className="hover:text-white">{tFooter('priceList')}</Link></li>
+              <li><Link href={`/${locale}/karijera`} className="hover:text-white">{tFooter('careers')}</Link></li>
+              <li><Link href={`/${locale}/cesto-postavljana-pitanja`} className="hover:text-white">{tFooter('faq')}</Link></li>
+              <li><Link href={`/${locale}/blog`} className="hover:text-white">{tFooter('blog')}</Link></li>
             </ul>
           </div>
 
           {/* Prodaja */}
           <div>
-            <h3 className="font-bold mb-4">Prodaja stanova</h3>
+            <h3 className="font-bold mb-4">{tFooter('apartmentSales')}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link href={`/${locale}/prodaja-nekretnina/nis`} className="hover:text-white">Prodaja stanova Niš</Link></li>
-              <li><Link href={`/${locale}/izdavanje-stanova/nis`} className="hover:text-white">Izdavanje stanova Niš</Link></li>
+              <li><Link href={`/${locale}/prodaja-nekretnina/nis`} className="hover:text-white">{tFooter('apartmentSalesNis')}</Link></li>
+              <li><Link href={`/${locale}/izdavanje-stanova/nis`} className="hover:text-white">{tFooter('apartmentRentalsNis')}</Link></li>
             </ul>
           </div>
 
           {/* Novogradnja */}
           <div>
-            <h3 className="font-bold mb-4">Novogradnja</h3>
+            <h3 className="font-bold mb-4">{tFooter('newConstruction')}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link href={`/${locale}/novogradnja`} className="hover:text-white">Novogradnja</Link></li>
-              <li><Link href={`/${locale}/luksuzni-stanovi-za-izdavanje`} className="hover:text-white">Luksuzni stanovi za izdavanje</Link></li>
-              <li><Link href={`/${locale}/luksuzni-stanovi-za-prodaju`} className="hover:text-white">Luksuzni stanovi za prodaju</Link></li>
-              <li><Link href={`/${locale}/trazite-nekretninu`} className="hover:text-white">Tražite nekretninu</Link></li>
-              <li><Link href={`/${locale}/stambeni-krediti`} className="hover:text-white">Stambeni krediti</Link></li>
+              <li><Link href={`/${locale}/novogradnja`} className="hover:text-white">{tFooter('newConstruction')}</Link></li>
+              <li><Link href={`/${locale}/luksuzni-stanovi-za-izdavanje`} className="hover:text-white">{tFooter('luxuryRentals')}</Link></li>
+              <li><Link href={`/${locale}/luksuzni-stanovi-za-prodaju`} className="hover:text-white">{tFooter('luxurySales')}</Link></li>
+              <li><Link href={`/${locale}/trazite-nekretninu`} className="hover:text-white">{tFooter('searchProperty')}</Link></li>
+              <li><Link href={`/${locale}/stambeni-krediti`} className="hover:text-white">{tFooter('housingLoans')}</Link></li>
             </ul>
           </div>
         </div>
@@ -98,7 +99,7 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="border-t border-gray-800 pt-6 text-sm text-gray-400">
-          <p>©copyright Olymp Nekretnine. Sva prava zadržana.</p>
+          <p>{tFooter('copyright')}</p>
         </div>
       </div>
     </footer>

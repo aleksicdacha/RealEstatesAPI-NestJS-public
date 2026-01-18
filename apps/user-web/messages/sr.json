@@ -66,7 +66,7 @@
     "heroTitle": "Kupite ili iznajmite nekretninu",
     "heroHighlight": "bez rizika",
     "heroSubtitle": "Pronađite savršenu nekretninu u najtraženijim gradovima Srbije",
-    "noCosts": "Bez provizije",
+    "noCosts": "Bez rizika",
     "verification": "Verifikovane nekretnine",
     "support": "Podrška 24/7",
     "verifiedProperties": "Verifikovane nekretnine",
@@ -305,16 +305,6 @@
     "teamText": "Stručan i posvećen tim profesionalaca",
     "support": "Podrška",
     "supportText": "Podrška 24/7 za sve vaše potrebe"
-  },
-  "Footer": {
-    "aboutUs": "O nama",
-    "services": "Usluge",
-    "contact": "Kontakt",
-    "followUs": "Pratite nas",
-    "allRightsReserved": "Sva prava zadržana",
-    "privacyPolicy": "Politika privatnosti",
-    "terms": "Uslovi korišćenja",
-    "sitemap": "Mapa sajta"
   },
   "Common": {
     "loading": "Učitavanje...",
@@ -560,5 +550,25 @@
     "submitting": "Šalje se...",
     "acceptTerms": "Prihvatam uslove korišćenja i politiku privatnosti",
     "privacyNote": "Poštujemo vašu privatnost. Možete se odjaviti u bilo kom trenutku."
+  },
+  "Footer": {
+    "haveQuestions": "Imate pitanja?",
+    "contactUs": "Kontaktirajte nas",
+    "information": "Informacije",
+    "contact": "Kontakt",
+    "aboutUs": "O nama",
+    "priceList": "Cenovnik",
+    "careers": "Karijera",
+    "faq": "Često postavljana pitanja",
+    "blog": "Blog",
+    "apartmentSales": "Prodaja stanova",
+    "apartmentSalesNis": "Prodaja stanova Niš",
+    "apartmentRentalsNis": "Izdavanje stanova Niš",
+    "newConstruction": "Novogradnja",
+    "luxuryRentals": "Luksuzni stanovi za izdavanje",
+    "luxurySales": "Luksuzni stanovi za prodaju",
+    "searchProperty": "Tražite nekretninu",
+    "housingLoans": "Stambeni krediti",
+    "copyright": "©copyright Olymp Nekretnine. Sva prava zadržana."
   }
 }
