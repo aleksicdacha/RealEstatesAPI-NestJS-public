@@ -82,14 +82,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Helper to decode JWT and check expiry
+  // For refresh tokens, we check strict expiry (no buffer)
+  // For access tokens, we allow 10% buffer for proactive refresh
+  const isTokenExpired = (token: string, useBuffer: boolean = false): boolean => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const decoded = JSON.parse(jsonPayload);
+
+      if (!decoded.exp) return true;
+
+      const expirationTime = decoded.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+
+      // For refresh tokens, check strict expiry
+      // For access tokens, add a small buffer for proactive refresh
+      if (!useBuffer) {
+        return currentTime >= expirationTime;
+      }
+
+      // Calculate buffer as 10% of token lifetime (min 5s, max 60s)
+      const issuedTime = decoded.iat ? decoded.iat * 1000 : currentTime;
+      const tokenLifetime = expirationTime - issuedTime;
+      const bufferTime = Math.min(Math.max(tokenLifetime * 0.1, 5000), 60000);
+
+      return currentTime >= (expirationTime - bufferTime);
+    } catch (error) {
+      console.error('[Auth] Failed to decode token:', error);
+      return true; // Treat decode errors as expired
+    }
+  };
+
   useEffect(() => {
     // Check if user is logged in on mount
     const checkAuth = async () => {
-      const token = localStorage.getItem('accessToken');
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
       const userData = localStorage.getItem('user');
       
-      if (token && userData) {
+      if (accessToken && refreshToken && userData) {
         try {
+          // Check if refresh token is expired (strict check, no buffer)
+          // We only logout when the refresh token is TRULY expired
+          if (isTokenExpired(refreshToken, false)) {
+            console.warn('[Auth] Refresh token expired after long inactivity - logging out');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            setUser(null);
+            setLoading(false);
+            return;
+          }
+
           setUser(JSON.parse(userData));
           // Schedule automatic token refresh
           scheduleTokenRefresh();

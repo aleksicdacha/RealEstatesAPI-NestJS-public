@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Toolbar } from "primereact/toolbar";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
@@ -161,7 +160,7 @@ export default function ClientsPage() {
       }
     };
 
-    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
+    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} className="rounded-full" />;
   };
 
   const transactionTypeBodyTemplate = (rowData: Client) => {
@@ -175,11 +174,11 @@ export default function ClientsPage() {
       }
     };
 
-    return <Tag value={translateTransactionType(rowData.transactionType)} severity={getSeverity(rowData.transactionType)} />;
+    return <Tag value={translateTransactionType(rowData.transactionType)} severity={getSeverity(rowData.transactionType)} className="rounded-full" />;
   };
 
   const paymentTypeBodyTemplate = (rowData: Client) => {
-    return <Tag value={translatePaymentType(rowData.paymentType)} severity="secondary" />;
+    return <Tag value={translatePaymentType(rowData.paymentType)} severity="secondary" className="rounded-full" />;
   };
 
   const propertyBodyTemplate = (rowData: Client) => {
@@ -226,7 +225,7 @@ export default function ClientsPage() {
   return (
     <div className="datatable-crud-demo">
       <Toast ref={toast} />
-      <Toolbar className="mb-4" />
+      {/*<Toolbar className="mb-4" />*/}
       
       {/* Full-page loading overlay */}
       {loading && (

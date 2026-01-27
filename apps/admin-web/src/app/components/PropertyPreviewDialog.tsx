@@ -255,6 +255,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                   <Tag 
                     value={property.status === 'active' ? t('available') : t(property.status)} 
                     severity={getStatusSeverity(property.status)}
+                    className="rounded-full"
                   />
                 </div>
               </div>
@@ -383,7 +384,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                       <Tag 
                         key={index} 
                         value={t(getEquipmentTranslationKey(equipment))} 
-                        className="mr-2 mb-2"
+                        className="mr-2 mb-2 rounded-full"
                       />
                     ))}
                   </div>
@@ -462,6 +463,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                     <Tag 
                       value={tClients(client.status)} 
                       severity={client.status === 'active' ? 'success' : 'danger'}
+                      className="rounded-full"
                     />
                   </div>
                 </div>

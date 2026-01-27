@@ -7,23 +7,29 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    fontFamily: {
-      sans: ['var(--font-main)', 'system-ui', '-apple-system', 'sans-serif'],
-    },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-main)', 'system-ui', 'sans-serif'],
+      },
       colors: {
+        // Glavna boja brenda - brand orange
+        brand: {
+          '50': '#fff7ed',
+          '100': '#ffedd5',
+          '200': '#fed7aa',
+          '300': '#fdba74',
+          '400': '#fb923c',
+          '500': '#f97316',
+          '600': '#ea580c',
+          '700': '#c2410c',
+          '800': '#9a3412',
+          '900': '#7c2d12',
+          '950': '#431407',
+        },
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
     },
-    spacing: {
-      '1': '8px',
-      '2': '12px',
-      '3': '16px',
-      '4': '24px',
-      '5': '32px',
-      '6': '48px',
-    }
   },
   plugins: [],
 } satisfies Config;

@@ -8,6 +8,7 @@ import ClientForm, { ClientFormRef } from './wizard-steps/ClientForm';
 import ImageUploader from './wizard-steps/ImageUploader';
 import MapSelector from './wizard-steps/MapSelector';
 import { clientService, Client } from '@/services/client.service';
+import { apiClient } from '@/lib/api-client';
 
 interface PropertyFormData {
   code: string;
@@ -131,9 +132,6 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
     representative: undefined,
   });
 
-  const [uploadedImages, setUploadedImages] = useState<{ url: string }[]>([]);
-  // const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-
   const steps = [
     { label: t('propertyDetails') },
     { label: t('clientDetails') },
@@ -256,14 +254,6 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
         throw new Error('Please upload at least one image before finishing.');
       }
 
-      const payload = {
-        id: propertyUUID,
-        property: propertyData,
-        client: clientData,
-        images,
-        location
-      };
-
       const propertyPayload = {
         "id": propertyUUID,
         "code": propertyData.code,
@@ -316,81 +306,33 @@ const PropertyWizard = ({ onCompleted }: PropertyWizardProps) => {
 
 
       // Step 1: Save Property
-      const propertyResponse = await fetch('http://localhost:3000/v1/properties', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(propertyPayload),
-      });
+      try {
+        await apiClient.post('/properties', propertyPayload);
 
+        // Step 2: Save Client
+        await apiClient.post('/clients', clientPayload);
 
-      if (!propertyResponse.ok) {
-        let errorMessage = 'Failed to create property';
-        try {
-          const errorData = await propertyResponse.json();
-          // Extract validation errors if they exist
-          if (errorData.message) {
-            if (Array.isArray(errorData.message)) {
-              errorMessage = errorData.message.join(', ');
-            } else {
-              errorMessage = errorData.message;
-            }
+        // Step 3: Associate uploaded images with the property
+        if (images && images.length > 0) {
+          // Format images properly with url, isFavorite, and order
+          const formattedImages = images.map((img, index) => ({
+            url: img.url,
+            isFavorite: index === 0, // First image is favorite
+            order: index + 1 // Order starts from 1
+          }));
+
+          const imagesPayload = { images: formattedImages };
+
+          try {
+            await apiClient.put(`/properties/${propertyUUID}`, imagesPayload);
+          } catch (imageError) {
+            console.warn('Failed to associate images with property, but property was created successfully', imageError);
           }
-        } catch (parseError) {
-          errorMessage = `HTTP ${propertyResponse.status}: ${propertyResponse.statusText}`;
         }
+      } catch (apiError: unknown) {
+        // Handle API errors from property or client creation
+        const errorMessage = apiError instanceof Error ? apiError.message : 'Failed to create property or client';
         throw new Error(errorMessage);
-      }
-
-
-      const property = await propertyResponse.json();
-
-      // Step 2: Save Client
-      const clientResponse = await fetch('http://localhost:3000/v1/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clientPayload),
-      });
-
-      if (!clientResponse.ok) {
-        let errorMessage = 'Failed to create client';
-        try {
-          const errorData = await clientResponse.json();
-          if (errorData.message) {
-            if (Array.isArray(errorData.message)) {
-              errorMessage = errorData.message.join(', ');
-            } else {
-              errorMessage = errorData.message;
-            }
-          }
-        } catch (parseError) {
-          errorMessage = `HTTP ${clientResponse.status}: ${clientResponse.statusText}`;
-        }
-        throw new Error(errorMessage);
-      }
-
-      // Step 3: Associate uploaded images with the property
-      if (images && images.length > 0) {
-        // Format images properly with url, isFavorite, and order
-        const formattedImages = images.map((img, index) => ({
-          url: img.url,
-          isFavorite: index === 0, // First image is favorite
-          order: index + 1 // Order starts from 1
-        }));
-        
-        const imagesPayload = { images: formattedImages };
-        
-        const updatePropertyResponse = await fetch(
-          `http://localhost:3000/v1/properties/${propertyUUID}`,
-          {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(imagesPayload),
-          }
-        );
-
-        if (!updatePropertyResponse.ok) {
-          console.warn('Failed to associate images with property, but property was created successfully');
-        }
       }
 
       toast.current?.show({

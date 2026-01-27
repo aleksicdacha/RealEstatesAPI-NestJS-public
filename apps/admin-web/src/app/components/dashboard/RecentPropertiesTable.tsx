@@ -40,7 +40,7 @@ export const RecentPropertiesTable: React.FC<RecentPropertiesTableProps> = ({
   };
 
   const statusBodyTemplate = (rowData: Property) => {
-    return <Tag value={rowData.status} severity={getStatusSeverity(rowData.status)} />;
+    return <Tag value={rowData.status} severity={getStatusSeverity(rowData.status)} className="rounded-full" />;
   };
 
   const priceBodyTemplate = (rowData: Property) => {

@@ -11,6 +11,7 @@ import { Toast } from 'primereact/toast';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Divider } from 'primereact/divider';
 import { Avatar } from 'primereact/avatar';
+import { apiClient } from '@/lib/api-client';
 
 interface Message {
   id: number;
@@ -109,20 +110,8 @@ export default function AgentChatPage() {
 
   const loadConversations = async () => {
     try {
-      const response = await fetch('http://localhost:3000/v1/agent-chat/conversations', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
-      
-      if (!response.ok) {
-        console.error('Failed to load conversations:', response.status, response.statusText);
-        setConversations([]);
-        setLoading(false);
-        return;
-      }
-      
-      const data = await response.json();
+      const data = await apiClient.get<Conversation[]>('/agent-chat/conversations');
+
       console.log('Loaded conversations:', data);
       
       // Ensure data is an array
@@ -131,8 +120,8 @@ export default function AgentChatPage() {
           id: c.id, 
           name: c.guestName, 
           status: c.status,
-          agentId: c.agentId,
-          unreadCount: c.unreadCount 
+          agentId: c.agent?.name,
+          unreadCount: c.unreadCount
         })));
         setConversations(data);
       } else {
@@ -159,25 +148,14 @@ export default function AgentChatPage() {
     }
 
     // Mark as read
-    await fetch(`http://localhost:3000/v1/agent-chat/conversations/${conversation.id}/read`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-      body: JSON.stringify({ senderType: 'guest' }),
+    await apiClient.patch(`/agent-chat/conversations/${conversation.id}/read`, {
+      senderType: 'guest'
     });
 
     // Reload conversation details
-    const response = await fetch(
-      `http://localhost:3000/v1/agent-chat/conversations/${conversation.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      },
+    const fullConversation = await apiClient.get<Conversation>(
+      `/agent-chat/conversations/${conversation.id}`
     );
-    const fullConversation = await response.json();
     setSelectedConversation(fullConversation);
   };
 
@@ -201,19 +179,11 @@ export default function AgentChatPage() {
 
     const agentId = 1; // TODO: Get from auth context
 
-    const response = await fetch(
-      `http://localhost:3000/v1/agent-chat/conversations/${selectedConversation.id}/assign`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({ agentId }),
-      },
+    const updatedConversation = await apiClient.post<Conversation>(
+      `/agent-chat/conversations/${selectedConversation.id}/assign`,
+      { agentId }
     );
 
-    const updatedConversation = await response.json();
     setSelectedConversation(updatedConversation);
     loadConversations();
   };
@@ -221,15 +191,7 @@ export default function AgentChatPage() {
   const closeConversation = async () => {
     if (!selectedConversation) return;
 
-    await fetch(
-      `http://localhost:3000/v1/agent-chat/conversations/${selectedConversation.id}/close`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      },
-    );
+    await apiClient.patch(`/agent-chat/conversations/${selectedConversation.id}/close`);
 
     toast.current?.show({
       severity: 'success',
@@ -319,7 +281,7 @@ export default function AgentChatPage() {
                               <Tag 
                                 value={conversation.status.toUpperCase()} 
                                 severity={getStatusSeverity(conversation.status)}
-                                className="font-semibold"
+                                className="font-semibold rounded-full"
                               />
                               <small className="text-600 font-medium">
                                 {new Date(conversation.createdAt).toLocaleString()}

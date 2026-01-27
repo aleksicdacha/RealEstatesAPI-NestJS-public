@@ -3,11 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { DataTable, DataTableSortEvent, SortOrder } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Toolbar } from "primereact/toolbar";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
-import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { Tag } from "primereact/tag";
@@ -39,7 +36,6 @@ export default function PropertiesPage() {
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>(-1);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
   const [filters, setFilters] = useState<PropertyFilterValues>({});
   const [showMap, setShowMap] = useState(true);
   const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null);
@@ -50,17 +46,11 @@ export default function PropertiesPage() {
     setWizardVisible(true); // Show the wizard
   };
 
-  const closeWizard = () => {
-    setWizardVisible(false); // Hide the wizard
-  };
-
   // Filters
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<string[]>([]);
-
   const [selectedProperties, setSelectedProperties] = useState<Property[]>([]);
   const [isDialogVisible, setDialogVisible] = useState(false);
-  const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [propertyForm, setPropertyForm] = useState<Property | null>(null);
 
   const dt = useRef<DataTable<Property[]>>(null);
@@ -298,7 +288,7 @@ export default function PropertiesPage() {
       }
     };
 
-    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
+    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} className="rounded-full" />;
   };
 
   return (
@@ -383,7 +373,7 @@ export default function PropertiesPage() {
             onRowMouseEnter={(e) => !loading && showMap && setHoveredPropertyId(e.data.id)}
             onRowMouseLeave={() => !loading && showMap && setHoveredPropertyId(null)}
           >
-            <Column field="code" header={t('code')} sortable style={{ minWidth: "12rem" }} body={loading ? () => <div className="skeleton-line h-1rem w-8rem"></div> : null}></Column>
+            <Column field="code" header={t('code')} sortable style={{ minWidth: "8rem" }} body={loading ? () => <div className="skeleton-line h-1rem w-8rem"></div> : null}></Column>
             <Column field="neighborhood" header={t('neighborhood')} style={{ minWidth: "10rem" }} body={loading ? () => <div className="skeleton-line h-1rem w-6rem"></div> : null}></Column>
             <Column field="area" header={t('area')} sortable body={loading ? () => <div className="skeleton-line h-1rem w-4rem"></div> : null}></Column>
             <Column field="price" header={t('ownerPrice')} body={loading ? () => <div className="skeleton-line h-1rem w-6rem"></div> : priceBodyTemplate} sortable></Column>

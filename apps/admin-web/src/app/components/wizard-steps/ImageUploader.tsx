@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FileUpload, FileUploadUploadEvent, ItemTemplateOptions } from 'primereact/fileupload';
+import { FileUpload, ItemTemplateOptions } from 'primereact/fileupload';
 import { Galleria } from "primereact/galleria";
 import { Toast } from 'primereact/toast';
 import { ProgressBar } from 'primereact/progressbar';
@@ -83,7 +83,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ propertyId, onNext, prope
             <small>{new Date().toLocaleDateString()}</small>
                     </span>
         </div>
-        <Tag value={props.formatSize} severity="warning" className="px-3 py-2" />
+        <Tag value={props.formatSize} severity="warning" className="px-3 py-2 rounded-full" />
         <Button type="button" icon="pi pi-trash" className="p-button-outlined p-button-rounded p-button-danger ml-auto px-2" onClick={() => onTemplateRemove(file, props.onRemove)} />
       </div>
     );
@@ -139,7 +139,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ propertyId, onNext, prope
       });
 
       if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text();
         throw new Error(`Upload failed: ${uploadResponse.statusText} (${uploadResponse.status})`);
       }
 

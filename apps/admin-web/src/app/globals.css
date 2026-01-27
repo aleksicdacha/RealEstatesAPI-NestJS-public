@@ -546,4 +546,70 @@ html, body,
   color: #34d399 !important;
 }
 
+/* ============================================
+   PrimeReact Tag (Chip) - Rounded Full Override
+   ============================================ */
+/* Force rounded-full on all Tag components */
+.p-tag {
+  border-radius: 9999px !important;
+}
+
+/* Additional specificity for rounded-full className */
+.p-tag.rounded-full {
+  border-radius: 9999px !important;
+}
+
+/* Ensure all severity variants have rounded corners */
+.p-tag.p-tag-success,
+.p-tag.p-tag-info,
+.p-tag.p-tag-warning,
+.p-tag.p-tag-danger,
+.p-tag.p-tag-secondary,
+.p-tag.p-tag-contrast {
+  border-radius: 9999px !important;
+}
+
+/* ============================================
+   Admin Layout - Remove unwanted spacing
+   ============================================ */
+/* Ensure no extra padding/margin around the page */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove PrimeReact Menubar default margin/padding if it exists */
+.p-menubar {
+  margin: 0 !important;
+}
+
+/* Smooth transitions for navigation */
+button[class*="text-gray-700"] {
+  transition: all 0.3s ease;
+}
+
+/* ============================================
+   Admin Navbar - Clean Design Override
+   ============================================ */
+/* Ensure navbar buttons have no border and proper styling */
+header nav button {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Override any PrimeReact button styles in navbar */
+header nav button:hover {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+header nav button:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from '@src/entities/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -12,8 +12,6 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -36,15 +34,31 @@ export class AuthService {
     const tokens = await this.issueTokens(user.id, user.username);
     await this.userService.updateRefreshToken(user.id, tokens.refreshToken);
 
-    return { 
+    // Get access token expiration from config (default 7 days = 604800 seconds)
+    const expiresIn = this.parseExpiresIn(this.configService.get<string>('jwt.expiresIn') || '7d');
+
+    return {
       accessToken, 
       refreshToken: tokens.refreshToken,
+      expiresIn, // Send to frontend for scheduling auto-refresh
       user: {
         id: user.id,
         username: user.username,
         role: user.role
       }
     };
+  }
+
+  // Helper to convert expiration string to seconds
+  private parseExpiresIn(expiresIn: string): number {
+    const match = expiresIn.match(/^(\d+)([smhd])$/);
+    if (!match) return 3600; // Default 1 hour
+
+    const value = parseInt(match[1]);
+    const unit = match[2];
+
+    const multipliers = { s: 1, m: 60, h: 3600, d: 86400 };
+    return value * (multipliers[unit] || 3600);
   }
 
   async logout(userId: number) {

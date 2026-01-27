@@ -14,6 +14,58 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+// Helper to decode JWT without verification (client-side check only)
+function decodeJWT(token: string): { exp?: number; iat?: number } | null {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('[API Client] Failed to decode JWT:', error);
+    return null;
+  }
+}
+
+// Check if token is expired (strict check - no buffer)
+// Use this for refresh tokens to avoid premature logout
+function isTokenStrictlyExpired(token: string): boolean {
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) {
+    return true;
+  }
+
+  const expirationTime = decoded.exp * 1000;
+  const currentTime = Date.now();
+
+  return currentTime >= expirationTime;
+}
+
+// Check if token is expired or will expire soon
+// Uses 10% of token lifetime as buffer (min 5s, max 60s)
+// Use this for access tokens to enable proactive refresh
+function isTokenExpired(token: string): boolean {
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp || !decoded.iat) {
+    return true; // If we can't decode, treat as expired
+  }
+
+  const expirationTime = decoded.exp * 1000; // Convert to milliseconds
+  const issuedTime = decoded.iat * 1000;
+  const currentTime = Date.now();
+
+  // Calculate buffer as 10% of token lifetime (min 5s, max 60s)
+  const tokenLifetime = expirationTime - issuedTime;
+  const bufferTime = Math.min(Math.max(tokenLifetime * 0.1, 5000), 60000);
+
+  return currentTime >= (expirationTime - bufferTime);
+}
+
 class ApiClient {
   private client: AxiosInstance;
   private isRefreshing = false;
@@ -72,14 +124,81 @@ class ApiClient {
   }
 
   private setupInterceptors() {
-    // Request interceptor
+    // Request interceptor - check token validity before making request
     this.client.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem('accessToken'); // Changed from 'access_token' to 'accessToken'
-        console.log('[API Client] Token from localStorage:', token ? 'EXISTS' : 'NOT FOUND');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-          console.log('[API Client] Authorization header set');
+      async (config) => {
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        // If no tokens at all, let the request go through (might be public endpoint)
+        if (!accessToken && !refreshToken) {
+          console.log('[API Client] No tokens found');
+          return config;
+        }
+
+        // Check if refresh token itself is expired (strict check, no buffer)
+        // Only logout when refresh token is TRULY expired
+        if (refreshToken && isTokenStrictlyExpired(refreshToken)) {
+          console.warn('[API Client] Refresh token expired - logging out immediately');
+
+          // Clear storage and redirect to login
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+
+          if (typeof window !== 'undefined') {
+            window.location.href = '/sr/login';
+          }
+
+          // Reject the request
+          return Promise.reject(new Error('Session expired. Please login again.'));
+        }
+
+        // If access token is expired but refresh token is valid, try to refresh proactively
+        // Use buffered check for access token to refresh before it actually expires
+        if (accessToken && isTokenExpired(accessToken) && refreshToken && !isTokenStrictlyExpired(refreshToken)) {
+          console.log('[API Client] Access token expired, attempting proactive refresh');
+
+          try {
+            const newToken = await this.refreshAccessToken();
+            if (newToken) {
+              config.headers.Authorization = `Bearer ${newToken}`;
+              console.log('[API Client] Proactive refresh successful');
+              return config;
+            } else {
+              // Refresh failed (likely refresh token also expired)
+              console.error('[API Client] Proactive refresh failed - logging out');
+
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+              localStorage.removeItem('user');
+
+              if (typeof window !== 'undefined') {
+                window.location.href = '/sr/login';
+              }
+
+              return Promise.reject(new Error('Session expired. Please login again.'));
+            }
+          } catch (error) {
+            console.error('[API Client] Proactive refresh error - logging out:', error);
+
+            // Clear storage and redirect to login
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+
+            if (typeof window !== 'undefined') {
+              window.location.href = '/sr/login';
+            }
+
+            return Promise.reject(new Error('Session expired. Please login again.'));
+          }
+        }
+
+        // Use existing access token
+        if (accessToken) {
+          config.headers.Authorization = `Bearer ${accessToken}`;
+          console.log('[API Client] Using existing access token');
         }
         return config;
       },
@@ -114,7 +233,7 @@ class ApiClient {
 
           try {
             const newToken = await this.refreshAccessToken();
-            
+
             if (newToken) {
               console.log('[API Client] Token refreshed, retrying request');
               this.processQueue(null, newToken);
