@@ -416,26 +416,38 @@ print_success "Shared packages built"
 # Build API specifically (most important)
 print_info "Building API..."
 cd apps/api
+
+# Clean previous builds
+rm -rf dist build 2>/dev/null || true
+
+# Build
 npm run build
-cd ../..
 
-# Verify API build exists
-if [ -f "apps/api/dist/main.js" ]; then
-    print_success "API built successfully"
+# Check if build succeeded (could be in dist or build)
+if [ -f "dist/main.js" ]; then
+    print_success "API built successfully (dist/main.js)"
+elif [ -f "build/main.js" ]; then
+    print_warning "API built to 'build' folder, moving to 'dist'..."
+    mv build dist
+    print_success "API build moved to dist/"
 else
-    print_error "API build failed! dist/main.js not found"
-    print_info "Trying alternative build..."
-    cd apps/api
+    print_error "API build failed! No main.js found"
+    print_info "Trying direct nest build..."
     npx nest build
-    cd ../..
 
-    if [ -f "apps/api/dist/main.js" ]; then
-        print_success "API built with nest build"
+    if [ -f "dist/main.js" ]; then
+        print_success "API built with npx nest build"
+    elif [ -f "build/main.js" ]; then
+        mv build dist
+        print_success "API build moved to dist/"
     else
         print_error "API build failed completely!"
+        print_info "Checking for errors..."
+        npm run build 2>&1 | tail -50
         exit 1
     fi
 fi
+cd ../..
 
 # Build frontend applications
 print_info "Building Admin Web..."
