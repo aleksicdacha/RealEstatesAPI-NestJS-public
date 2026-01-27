@@ -199,9 +199,9 @@ export function Chatbot() {
         setConversationId(data.conversationId);
         
         // Initialize WebSocket connection - use base URL without /v1 path
-        const wsBaseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1').replace('/v1', '');
+        const wsBaseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1').replace(/\/v1\/?$/, '');
         const newSocket = io(`${wsBaseUrl}/agent-chat`, {
-          transports: ['websocket'],
+          transports: ['websocket', 'polling'],
         });
 
         newSocket.on('connect', () => {

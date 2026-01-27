@@ -48,9 +48,12 @@ export default function AgentChatPage() {
 
   useEffect(() => {
     // Initialize Socket.io connection
+    // Get base URL for WebSocket - strip /v1 if present since socket.io connects to root
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const newSocket = io(`${apiBaseUrl}/agent-chat`, {
-      transports: ['websocket'],
+    const wsBaseUrl = apiBaseUrl.replace(/\/v1\/?$/, '');
+
+    const newSocket = io(`${wsBaseUrl}/agent-chat`, {
+      transports: ['websocket', 'polling'],
     });
 
     newSocket.on('connect', () => {

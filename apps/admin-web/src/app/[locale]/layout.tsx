@@ -37,10 +37,15 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user || isAuthPage) return;
 
-    const socket: Socket = io(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/agent-chat`, {
+    // Get base URL for WebSocket - strip /v1 if present since socket.io connects to root
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const wsBaseUrl = apiUrl.replace(/\/v1\/?$/, '');
+
+    const socket: Socket = io(`${wsBaseUrl}/agent-chat`, {
       auth: {
         token: localStorage.getItem('accessToken')
-      }
+      },
+      transports: ['websocket', 'polling'],
     });
 
     socket.on('connect', () => {
