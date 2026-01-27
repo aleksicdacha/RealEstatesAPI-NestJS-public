@@ -2,6 +2,25 @@
 
 A modern, full-stack real estate management application built with **NestJS** (backend) and **Next.js** (frontend) using the latest best practices and technologies.
 
+---
+
+## 🚨 Quick Server Deployment
+
+**For production server (46.224.231.217):**
+
+```bash
+ssh root@46.224.231.217
+cd ~/RealEstatesAPI-NestJS
+./scripts/server-fix.sh  # Automated deployment with all fixes
+```
+
+**📚 Documentation:**
+- **[Server Quick Reference](documentation/SERVER_QUICK_REFERENCE.md)** - All PM2 commands
+- **[Urgent Server Fix](documentation/URGENT_SERVER_FIX.md)** - Troubleshooting guide
+- **[Deployment Guide](documentation/HETZNER_DEPLOYMENT_GUIDE.md)** - Full setup
+
+---
+
 ## 🏗️ Architecture
 
 ### Backend (NestJS v11)
