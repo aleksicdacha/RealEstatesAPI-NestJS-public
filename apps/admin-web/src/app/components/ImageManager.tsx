@@ -244,7 +244,7 @@ export function ImageManager({
       });
       
       try {
-        const response = await fetch('http://localhost:3000/v1/upload', {
+        const response = await fetch(`${API_BASE_URL}/v1/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -303,7 +303,7 @@ export function ImageManager({
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = `http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
+        img.src = `${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
       });
 
       // Calculate crop dimensions
@@ -363,7 +363,7 @@ export function ImageManager({
       }
 
       // Upload the cropped image to replace the original
-      const response = await fetch('http://localhost:3000/v1/upload', {
+      const response = await fetch(`${API_BASE_URL}/v1/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -428,7 +428,7 @@ export function ImageManager({
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = `http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
+        img.src = `${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
       });
 
       // Calculate new dimensions
