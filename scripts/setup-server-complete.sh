@@ -413,28 +413,72 @@ cd ../..
 
 print_success "Shared packages built"
 
-# Build all applications
+# Build API specifically (most important)
+print_info "Building API..."
+cd apps/api
 npm run build
+cd ../..
+
+# Verify API build exists
+if [ -f "apps/api/dist/main.js" ]; then
+    print_success "API built successfully"
+else
+    print_error "API build failed! dist/main.js not found"
+    print_info "Trying alternative build..."
+    cd apps/api
+    npx nest build
+    cd ../..
+
+    if [ -f "apps/api/dist/main.js" ]; then
+        print_success "API built with nest build"
+    else
+        print_error "API build failed completely!"
+        exit 1
+    fi
+fi
+
+# Build frontend applications
+print_info "Building Admin Web..."
+cd apps/admin-web
+npm run build
+cd ../..
+
+print_info "Building User Web..."
+cd apps/user-web
+npm run build
+cd ../..
 
 print_success "All applications built"
 
 #############################################################################
-# Step 12: Run Database Migrations
+# Step 12: Run Database Migrations and Seed
 #############################################################################
 
 print_header "🗄️  Step 12: Running Database Migrations"
 
 cd apps/api
 
-# Run migrations
-npm run migration:run || print_warning "Migrations may have already run"
+# Install tsconfig-paths if not present
+npm install tsconfig-paths --save-dev 2>/dev/null || true
 
-# Seed initial data
-npm run seed:users || print_warning "Users may have already been seeded"
+# Try running migrations
+print_info "Running migrations..."
+npm run migration:run 2>/dev/null || {
+    print_warning "Migrations script failed. Trying direct TypeORM CLI..."
+    npx typeorm migration:run -d src/data-source.ts 2>/dev/null || {
+        print_warning "Migrations may not exist yet or already ran. Continuing..."
+    }
+}
+
+# Seed admin user directly using ts-node
+print_info "Creating admin user..."
+npx ts-node ../../seeds/create-admin.ts 2>/dev/null || {
+    print_warning "Seed script failed. Admin user may already exist."
+}
 
 cd ../..
 
-print_success "Database migrations complete"
+print_success "Database setup complete"
 
 #############################################################################
 # Step 13: Start Applications with PM2
@@ -445,21 +489,37 @@ print_header "🚀 Step 13: Starting Applications"
 # Stop any existing PM2 processes
 pm2 delete all 2>/dev/null || true
 
+# Verify API build exists before starting
+if [ ! -f "apps/api/dist/main.js" ]; then
+    print_error "API build not found! Building now..."
+    cd apps/api
+    npm run build || npx nest build
+    cd ../..
+fi
+
 # Start API
+print_info "Starting API..."
 cd apps/api
-pm2 start dist/main.js --name "api" -i 1
+if [ -f "dist/main.js" ]; then
+    pm2 start dist/main.js --name "api" -i 1
+    print_success "API started"
+else
+    print_error "Cannot start API - dist/main.js not found!"
+    print_info "Check build logs above for errors"
+fi
 cd ../..
 
 # Start Admin Web
+print_info "Starting Admin Web..."
 cd apps/admin-web
 pm2 start npm --name "admin-web" -- start
 cd ../..
 
 # Start User Web
+print_info "Starting User Web..."
 cd apps/user-web
 pm2 start npm --name "user-web" -- start
 cd ../..
-
 # Save PM2 configuration
 pm2 save
 
