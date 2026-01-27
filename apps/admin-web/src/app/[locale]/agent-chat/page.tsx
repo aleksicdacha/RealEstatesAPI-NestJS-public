@@ -48,7 +48,8 @@ export default function AgentChatPage() {
 
   useEffect(() => {
     // Initialize Socket.io connection
-    const newSocket = io('http://localhost:3000/agent-chat', {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const newSocket = io(`${apiBaseUrl}/agent-chat`, {
       transports: ['websocket'],
     });
 
