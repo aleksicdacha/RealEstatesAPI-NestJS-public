@@ -13,8 +13,9 @@ import { MessageSenderType } from './agent-message.entity';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3001', 'http://localhost:3002'],
-    credentials: true,
+    origin: '*', // Allow all origins to match main CORS configuration
+    methods: ['GET', 'POST'],
+    credentials: false,
   },
   namespace: '/agent-chat',
 })

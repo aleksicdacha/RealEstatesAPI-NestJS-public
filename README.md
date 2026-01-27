@@ -312,6 +312,47 @@ npm run test:e2e           # E2E tests with Playwright
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🚀 Production Deployment
+
+### Hetzner Cloud Deployment
+
+Ready to deploy to production? Follow these comprehensive guides:
+
+#### **Quick Start:**
+1. 📋 **[HETZNER_SETUP_CHECKLIST.md](./HETZNER_SETUP_CHECKLIST.md)** - Complete server setup checklist
+2. 🔐 **[SSH_QUICK_GUIDE.md](./documentation/SSH_QUICK_GUIDE.md)** - SSH key setup for Hetzner
+3. ⚙️ **[HETZNER_SERVER_OPTIONS_EXPLAINED.md](./documentation/HETZNER_SERVER_OPTIONS_EXPLAINED.md)** - Server configuration guide
+4. 🖥️ **[HETZNER_DEPLOYMENT_GUIDE.md](./documentation/HETZNER_DEPLOYMENT_GUIDE.md)** - Full deployment walkthrough
+5. 🚀 **[PRODUCTION_QUICK_START.md](./documentation/PRODUCTION_QUICK_START.md)** - Start applications on server
+6. 🤖 **[AUTOMATED_DEPLOYMENT_GUIDE.md](./documentation/AUTOMATED_DEPLOYMENT_GUIDE.md)** - CI/CD automation setup
+
+#### **Recommended Server:**
+- **Type:** CPX22 (Regular Performance)
+- **Specs:** 2 vCPUs, 4GB RAM, 80GB SSD
+- **Cost:** €5.99/mo (or €7.19/mo with backups)
+- **Perfect for:** NestJS API + 2x Next.js frontends + PostgreSQL + Redis
+
+#### **Quick Deploy Steps:**
+```bash
+# 1. Create Hetzner server (see checklist above)
+# 2. SSH into server
+ssh root@YOUR_SERVER_IP
+
+# 3. Run automated setup
+curl -fsSL https://get.docker.com | sh
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs docker-compose-plugin git
+
+# 4. Clone and deploy
+git clone <your-repo-url>
+cd RealEstatesAPI-NestJS
+# Follow HETZNER_DEPLOYMENT_GUIDE.md for complete steps
+```
+
+See **[Complete Deployment Documentation](./documentation/)** for detailed guides.
+
+---
+
 ## 🆘 Support
 
 For support and questions:
@@ -319,6 +360,7 @@ For support and questions:
 - 📧 Email: support@realestate-app.com
 - 📚 Documentation: [API Docs](http://localhost:3000/api/docs)
 - 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+- 🚀 Deployment Help: See `documentation/` folder
 
 ---
 

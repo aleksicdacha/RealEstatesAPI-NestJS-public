@@ -1,0 +1,355 @@
+# 🚀 Server Deployment & Startup Guide
+
+## Files are on server - Now what?
+
+This guide covers:
+1. **Starting applications on production server**
+2. **Development vs Production differences**
+3. **Automated deployment from GitHub**
+4. **CI/CD setup for automatic deployments**
+
+---
+
+## 📋 Part 1: Starting Applications on Server (Production)
+
+### Step 1: Configure Environment Variables
+
+```bash
+cd ~/RealEstatesAPI-NestJS
+
+# Create production environment file for API
+cp apps/api/.env.example apps/api/.env
+nano apps/api/.env
+```
+
+**Configure these critical values:**
+
+```env
+# Database (PostgreSQL will run in Docker)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=estates_user
+DB_PASSWORD=CHANGE_THIS_TO_STRONG_PASSWORD
+DB_NAME=estates_prod
+DB_SYNC=false  # IMPORTANT: false in production!
+
+# Security
+JWT_SECRET=CHANGE_THIS_TO_32_CHAR_RANDOM_STRING
+NODE_ENV=production
+
+# Server
+PORT=3000
+
+# CORS - Replace with your actual domain
+CORS_ORIGIN=https://yourdomain.com,https://admin.yourdomain.com
+
+# Optional APIs
+GEMINI_API_KEY=your_gemini_key_here
+GOOGLE_MAPS_API_KEY=your_google_maps_key
+```
+
+**Generate secure secrets:**
+```bash
+# Generate JWT secret
+openssl rand -base64 32
+
+# Generate DB password
+openssl rand -base64 24
+```
+
+**Create frontend environment files:**
+
+```bash
+# User Web
+nano apps/user-web/.env.local
+```
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/v1
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here
+```
+
+```bash
+# Admin Web
+nano apps/admin-web/.env.local
+```
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/v1
+```
+
+---
+
+### Step 2: Start Database
+
+```bash
+cd ~/RealEstatesAPI-NestJS
+
+# Start PostgreSQL with Docker
+docker compose up -d postgres
+
+# Wait for it to initialize (10 seconds)
+sleep 10
+
+# Verify it's running
+docker ps
+```
+
+---
+
+### Step 3: Install Dependencies
+
+```bash
+cd ~/RealEstatesAPI-NestJS
+
+# Install root dependencies
+npm install
+
+# Build shared packages (CRITICAL!)
+cd packages/types
+npm run build
+cd ../..
+
+# Verify build
+ls -la packages/types/dist
+```
+
+---
+
+### Step 4: Run Database Migrations
+
+```bash
+cd ~/RealEstatesAPI-NestJS/apps/api
+
+# Run migrations
+npm run migration:run
+
+# Create admin user
+npm run seed:users
+```
+
+**Default admin credentials** (see `documentation/ADMIN_CREDENTIALS.md`):
+- Email: `admin@example.com`
+- Password: `admin123` (change immediately!)
+
+---
+
+### Step 5: Build Applications
+
+```bash
+cd ~/RealEstatesAPI-NestJS
+
+# Build all apps
+npm run build
+
+# This builds:
+# - apps/api (NestJS)
+# - apps/admin-web (Next.js)
+# - apps/user-web (Next.js)
+```
+
+**Verify builds:**
+```bash
+ls -la apps/api/dist
+ls -la apps/admin-web/.next
+ls -la apps/user-web/.next
+```
+
+---
+
+### Step 6: Start with PM2 (Production Process Manager)
+
+```bash
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Start API
+cd ~/RealEstatesAPI-NestJS/apps/api
+pm2 start dist/main.js --name "realestates-api" --env production
+
+# Start Admin Web
+cd ~/RealEstatesAPI-NestJS/apps/admin-web
+pm2 start npm --name "realestates-admin" -- start
+
+# Start User Web
+cd ~/RealEstatesAPI-NestJS/apps/user-web
+pm2 start npm --name "realestates-user" -- start
+
+# View status
+pm2 status
+
+# View logs
+pm2 logs
+
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 to start on boot
+pm2 startup
+# Follow the command it prints!
+```
+
+---
+
+### Step 7: Verify Applications
+
+```bash
+# Check PM2 status
+pm2 status
+
+# Test API
+curl http://localhost:3000/v1/properties/public
+
+# Test Admin Web
+curl http://localhost:3001
+
+# Test User Web
+curl http://localhost:3002
+
+# View logs
+pm2 logs realestates-api --lines 50
+```
+
+---
+
+## 🔄 Part 2: Development vs Production Setup
+
+### Differences:
+
+| Aspect | Development (Local) | Production (Server) |
+|--------|---------------------|---------------------|
+| **Start Command** | `npm run dev` | `npm run build` → `pm2 start` |
+| **Hot Reload** | ✅ Yes | ❌ No |
+| **DB_SYNC** | `true` (auto schema) | `false` (migrations only) |
+| **NODE_ENV** | `development` | `production` |
+| **Process Manager** | Node directly | PM2 |
+| **Port Exposure** | Direct | Behind Nginx |
+| **CORS** | `http://localhost:*` | Your domain |
+| **Error Details** | Full stack traces | Hidden |
+| **Source Maps** | Yes | No |
+
+---
+
+## 🤖 Part 3: Automated Deployment Setup
+
+### Option A: Simple Git Pull Script
+
+Create deployment script on server:
+
+```bash
+nano ~/deploy.sh
+```
+
+```bash
+#!/bin/bash
+
+echo "🚀 Deploying Real Estate Platform..."
+
+# Navigate to project
+cd ~/RealEstatesAPI-NestJS
+
+# Pull latest changes
+echo "📥 Pulling from GitHub..."
+git pull origin main
+
+# Install dependencies
+echo "📦 Installing dependencies..."
+npm install
+
+# Build shared packages
+echo "🔧 Building shared packages..."
+cd packages/types
+npm run build
+cd ../..
+
+# Run migrations
+echo "🗄️ Running migrations..."
+cd apps/api
+npm run migration:run
+cd ../..
+
+# Build all apps
+echo "🏗️ Building applications..."
+npm run build
+
+# Restart PM2 processes
+echo "🔄 Restarting applications..."
+pm2 restart all
+
+# Show status
+echo "✅ Deployment complete!"
+pm2 status
+
+# Show logs
+pm2 logs --lines 20
+```
+
+**Make executable and use:**
+
+```bash
+chmod +x ~/deploy.sh
+
+# Deploy anytime:
+./deploy.sh
+```
+
+---
+
+### Option B: GitHub Actions CI/CD (Automated)
+
+Create this file in your project: `.github/workflows/deploy.yml`
+
+<function_calls>
+<invoke name="create_file">
+<parameter name="content">name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main  # Triggers on push to main branch
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/RealEstatesAPI-NestJS
+            
+            # Pull latest changes
+            git pull origin main
+            
+            # Install dependencies
+            npm install
+            
+            # Build shared packages
+            cd packages/types
+            npm run build
+            cd ../..
+            
+            # Run migrations
+            cd apps/api
+            npm run migration:run
+            cd ../..
+            
+            # Build all applications
+            npm run build
+            
+            # Restart PM2 processes
+            pm2 restart all
+            
+            # Show status
+            pm2 status
+
+      - name: ✅ Deployment complete
+        run: echo "Deployment successful!"
