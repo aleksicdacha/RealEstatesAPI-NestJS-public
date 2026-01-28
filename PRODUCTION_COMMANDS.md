@@ -6,6 +6,44 @@
 
 ---
 
+## ⚡ IMMEDIATE ACTION - RUN THIS NOW
+
+You are currently on the server with everything pulled from Git. Follow these exact steps:
+
+```bash
+# 1. Navigate to project (you should already be here)
+cd ~/RealEstatesAPI-NestJS
+
+# 2. Make deployment script executable
+chmod +x deploy-production.sh
+
+# 3. Pull latest changes (includes the fix we just made)
+git pull origin develop
+
+# 4. Run the deployment script
+./deploy-production.sh
+```
+
+**That's it!** The script will do everything automatically, including:
+- ✅ Stopping old services
+- ✅ Installing dependencies
+- ✅ Building the API (fixes migration errors)
+- ✅ Running migrations
+- ✅ Starting all services with Docker Compose
+- ✅ Health checks
+
+**Wait for it to complete (~5-10 minutes), then test the URLs below.**
+
+---
+
+## 🌐 TEST THESE URLS AFTER DEPLOYMENT
+
+- **API:** http://46.224.231.217:3000/v1/properties/public?page=1&limit=1
+- **Admin Panel:** http://46.224.231.217:3001
+- **User Website:** http://46.224.231.217:3002
+
+---
+
 ## 🚀 QUICK START (Run on Server)
 
 ```bash

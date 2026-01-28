@@ -121,9 +121,15 @@ docker compose -f docker-compose.prod.yml up -d postgres
 echo "  - Waiting for PostgreSQL to be ready..."
 sleep 10
 
+# Build API first (needed for migration TypeScript paths)
+echo "  - Building API..."
+cd apps/api
+npm run build || {
+    echo -e "${YELLOW}  ⚠️  API build skipped${NC}"
+}
+
 # Run migrations
 echo "  - Running database migrations..."
-cd apps/api
 npm run migration:run || {
     echo -e "${YELLOW}  ⚠️  Migration failed or already up to date${NC}"
 }
