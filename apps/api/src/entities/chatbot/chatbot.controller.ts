@@ -1,6 +1,7 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { ChatbotService } from './chatbot.service';
 
 class ConversationMessage {
@@ -27,10 +28,12 @@ export class SendMessageDto {
 }
 
 @Controller('chatbot')
+@UseGuards(ThrottlerGuard)
 export class ChatbotController {
   constructor(private readonly chatbotService: ChatbotService) {}
 
   @Post('message')
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 messages per minute per IP
   async sendMessage(@Body() dto: SendMessageDto) {
     return this.chatbotService.processMessage(
       dto.message,
@@ -40,6 +43,7 @@ export class ChatbotController {
   }
 
   @Post('connect-agent')
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 agent requests per 5 minutes
   async connectToAgent(@Body() body: { name: string; email: string; phone?: string; message: string; locale?: string }) {
     return this.chatbotService.connectToAgent(body);
   }

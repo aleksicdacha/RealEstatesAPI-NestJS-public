@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -8,6 +8,18 @@ import { useTranslations } from 'next-intl';
 import { googleMapsLoaderOptions } from "../../utils/googleMapsLoader";
 import { customMapStyles } from "../../utils/mapStyles";
 import { getNeighborhoodFromCoordinates } from '@/services/geocoding.service';
+
+// Debounce utility to prevent rapid-fire API calls
+function debounce<T extends (...args: never[]) => void>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 const containerStyle = {
   width: "100%",
@@ -42,7 +54,7 @@ interface MapSelectorProps {
   lng?: number;
 }
 
-const MapSelector: React.FC<MapSelectorProps> = ({ onLocationChange, onLoadingChange, uuid, lat, lng }) => {
+const MapSelector: React.FC<MapSelectorProps> = ({ onLocationChange, onLoadingChange, lat, lng }) => {
   const t = useTranslations('properties');
   const position = lat && lng ? {lat: lat, lng: lng} : initialCenter;
 
@@ -61,6 +73,34 @@ const MapSelector: React.FC<MapSelectorProps> = ({ onLocationChange, onLoadingCh
       geocoderRef.current = new window.google.maps.Geocoder();
     }
   }, [isLoaded]);
+
+  // Debounced neighborhood lookup - prevents rapid API calls during dragging
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedGetNeighborhood = useCallback(
+    debounce(async (lat: number, lng: number, address: string) => {
+      setIsLoadingNeighborhood(true);
+      onLoadingChange?.(true);
+
+      let neighborhood: string | undefined;
+      try {
+        console.log('🗺️ MapSelector: Getting neighborhood for lat:', lat, 'lng:', lng);
+        const result = await getNeighborhoodFromCoordinates(lat, lng);
+        neighborhood = result || undefined;
+        console.log('🗺️ MapSelector: Neighborhood result:', neighborhood);
+      } catch (error) {
+        console.error('❌ MapSelector: Failed to get neighborhood:', error);
+      } finally {
+        setIsLoadingNeighborhood(false);
+        onLoadingChange?.(false);
+      }
+
+      console.log('🗺️ MapSelector: Calling onLocationChange with neighborhood:', neighborhood);
+      if (typeof onLocationChange === "function") {
+        onLocationChange(lat, lng, address, neighborhood);
+      }
+    }, 1000), // Wait 1 second after user stops interacting
+    [onLocationChange, onLoadingChange]
+  );
 
   // Reverse geocode function (lat, lng -> address)
   const geocodeLatLng = (lat: number, lng: number, callback?: (address: string) => void) => {
@@ -163,7 +203,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ onLocationChange, onLoadingCh
     });
   };
 
-  // Handle marker drag event
+  // Handle marker drag event - uses debounced neighborhood lookup
   const handleMarkerDragEnd = async (event: google.maps.MapMouseEvent) => {
     const lat = event.latLng!.lat();
     const lng = event.latLng!.lng();
@@ -171,28 +211,9 @@ const MapSelector: React.FC<MapSelectorProps> = ({ onLocationChange, onLoadingCh
     setCenter({ lat, lng });
     updateMarker(lat, lng);
     
-    geocodeLatLng(lat, lng, async (newAddress) => {
-      // Get neighborhood using combined approach
-      setIsLoadingNeighborhood(true);
-      onLoadingChange?.(true);
-      
-      let neighborhood: string | undefined;
-      try {
-        console.log('🗺️ MapSelector (marker drag): Getting neighborhood for lat:', lat, 'lng:', lng);
-        const result = await getNeighborhoodFromCoordinates(lat, lng);
-        neighborhood = result || undefined;
-        console.log('🗺️ MapSelector (marker drag): Neighborhood result:', neighborhood);
-      } catch (error) {
-        console.error('❌ MapSelector (marker drag): Failed to get neighborhood:', error);
-      } finally {
-        setIsLoadingNeighborhood(false);
-        onLoadingChange?.(false);
-      }
-
-      console.log('🗺️ MapSelector (marker drag): Calling onLocationChange with neighborhood:', neighborhood);
-      if (typeof onLocationChange === "function") {
-        onLocationChange(lat, lng, newAddress, neighborhood);
-      }
+    geocodeLatLng(lat, lng, (newAddress) => {
+      // Use debounced function to prevent API spam during dragging
+      debouncedGetNeighborhood(lat, lng, newAddress);
     });
   };
 

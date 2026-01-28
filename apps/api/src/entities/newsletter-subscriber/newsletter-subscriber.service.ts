@@ -90,20 +90,42 @@ export class NewsletterSubscriberService {
       return { message: 'Nema aktivnih pretplatnika.', sentCount: 0 };
     }
 
+    // 🔒 SECURITY: Batch processing to prevent email flooding and IP blacklisting
+    const BATCH_SIZE = 50; // Send max 50 emails per batch
+    const DELAY_MS = 2000; // 2 seconds delay between batches
+
+    console.log(`📧 Starting newsletter send to ${targetSubscribers.length} subscribers (batched)`);
+
     let sentCount = 0;
-    for (const subscriber of targetSubscribers) {
-      try {
-        await this.emailService.sendNewsletterEmail(
-          subscriber.email,
-          subject,
-          content,
-          subscriber.unsubscribeToken
-        );
-        sentCount++;
-      } catch (error) {
-        console.error(`Failed to send newsletter to ${subscriber.email}:`, error);
+    for (let i = 0; i < targetSubscribers.length; i += BATCH_SIZE) {
+      const batch = targetSubscribers.slice(i, i + BATCH_SIZE);
+      const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
+      const totalBatches = Math.ceil(targetSubscribers.length / BATCH_SIZE);
+
+      console.log(`📧 Processing batch ${batchNumber}/${totalBatches} (${batch.length} emails)...`);
+
+      for (const subscriber of batch) {
+        try {
+          await this.emailService.sendNewsletterEmail(
+            subscriber.email,
+            subject,
+            content,
+            subscriber.unsubscribeToken
+          );
+          sentCount++;
+        } catch (error) {
+          console.error(`❌ Failed to send newsletter to ${subscriber.email}:`, error);
+        }
+      }
+
+      // Delay between batches to prevent rate limiting
+      if (i + BATCH_SIZE < targetSubscribers.length) {
+        console.log(`⏳ Waiting ${DELAY_MS}ms before next batch...`);
+        await new Promise(resolve => setTimeout(resolve, DELAY_MS));
       }
     }
+
+    console.log(`✅ Newsletter sending completed: ${sentCount}/${targetSubscribers.length} sent successfully`);
 
     return {
       message: `Newsletter poslat ${sentCount} od ${targetSubscribers.length} pretplatnika.`,
