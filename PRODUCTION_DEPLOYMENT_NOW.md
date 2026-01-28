@@ -9,82 +9,65 @@ You have a **migration connection error** because:
 
 ## 🎯 What to Run on Server NOW
 
-### Option 1: Automated (Recommended)
+### ⚡ Quick Deployment (Recommended)
 
 ```bash
 # On server terminal:
 cd /root/RealEstatesAPI-NestJS
 
-# 1. Pull latest code (has the fix scripts)
+# 1. Pull latest code with Dockerfile fixes
 git pull origin develop
 
-# 2. Create environment files
-chmod +x create-prod-env.sh
-./create-prod-env.sh
+# 2. Make deployment script executable
+chmod +x deploy-production-complete.sh
 
-# 3. Run deployment with migration fix
-chmod +x fix-migration-deploy.sh
-./fix-migration-deploy.sh
+# 3. Run complete deployment
+./deploy-production-complete.sh
 ```
 
 **That's it!** The script will:
-1. Start PostgreSQL
-2. Wait for it to be ready
-3. Run migrations (tries HOST first, falls back to Docker)
-4. Build and start all services
-5. Verify everything is running
+1. Stop existing containers
+2. Start PostgreSQL and Redis
+3. Build all Docker images (API, Admin, User-Web)
+4. Run database migrations
+5. Start all services
+6. Verify deployment
 
 ---
 
-### Option 2: Manual (If scripts fail)
+### 🛠️ Manual Deployment (If automated fails)
 
 ```bash
 cd /root/RealEstatesAPI-NestJS
 
-# 1. Create .env.production
-cat > .env.production << 'EOF'
-DB_HOST=postgres
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=CHANGE_ME
-DB_NAME=estates
-JWT_SECRET=CHANGE_ME
-JWT_EXPIRES_IN=30m
-JWT_REFRESH_SECRET=CHANGE_ME
-JWT_REFRESH_EXPIRES_IN=7d
-REDIS_HOST=redis
-REDIS_PORT=6379
-NODE_ENV=production
-PORT=3000
-CORS_ORIGIN=http://46.224.231.217:3001,http://46.224.231.217:3002
-RATE_LIMIT_TTL=60000
-RATE_LIMIT_MAX=100
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
-GEMINI_API_KEY=
-EOF
+# 1. Stop existing containers
+docker compose -f docker-compose.prod.yml down
 
 # 2. Start PostgreSQL
-docker compose -f docker-compose.prod.yml up -d postgres
-sleep 15
+docker compose -f docker-compose.prod.yml up -d postgres redis
+sleep 20
 
 # 3. Verify PostgreSQL
 docker compose -f docker-compose.prod.yml exec postgres pg_isready -U postgres
 
-# 4. Build all services
+# 4. Build all images
 docker compose -f docker-compose.prod.yml build
 
 # 5. Start all services
 docker compose -f docker-compose.prod.yml up -d
 
-# 6. Run migrations INSIDE Docker (safest method)
-sleep 10
+# 6. Wait for API to start
+sleep 15
+
+# 7. Run migrations inside API container
 docker compose -f docker-compose.prod.yml exec api npm run migration:run
 
-# 7. Restart API
+# 8. Restart API
 docker compose -f docker-compose.prod.yml restart api
 
-# 8. Verify
+# 9. Verify
 docker compose -f docker-compose.prod.yml ps
+curl http://localhost:3000/v1/properties/public?page=1&limit=1
 ```
 
 ---
