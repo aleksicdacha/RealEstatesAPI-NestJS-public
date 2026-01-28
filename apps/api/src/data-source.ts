@@ -1,12 +1,4 @@
 import { DataSource } from 'typeorm';
-import { User } from './entities/user/user.entity';
-import { Property } from './entities/property/property.entity';
-import { PropertyImage } from './entities/property-image/property-image.entity';
-import { Client } from './entities/client/client.entity';
-import { Representative } from './entities/representative/representative.entity';
-import { AgentConversation } from './entities/agent-chat/agent-conversation.entity';
-import { AgentMessage } from './entities/agent-chat/agent-message.entity';
-import { NewsletterSubscriber } from './entities/newsletter-subscriber/newsletter-subscriber.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -17,6 +9,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'estates',
   synchronize: false,
   logging: true,
-  entities: [User, Property, PropertyImage, Client, Representative, AgentConversation, AgentMessage, NewsletterSubscriber],
-  migrations: [__dirname + '/migrations/*.js'],
+  entities: [__dirname + '/entities/**/*.entity.{ts,js}'],
+  migrations: [__dirname + '/migrations/*.{ts,js}'],
 });
