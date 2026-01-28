@@ -51,7 +51,56 @@ docker compose -f docker-compose.prod.yml logs -f api
 
 ---
 
-## CRITICAL: Run these commands on the production server
+## 📋 STEP-BY-STEP: What to do on the server RIGHT NOW
+
+### Step 0: Create .env.production file
+```bash
+cd /root/RealEstatesAPI-NestJS
+
+cat > .env.production << 'EOF'
+DB_HOST=postgres
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=CHANGE_ME
+DB_NAME=estates
+
+JWT_SECRET=CHANGE_ME
+JWT_EXPIRES_IN=30m
+JWT_REFRESH_SECRET=CHANGE_ME
+JWT_REFRESH_EXPIRES_IN=7d
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+NODE_ENV=production
+PORT=3000
+CORS_ORIGIN=http://46.224.231.217:3001,http://46.224.231.217:3002
+
+RATE_LIMIT_TTL=60000
+RATE_LIMIT_MAX=100
+
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+GEMINI_API_KEY=
+EOF
+```
+
+### Step 1: Pull Latest Code
+```bash
+cd /root/RealEstatesAPI-NestJS
+git pull origin develop
+```
+
+### Step 2: Run the Fix Script
+```bash
+chmod +x fix-migration-deploy.sh
+./fix-migration-deploy.sh
+```
+
+**That's it! The script will handle everything.**
+
+---
+
+## DETAILED MANUAL STEPS (if script fails)
 
 ### Step 1: Pull Latest Code (if not already done)
 ```bash
