@@ -1,5 +1,56 @@
 # SERVER DEPLOYMENT COMMANDS
 
+## 🚨 QUICK FIX FOR MIGRATION ERROR (Run this NOW on server)
+
+```bash
+cd /root/RealEstatesAPI-NestJS
+
+# Option A: Simple - Use the fix script
+chmod +x fix-migration-deploy.sh
+./fix-migration-deploy.sh
+```
+
+**If Option A fails, use Option B:**
+
+```bash
+# Option B: Manual steps
+cd /root/RealEstatesAPI-NestJS
+
+# 1. Start PostgreSQL with exposed port
+docker compose -f docker-compose.prod.yml up -d postgres
+sleep 15
+
+# 2. Verify PostgreSQL is running
+docker compose -f docker-compose.prod.yml exec postgres pg_isready -U postgres
+
+# 3. Build all services
+docker compose -f docker-compose.prod.yml build
+
+# 4. Start all services (skip migration for now)
+docker compose -f docker-compose.prod.yml up -d
+
+# 5. Run migrations INSIDE the API container
+sleep 10
+docker compose -f docker-compose.prod.yml exec api npm run migration:run
+
+# 6. Restart API to apply changes
+docker compose -f docker-compose.prod.yml restart api
+
+# 7. Verify everything is running
+docker compose -f docker-compose.prod.yml ps
+```
+
+**Check if it worked:**
+```bash
+# Test API
+curl http://localhost:3000/v1/properties/public?page=1&limit=1
+
+# Check logs
+docker compose -f docker-compose.prod.yml logs -f api
+```
+
+---
+
 ## CRITICAL: Run these commands on the production server
 
 ### Step 1: Pull Latest Code (if not already done)
@@ -112,28 +163,61 @@ chmod +x quick-prod-deploy.sh
 
 ## If deployment fails at migration step:
 
-### Option A: Skip migrations (if database already has tables)
-```bash
-# Start PostgreSQL only
-docker compose -f docker-compose.prod.yml up -d postgres
-sleep 10
+### CRITICAL FIX: PostgreSQL Connection Issue
 
-# Skip migration step and start all services
-docker compose -f docker-compose.prod.yml up -d
-```
+The error `ECONNREFUSED ::1:5432` means PostgreSQL is running in Docker but migrations are trying to connect to localhost.
 
-### Option B: Run migrations manually
+**Solution: Use Docker's PostgreSQL port mapping**
+
 ```bash
-# Ensure PostgreSQL is running
+# First, ensure PostgreSQL container exposes port 5432 to host
+# Check docker-compose.prod.yml has this in postgres service:
+#   ports:
+#     - "5432:5432"
+
+# Step 1: Start PostgreSQL with port exposed
 docker compose -f docker-compose.prod.yml up -d postgres
+
+# Step 2: Wait for PostgreSQL to be ready
+echo "Waiting for PostgreSQL to start..."
 sleep 15
 
-# Try to run migrations
+# Step 3: Verify PostgreSQL is accessible
+docker compose -f docker-compose.prod.yml exec postgres pg_isready -U postgres
+
+# Step 4: Run migrations (now apps/api/.env uses localhost, which will work)
 cd apps/api
 npm run migration:run
 cd ../..
 
-# If successful, start all services
+# Step 5: Start all services
+docker compose -f docker-compose.prod.yml up -d
+
+# Step 6: Verify all services are running
+docker compose -f docker-compose.prod.yml ps
+```
+
+### Option B: Run migrations inside Docker container
+If port mapping doesn't work, run migrations inside the API container:
+
+```bash
+# Start all services
+docker compose -f docker-compose.prod.yml up -d
+
+# Wait for services to be ready
+sleep 15
+
+# Run migrations inside the API container
+docker compose -f docker-compose.prod.yml exec api npm run migration:run
+
+# Restart API to apply changes
+docker compose -f docker-compose.prod.yml restart api
+```
+
+### Option C: Skip migrations (if database already has tables)
+```bash
+# If your database already has all tables from previous deployment
+# Just start all services directly
 docker compose -f docker-compose.prod.yml up -d
 ```
 
