@@ -123,6 +123,17 @@ cd ../..
 
 ---
 
+## ✅ FIXED: Environment Files Already Configured!
+
+All `.env.production` files already exist and have been updated with correct production settings:
+- ✅ `.env.production` (root) - DB_HOST=postgres, CORS, API keys configured
+- ✅ `apps/admin-web/.env.production` - Points to production API
+- ✅ `apps/user-web/.env.production` - Points to production API
+
+**You can now proceed to Step 6!**
+
+---
+
 ## Step 6: Start Database & Run Migrations
 
 ```bash
