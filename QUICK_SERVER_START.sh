@@ -17,7 +17,7 @@ echo "🐳 Checking Docker services..."
 docker ps
 if ! docker ps | grep -q postgres; then
     echo "⚠️  PostgreSQL not running, starting it..."
-    docker-compose up -d postgres
+    docker compose up -d postgres
     sleep 5
 fi
 echo "✅ PostgreSQL is running"

@@ -5,7 +5,7 @@ echo ""
 
 # Start database
 echo "📊 Starting PostgreSQL..."
-docker-compose up -d postgres
+docker compose up -d postgres
 sleep 2
 
 # Start API locally (until we move it to apps/api)

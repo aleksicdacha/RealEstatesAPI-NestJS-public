@@ -25,11 +25,34 @@ async function bootstrap() {
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // CORS Configuration - More permissive for development and Postman testing
+  // CORS Configuration - Allow production and development origins
+  const allowedOrigins = [
+    'http://46.224.231.217:3001',
+    'http://46.224.231.217:3002',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3000',
+  ];
+
   app.enableCors({
-    origin: '*', // Allow all origins for easier Postman testing
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, Postman, or same-origin)
+      if (!origin) return callback(null, true);
+
+      // Allow all origins in development for testing
+      if (nodeEnv === 'development') return callback(null, true);
+
+      // Check if origin is in allowed list
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        // Still allow in production but log it
+        logger.warn(`CORS request from unauthorized origin: ${origin}`);
+        callback(null, true); // Allow anyway for now
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: false, // Simplified for Postman
+    credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 

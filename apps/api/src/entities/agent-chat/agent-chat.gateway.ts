@@ -13,11 +13,17 @@ import { MessageSenderType } from './agent-message.entity';
 
 @WebSocketGateway({
   cors: {
-    origin: '*', // Allow all origins to match main CORS configuration
+    origin: [
+      'http://46.224.231.217:3001',
+      'http://46.224.231.217:3002',
+      'http://localhost:3001',
+      'http://localhost:3002',
+    ],
     methods: ['GET', 'POST'],
-    credentials: false,
+    credentials: true,
   },
   namespace: '/agent-chat',
+  transports: ['websocket', 'polling'],
 })
 export class AgentChatGateway
   implements OnGatewayConnection, OnGatewayDisconnect

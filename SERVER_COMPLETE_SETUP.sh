@@ -70,7 +70,16 @@ echo ""
 echo "🐳 Step 2: Checking Docker services..."
 if ! docker ps | grep -q postgres; then
     echo "⚠️  PostgreSQL not running, starting..."
-    docker-compose up -d postgres
+    # Use 'docker compose' (new syntax) instead of 'docker-compose' (old syntax)
+    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+        docker compose up -d postgres
+    elif command -v docker-compose &> /dev/null; then
+        docker-compose up -d postgres
+    else
+        echo "❌ Neither 'docker compose' nor 'docker-compose' command found"
+        echo "   Please install Docker Compose"
+        exit 1
+    fi
     echo "⏳ Waiting for PostgreSQL to be ready..."
     sleep 10
 else
