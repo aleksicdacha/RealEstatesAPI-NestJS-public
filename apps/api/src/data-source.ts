@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
-import { User } from '@src/entities/user/user.entity';
-import { Property } from '@src/entities/property/property.entity';
-import { PropertyImage } from '@src/entities/property-image/property-image.entity';
-import { Client } from '@src/entities/client/client.entity';
-import { Representative } from '@src/entities/representative/representative.entity';
-import { AgentConversation } from '@src/entities/agent-chat/agent-conversation.entity';
-import { AgentMessage } from '@src/entities/agent-chat/agent-message.entity';
-import { NewsletterSubscriber } from '@src/entities/newsletter-subscriber/newsletter-subscriber.entity';
+import { User } from './entities/user/user.entity';
+import { Property } from './entities/property/property.entity';
+import { PropertyImage } from './entities/property-image/property-image.entity';
+import { Client } from './entities/client/client.entity';
+import { Representative } from './entities/representative/representative.entity';
+import { AgentConversation } from './entities/agent-chat/agent-conversation.entity';
+import { AgentMessage } from './entities/agent-chat/agent-message.entity';
+import { NewsletterSubscriber } from './entities/newsletter-subscriber/newsletter-subscriber.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
