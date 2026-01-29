@@ -56,6 +56,11 @@ RUN cd /app && npm ci --workspace=apps/api --omit=dev
 # Copy built application from builder
 COPY --from=builder /app/apps/api/dist ./dist
 
+# Ensure i18n resources are present in both dist/ and src/
+RUN mkdir -p /app/apps/api/dist/i18n /app/apps/api/src/i18n
+COPY --from=builder /app/apps/api/src/i18n /app/apps/api/src/i18n
+COPY --from=builder /app/apps/api/src/i18n /app/apps/api/dist/i18n
+
 # Copy necessary files
 COPY apps/api/src/migrations ./src/migrations
 
@@ -70,4 +75,3 @@ ENV NODE_ENV=production
 
 # Start command
 CMD ["node", "dist/main.js"]
-
