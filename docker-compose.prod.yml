@@ -77,7 +77,7 @@ services:
     networks:
       - estates_network
     healthcheck:
-      test: ["CMD-SHELL", "ss -tln | grep -q :3000"]
+      test: ["CMD-SHELL", "netstat -tln | grep -q :3000"]
       interval: 30s
       timeout: 10s
       retries: 3
