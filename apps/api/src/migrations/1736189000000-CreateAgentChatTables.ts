@@ -181,18 +181,22 @@ export class CreateAgentChatTables1736189000000 implements MigrationInterface {
         const messagesTable = await queryRunner.getTable("agent_messages");
         const conversationsTable = await queryRunner.getTable("agent_conversations");
 
-        const messageForeignKeys = messagesTable.foreignKeys.filter(
-            fk => fk.columnNames.indexOf("conversationId") !== -1 || fk.columnNames.indexOf("senderId") !== -1
-        );
-        for (const fk of messageForeignKeys) {
-            await queryRunner.dropForeignKey("agent_messages", fk);
+        if (messagesTable) {
+            const messageForeignKeys = messagesTable.foreignKeys.filter(
+                fk => fk.columnNames.indexOf("conversationId") !== -1 || fk.columnNames.indexOf("senderId") !== -1
+            );
+            for (const fk of messageForeignKeys) {
+                await queryRunner.dropForeignKey("agent_messages", fk);
+            }
         }
 
-        const conversationForeignKeys = conversationsTable.foreignKeys.filter(
-            fk => fk.columnNames.indexOf("userId") !== -1 || fk.columnNames.indexOf("agentId") !== -1
-        );
-        for (const fk of conversationForeignKeys) {
-            await queryRunner.dropForeignKey("agent_conversations", fk);
+        if (conversationsTable) {
+            const conversationForeignKeys = conversationsTable.foreignKeys.filter(
+                fk => fk.columnNames.indexOf("userId") !== -1 || fk.columnNames.indexOf("agentId") !== -1
+            );
+            for (const fk of conversationForeignKeys) {
+                await queryRunner.dropForeignKey("agent_conversations", fk);
+            }
         }
 
         // Drop tables

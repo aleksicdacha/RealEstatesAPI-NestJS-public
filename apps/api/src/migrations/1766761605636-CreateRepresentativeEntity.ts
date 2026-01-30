@@ -87,11 +87,13 @@ export class CreateRepresentativeEntity1766761605636 implements MigrationInterfa
     public async down(queryRunner: QueryRunner): Promise<void> {
         // Remove foreign key first
         const table = await queryRunner.getTable("clients");
-        const foreignKey = table.foreignKeys.find(
-            (fk) => fk.columnNames.indexOf("representativeId") !== -1
-        );
-        if (foreignKey) {
-            await queryRunner.dropForeignKey("clients", foreignKey);
+        if (table) {
+            const foreignKey = table.foreignKeys.find(
+                (fk) => fk.columnNames.indexOf("representativeId") !== -1
+            );
+            if (foreignKey) {
+                await queryRunner.dropForeignKey("clients", foreignKey);
+            }
         }
 
         // Remove column from clients

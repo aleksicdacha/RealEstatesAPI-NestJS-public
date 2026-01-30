@@ -7,8 +7,8 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'CHANGE_ME',
   database: process.env.DB_NAME || 'estates',
-  synchronize: false,
-  logging: true,
-  entities: [__dirname + '/entities/**/*.entity.{ts,js}'],
-  migrations: [__dirname + '/migrations/*.{ts,js}'],
+  synchronize: false, // Must be false for migrations
+  logging: ['query', 'error', 'warn'], // Enable detailed logging
+  entities: ['dist/entities/**/*.entity.{ts,js}'],
+  migrations: ['src/migrations/*.{ts,js}'],
 });
