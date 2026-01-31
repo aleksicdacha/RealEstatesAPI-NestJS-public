@@ -5,12 +5,11 @@
 ### Option 1: Automated Setup (Recommended)
 ```bash
 # Make setup script executable and run
-chmod +x setup.sh
-./setup.sh
+chmod +x scripts/setup.sh
+./scripts/setup.sh
 
-# Start the application
-chmod +x start.sh
-./start.sh
+# Start the application (use npm scripts instead)
+npm run dev
 ```
 
 ### Option 2: Manual Setup

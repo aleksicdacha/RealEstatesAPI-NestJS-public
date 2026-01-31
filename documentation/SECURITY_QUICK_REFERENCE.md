@@ -184,9 +184,9 @@ apt install logwatch
 
 Run all scripts in sequence:
 ```bash
-./server-security-audit.sh
-./ddos-detection.sh
-./malware-scan.sh
+./scripts/server-security-audit.sh
+./scripts/ddos-detection.sh
+./scripts/malware-scan.sh
 ```
 
 ## EMERGENCY RESPONSE

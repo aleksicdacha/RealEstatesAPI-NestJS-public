@@ -142,7 +142,7 @@ docker compose -f docker-compose.prod.yml up -d <changed-service>
    - Interactive menu system
    - Quick access to common tasks
    - Safe command execution
-   - Usage: `chmod +x production-commands.sh && ./production-commands.sh`
+   - Usage: `chmod +x scripts/production-commands.sh && ./scripts/production-commands.sh`
 
 3. **fix_production_db.sql**
    - Complete database schema

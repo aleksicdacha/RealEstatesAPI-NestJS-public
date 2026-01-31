@@ -113,7 +113,7 @@ git clone <repository-url>
 cd RealEstatesAPI-NestJS
 
 # Run automated setup
-./setup.sh
+./scripts/setup.sh
 ```
 
 ### 2. Configure Environment

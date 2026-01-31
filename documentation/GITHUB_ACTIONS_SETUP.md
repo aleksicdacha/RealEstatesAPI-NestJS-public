@@ -1,356 +1,283 @@
-# 🔄 GitHub Actions Auto-Deploy Setup
+# GitHub Actions Deployment Setup Guide
 
-## Deploy automatically when you push to `develop` branch
+## Problem
+Your GitHub Actions workflow is failing with the error:
+```
+Error: missing server host
+```
+
+This means the required SSH secrets are not configured in your GitHub repository.
 
 ---
 
-## 📋 Quick Setup (5 minutes)
+## Solution: Configure GitHub Secrets
 
-### Step 1: Generate SSH Key on Server
+### Required Secrets
 
-SSH into your Hetzner server and run:
+You need to add 3 secrets to your GitHub repository:
+
+1. **HETZNER_HOST** - Your server IP address
+2. **HETZNER_USERNAME** - SSH username (usually `root`)
+3. **HETZNER_SSH_KEY** - Your private SSH key
+
+---
+
+## Step-by-Step Instructions
+
+### 1. Get Your SSH Private Key
+
+On your **local machine**, run this command to display your private SSH key:
 
 ```bash
-# Generate key specifically for GitHub Actions
-ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/github_actions -N ""
-
-# Add to authorized keys (so GitHub can SSH in)
-cat ~/.ssh/github_actions.pub >> ~/.ssh/authorized_keys
-
-# Display the PRIVATE key (copy this for GitHub)
-echo ""
-echo "===== COPY EVERYTHING BELOW THIS LINE ====="
-cat ~/.ssh/github_actions
-echo "===== COPY EVERYTHING ABOVE THIS LINE ====="
-echo ""
+cat ~/.ssh/id_rsa
 ```
 
-**Copy the entire private key** including `***REMOVED***` and `***REMOVED-BY-SECURITY-CLEANUP***`
+Or if you're using a different key:
 
-### Step 2: Add GitHub Secrets
+```bash
+cat ~/.ssh/id_ed25519
+```
 
-1. Go to your GitHub repository
-2. Click **Settings** (gear icon in top menu)
-3. In left sidebar: **Secrets and variables** → **Actions**
-4. Click **"New repository secret"**
+**Copy the entire output**, including the header and footer:
+```
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED-BY-SECURITY-CLEANUP***
+```
 
-**Add these 3 secrets:**
+⚠️ **IMPORTANT**: This is your **PRIVATE** key, keep it secret!
 
-| Name | Value |
-|------|-------|
-| `HETZNER_HOST` | Your server IP (e.g., `95.217.123.45`) |
-| `HETZNER_USERNAME` | `root` |
-| `HETZNER_SSH_KEY` | Paste the entire private key from Step 1 |
+---
 
-### Step 3: Done! Test It
+### 2. Add Secrets to GitHub Repository
 
-Push any change to `develop` branch:
+1. Go to your GitHub repository: https://github.com/aleksicdacha/RealEstatesAPI-NestJS
 
+2. Click **Settings** (top menu)
+
+3. In the left sidebar, click **Secrets and variables** → **Actions**
+
+4. Click **New repository secret** button
+
+5. Add each secret one by one:
+
+#### Secret 1: HETZNER_HOST
+- **Name**: `HETZNER_HOST`
+- **Value**: `46.224.231.217`
+- Click **Add secret**
+
+#### Secret 2: HETZNER_USERNAME
+- **Name**: `HETZNER_USERNAME`
+- **Value**: `root`
+- Click **Add secret**
+
+#### Secret 3: HETZNER_SSH_KEY
+- **Name**: `HETZNER_SSH_KEY`
+- **Value**: Paste your entire private SSH key (from step 1)
+- Click **Add secret**
+
+---
+
+### 3. Verify Secrets Are Added
+
+After adding all 3 secrets, you should see them listed on the Actions secrets page:
+- ✅ HETZNER_HOST
+- ✅ HETZNER_SSH_KEY
+- ✅ HETZNER_USERNAME
+
+**Note**: You won't be able to view the secret values after adding them (for security).
+
+---
+
+### 4. Test the Workflow
+
+#### Option A: Push a commit
 ```bash
 git add .
-git commit -m "Test auto-deploy"
+git commit -m "Test deployment"
 git push origin develop
 ```
 
-Go to GitHub → **Actions** tab → Watch your deployment run!
+#### Option B: Manually trigger workflow
+1. Go to **Actions** tab in GitHub
+2. Click **Deploy to Hetzner Production** workflow
+3. Click **Run workflow** button
+4. Select branch: `develop`
+5. Click **Run workflow**
 
 ---
 
-## 📁 Workflow File
+## Troubleshooting
 
-The workflow file is located at:
+### Issue: "Permission denied (publickey)"
+
+**Cause**: The SSH key doesn't match the one on the server.
+
+**Solution**:
+1. Check which public key is on the server:
+   ```bash
+   ssh root@46.224.231.217 "cat ~/.ssh/authorized_keys"
+   ```
+
+2. Check your local public key:
+   ```bash
+   cat ~/.ssh/id_rsa.pub
+   # or
+   cat ~/.ssh/id_ed25519.pub
+   ```
+
+3. They should match! If not, add your public key to the server:
+   ```bash
+   ssh-copy-id -i ~/.ssh/id_rsa.pub root@46.224.231.217
+   ```
+
+### Issue: "Host key verification failed"
+
+**Cause**: Server's host key is not recognized.
+
+**Solution**: 
+The workflow should handle this automatically. If it persists, you may need to add `StrictHostKeyChecking=no` to the SSH action (not recommended for production).
+
+### Issue: Deployment runs but fails during build
+
+**Check the logs**:
+1. Go to **Actions** tab in GitHub
+2. Click on the failed workflow run
+3. Click on "Deploy to Production" job
+4. Expand the failing step to see detailed logs
+
+Common fixes:
+- Ensure `.env` files exist on server
+- Check database connection
+- Verify PM2 is installed: `npm install -g pm2`
+
+---
+
+## Current Workflow Behavior
+
+When you push to the `develop` branch, the workflow will:
+
+1. ✅ Checkout code from GitHub
+2. 🔐 SSH into your server (46.224.231.217)
+3. 📥 Pull latest changes (`git pull`)
+4. 🐳 Start Docker services (PostgreSQL, Redis)
+5. 📦 Install dependencies (`npm ci`)
+6. 🔧 Build shared packages
+7. 🏗️ Build all apps (API, Admin, User-web)
+8. 🗄️ Run database migrations
+9. 🔄 Restart PM2 processes
+10. ✅ Verify deployment
+
+---
+
+## Environment Files Required on Server
+
+The workflow expects these files to exist on the server:
+
 ```
-.github/workflows/deploy-production.yml
+/root/RealEstatesAPI-NestJS/
+├── apps/api/.env
+├── apps/admin-web/.env.production
+└── apps/user-web/.env.production
 ```
 
-### What It Does
+If they don't exist, create them before running the workflow:
 
-When you push to `develop` branch:
-
-1. ✅ Connects to your Hetzner server via SSH
-2. ✅ Pulls latest code from `develop` branch
-3. ✅ Installs dependencies (`npm ci`)
-4. ✅ Builds shared packages and applications
-5. ✅ Runs database migrations
-6. ✅ Restarts all PM2 processes
-7. ✅ Verifies deployment is working
-
----
-
-## 🔧 Manual Deployment
-
-You can also trigger deployment manually:
-
-1. Go to your GitHub repository
-2. Click **Actions** tab
-3. Click **"Deploy to Hetzner Production"** in left sidebar
-4. Click **"Run workflow"** button (right side)
-5. Select `develop` branch
-6. Click green **"Run workflow"** button
-
----
-
-## 📊 Monitor Deployments
-
-### In GitHub
-
-1. Go to **Actions** tab
-2. Click on any workflow run to see details
-3. Green ✅ = Success, Red ❌ = Failed
-
-### On Server
-
+### On the server:
 ```bash
-# Check PM2 status
+cd /root/RealEstatesAPI-NestJS
+
+# Create API .env
+nano apps/api/.env
+# Paste content from local apps/api/.env
+# Press Ctrl+X, then Y, then Enter
+
+# Create Admin .env
+nano apps/admin-web/.env.production
+# Paste content from local apps/admin-web/.env.local (adjust URLs)
+# Press Ctrl+X, then Y, then Enter
+
+# Create User-web .env
+nano apps/user-web/.env.production
+# Paste content from local apps/user-web/.env.local (adjust URLs)
+# Press Ctrl+X, then Y, then Enter
+```
+
+---
+
+## After Successful Deployment
+
+Your services will be available at:
+- **API**: http://46.224.231.217:3000
+- **Admin Panel**: http://46.224.231.217:3001
+- **User Website**: http://46.224.231.217:3002
+
+---
+
+## Quick Reference Commands
+
+### Check workflow status
+```bash
+# On GitHub.com
+1. Go to repository
+2. Click "Actions" tab
+3. See latest workflow runs
+```
+
+### Check deployment on server
+```bash
+ssh root@46.224.231.217
 pm2 status
+pm2 logs
+```
 
-# View recent logs
-pm2 logs --lines 50
+### Stop all services on server
+```bash
+ssh root@46.224.231.217 "pm2 delete all"
+```
 
-# View API logs only
-pm2 logs api --lines 20
+### Restart services on server
+```bash
+ssh root@46.224.231.217 "cd /root/RealEstatesAPI-NestJS && pm2 restart all"
 ```
 
 ---
 
-## 🔍 Troubleshooting
+## Security Notes
 
-### Deployment fails with "Permission denied"
+⚠️ **NEVER commit these to Git:**
+- Private SSH keys
+- `.env` files with real credentials
+- Database passwords
+- JWT secrets
 
-**Cause:** SSH key not properly configured.
-
-**Fix:**
-```bash
-# On your server, verify the key is in authorized_keys
-cat ~/.ssh/authorized_keys | grep github-actions
-
-# If not there, re-add it
-cat ~/.ssh/github_actions.pub >> ~/.ssh/authorized_keys
-```
-
-Also verify the secret `HETZNER_SSH_KEY` contains the correct **private** key (not public).
-
-### Deployment fails with "Host key verification failed"
-
-**Cause:** First-time connection to server.
-
-**Fix:** The workflow should handle this automatically. If not, SSH into the server manually once from any machine to accept the fingerprint.
-
-### npm ci fails
-
-**Cause:** Corrupted `node_modules` or `package-lock.json`.
-
-**Fix:**
-```bash
-# On your server
-cd /root/RealEstatesAPI-NestJS
-rm -rf node_modules package-lock.json
-npm install
-```
-
-Then push a change to trigger deployment again.
-
-### PM2 processes not starting
-
-**Cause:** Application build failed or port conflict.
-
-**Fix:**
-```bash
-# On your server
-cd /root/RealEstatesAPI-NestJS
-
-# Check for build errors
-npm run build
-
-# Check what's using ports
-lsof -i :3000
-lsof -i :3001
-lsof -i :3002
-
-# Kill everything and restart
-pm2 kill
-cd apps/api && pm2 start dist/main.js --name "api" && cd ../..
-cd apps/admin-web && pm2 start npm --name "admin-web" -- start && cd ../..
-cd apps/user-web && pm2 start npm --name "user-web" -- start && cd ../..
-pm2 save
-```
-
-### Database migration fails
-
-**Cause:** Database not running or migration already applied.
-
-**Fix:**
-```bash
-# On your server
-
-# Check if database is running
-docker ps | grep postgres
-
-# If not running
-cd /root/RealEstatesAPI-NestJS
-docker compose -f docker-compose.prod.yml up -d postgres
-sleep 10
-
-# Try migration again
-cd apps/api
-npm run migration:run
-```
+✅ **Only store in GitHub Secrets:**
+- Server credentials
+- SSH keys
+- Any sensitive data needed for deployment
 
 ---
 
-## 🔒 Security Notes
+## Next Steps After Setup
 
-### SSH Key Security
-
-- The private key stored in GitHub Secrets is encrypted
-- Only repository admins and selected Actions can access it
-- Never commit the private key to the repository
-
-### Limiting Access
-
-If you want to restrict the deploy key:
-
-```bash
-# On your server, edit authorized_keys
-nano ~/.ssh/authorized_keys
-
-# Add command restriction before the key:
-command="cd /root/RealEstatesAPI-NestJS && git pull && npm ci && npm run build && pm2 restart all",no-port-forwarding,no-X11-forwarding,no-agent-forwarding ssh-ed25519 AAAA... github-actions-deploy
-```
-
-This restricts the key to only run deployment commands.
+1. ✅ Add the 3 GitHub secrets (see Step 2 above)
+2. ✅ Verify `.env` files exist on server
+3. ✅ Push a commit to `develop` branch
+4. ✅ Watch the workflow run in GitHub Actions tab
+5. ✅ Check your server to verify services are running
 
 ---
 
-## 📝 Workflow Configuration
+## Need Help?
 
-The current workflow deploys on:
-- ✅ Push to `develop` branch
-- ✅ Manual trigger (workflow_dispatch)
+If the workflow still fails after adding secrets:
 
-### To Change Trigger Branch
-
-Edit `.github/workflows/deploy-production.yml`:
-
-```yaml
-on:
-  push:
-    branches:
-      - main  # Change from 'develop' to 'main'
-```
-
-### To Add Production Branch
-
-```yaml
-on:
-  push:
-    branches:
-      - develop  # Staging
-      - main     # Production
-```
-
-### To Deploy Only on Tags
-
-```yaml
-on:
-  push:
-    tags:
-      - 'v*'  # Deploy on version tags like v1.0.0
-```
+1. Check the **Actions** tab logs for specific error messages
+2. SSH into your server and check PM2 logs: `pm2 logs`
+3. Verify environment files are correctly configured
+4. Ensure Docker services are running: `docker compose ps`
 
 ---
 
-## 🔄 Rollback
-
-If a deployment breaks something:
-
-### Quick Rollback (Last Working Commit)
-
-```bash
-# On your server
-cd /root/RealEstatesAPI-NestJS
-
-# Find the last working commit
-git log --oneline -10
-
-# Reset to specific commit (replace COMMIT_HASH)
-git reset --hard COMMIT_HASH
-
-# Rebuild and restart
-npm run build
-pm2 restart all
-```
-
-### Rollback via GitHub
-
-1. Find the last working commit in GitHub
-2. Create a new branch from that commit
-3. Push to `develop`:
-
-```bash
-git checkout -b hotfix COMMIT_HASH
-git push origin hotfix:develop --force
-```
-
----
-
-## 📊 Workflow Status Badge
-
-Add this to your README.md:
-
-```markdown
-![Deploy Status](https://github.com/YOUR_USERNAME/RealEstatesAPI-NestJS/actions/workflows/deploy-production.yml/badge.svg?branch=develop)
-```
-
-This shows a badge indicating the latest deployment status.
-
----
-
-## ✅ Verification Checklist
-
-- [ ] SSH key generated on server
-- [ ] Public key added to `~/.ssh/authorized_keys`
-- [ ] `HETZNER_HOST` secret added to GitHub
-- [ ] `HETZNER_USERNAME` secret added to GitHub  
-- [ ] `HETZNER_SSH_KEY` secret added to GitHub
-- [ ] Workflow file exists at `.github/workflows/deploy-production.yml`
-- [ ] Push to `develop` triggers deployment
-- [ ] Deployment completes successfully
-- [ ] Applications restart after deployment
-- [ ] Can access website after deployment
-
----
-
-## 🎯 Quick Commands Reference
-
-### Check Deployment Status
-
-```bash
-# On server
-pm2 status
-pm2 logs --lines 20
-curl http://localhost:3000/v1/properties/public
-```
-
-### Force Re-deploy
-
-Push an empty commit:
-```bash
-git commit --allow-empty -m "Force redeploy"
-git push origin develop
-```
-
-Or use GitHub Actions UI for manual deploy.
-
-### View Workflow Logs
-
-1. GitHub → Actions tab
-2. Click on workflow run
-3. Click on job name
-4. Expand each step to see logs
-
----
-
-**Your deployments are now automated! 🚀**
-
-Every push to `develop` branch will automatically deploy to your Hetzner server.
+**Last Updated**: January 28, 2026

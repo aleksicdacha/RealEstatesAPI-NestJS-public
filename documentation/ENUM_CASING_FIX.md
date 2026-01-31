@@ -128,7 +128,7 @@ clients:
 
 Run the verification script:
 ```bash
-./verify-enum-casing.sh
+./scripts/verify-enum-casing.sh
 ```
 
 Expected output:

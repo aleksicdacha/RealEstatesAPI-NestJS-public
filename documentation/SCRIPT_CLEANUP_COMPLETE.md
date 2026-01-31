@@ -99,7 +99,7 @@ Analyzed and removed all obsolete `.sh` scripts from the project, keeping only e
 
 ### 1. Production Commands Menu
 ```bash
-./production-commands.sh
+./scripts/production-commands.sh
 ```
 **Purpose:** Interactive menu for all production operations
 - Deploy/redeploy application
@@ -112,7 +112,7 @@ Analyzed and removed all obsolete `.sh` scripts from the project, keeping only e
 
 ### 2. Deployment Validation
 ```bash
-./validate-deployment.sh
+./scripts/validate-deployment.sh
 ```
 **Purpose:** Post-deployment health checks
 - Verify Docker containers running
@@ -122,31 +122,31 @@ Analyzed and removed all obsolete `.sh` scripts from the project, keeping only e
 
 ### 3. Setup Scripts
 ```bash
-./setup.sh                   # Initial project setup
-./setup-production-env.sh    # Production environment config
+./scripts/setup.sh                   # Initial project setup
+./scripts/setup-production-env.sh    # Production environment config
 ```
 **Purpose:** Environment initialization
 
 ### 4. Testing Scripts
 ```bash
-./test-client-transaction-filter.sh  # Test property filtering
-./test-public-endpoint.sh            # Test public API
+./scripts/test-client-transaction-filter.sh  # Test property filtering
+./scripts/test-public-endpoint.sh            # Test public API
 ```
 **Purpose:** Automated API endpoint testing
 
 ### 5. Verification Scripts
 ```bash
-./verify-enum-casing.sh    # Database enum validation
-./verify-data.sh           # Data integrity check
-./verify-system.sh         # Complete health check
+./scripts/verify-enum-casing.sh    # Database enum validation
+./scripts/verify-data.sh           # Data integrity check
+./scripts/verify-system.sh         # Complete health check
 ```
 **Purpose:** Database and system validation
 
 ### 6. Security Scripts
 ```bash
-./server-security-audit.sh  # Security audit
-./malware-scan.sh           # Malware detection
-./ssh-harden.sh             # SSH hardening
+./scripts/server-security-audit.sh  # Security audit
+./scripts/malware-scan.sh           # Malware detection
+./scripts/ssh-harden.sh             # SSH hardening
 ```
 **Purpose:** Security hardening and monitoring
 
