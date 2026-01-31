@@ -5,10 +5,10 @@ export class AddClientOwnerFields1766761547503 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             ALTER TABLE "clients" 
-            ADD COLUMN "ownerJmbg" VARCHAR(13),
-            ADD COLUMN "ownerBirthplace" TEXT,
-            ADD COLUMN "ownerIdCardNumber" VARCHAR(50),
-            ADD COLUMN "ownerIdCardIssuePlace" TEXT
+            ADD COLUMN IF NOT EXISTS "ownerJmbg" VARCHAR(13),
+            ADD COLUMN IF NOT EXISTS "ownerBirthplace" TEXT,
+            ADD COLUMN IF NOT EXISTS "ownerIdCardNumber" VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS "ownerIdCardIssuePlace" TEXT
         `);
     }
 

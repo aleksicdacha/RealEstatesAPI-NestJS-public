@@ -4,42 +4,67 @@ A modern, full-stack real estate management application built with **NestJS** (b
 
 ---
 
-## 🚨 Quick Server Deployment
+## 🚀 Quick Start
 
-**For production server (46.224.231.217):**
+### One-Click Deployment
 
 ```bash
-ssh root@46.224.231.217
-cd ~/RealEstatesAPI-NestJS
-./scripts/server-fix.sh  # Automated deployment with all fixes
+# For LOCAL development
+./deploy.sh  # Select option 1
+
+# For PRODUCTION server
+./deploy.sh  # Select option 2
 ```
 
-**📚 Documentation:**
-- **[Server Quick Reference](documentation/SERVER_QUICK_REFERENCE.md)** - All PM2 commands
-- **[Urgent Server Fix](documentation/URGENT_SERVER_FIX.md)** - Troubleshooting guide
-- **[Deployment Guide](documentation/HETZNER_DEPLOYMENT_GUIDE.md)** - Full setup
+**That's it!** The script handles everything:
+- ✅ Environment setup
+- ✅ Database migrations
+- ✅ Seeding (local only)
+- ✅ Docker containers
+- ✅ Service startup
+- ✅ Health checks
+
+### Access Points
+
+**Local Development:**
+- API: http://localhost:3000
+- Admin Panel: http://localhost:3001 (login: `admin`/`admin123`)
+- Public Website: http://localhost:3002
+
+**Production:**
+- See deployment output for your server's IP addresses
+
+---
+
+## 📚 Documentation
+
+- **[DEPLOYMENT_MASTER_GUIDE.md](./DEPLOYMENT_MASTER_GUIDE.md)** - Complete deployment guide
+- **[SEEDING_GUIDE.md](./SEEDING_GUIDE.md)** - Database seeding guide
+- **[AI_PROJECT_CONTEXT.md](./AI_PROJECT_CONTEXT.md)** - AI coding instructions
 
 ---
 
 ## 🏗️ Architecture
 
-### Backend (NestJS v11)
-- **Framework**: NestJS 11 with TypeScript
-- **Database**: PostgreSQL with TypeORM
+### Backend (NestJS v10)
+- **Framework**: NestJS 10 with TypeScript
+- **Database**: PostgreSQL 16 with TypeORM
 - **Authentication**: JWT with role-based access control
 - **Validation**: class-validator and class-transformer
 - **Documentation**: Swagger/OpenAPI
 - **Security**: Helmet, CORS, Rate limiting
 - **File Upload**: Multer for image management
-- **Caching**: Redis integration
-- **Testing**: Jest with e2e testing
+- **Caching**: Redis 7 integration
+- **AI Features**: Google Gemini chatbot
 
 ### Frontend (Next.js v15)
-- **Framework**: Next.js 15 with App Router
-- **UI Library**: PrimeReact with modern components
+- **Framework**: Next.js 15 with App Router & React 19
+- **Admin UI**: PrimeReact with modern components
+- **Public UI**: Custom components with Tailwind CSS
 - **State Management**: TanStack Query (React Query)
+- **Data Tables**: TanStack Table (server-side pagination)
 - **Forms**: React Hook Form with Zod validation
-- **Styling**: Tailwind CSS + PrimeFlex
+- **Internationalization**: next-intl (SR/EN)
 - **Type Safety**: Full TypeScript integration
 
 ## 🚀 Features
@@ -47,7 +72,9 @@ cd ~/RealEstatesAPI-NestJS
 ### Property Management
 - ✅ CRUD operations for properties
 - ✅ Advanced search and filtering
-- ✅ Image upload and management
+- ✅ Image upload, crop, rotate, reorder
+- ✅ Google Maps integration
+- ✅ Multi-step wizard (Property → Client → Images → Location)
 - ✅ Geolocation support
 - ✅ Status tracking
 - ✅ Bulk operations

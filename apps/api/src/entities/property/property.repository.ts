@@ -44,8 +44,13 @@ export class PropertyRepository extends Repository<Property> {
     }
 
     // Client transaction type filter (prodaja/izdavanje)
+    // Only filter properties that HAVE a client with the specified transaction type
     if (options.clientTransactionType) {
-      queryBuilder.andWhere('client.transactionType = :clientTransactionType', { clientTransactionType: options.clientTransactionType });
+      queryBuilder.andWhere('client.transactionType = :clientTransactionType', {
+        clientTransactionType: options.clientTransactionType
+      });
+      // Ensure client is NOT NULL when filtering by client fields
+      queryBuilder.andWhere('client.id IS NOT NULL');
     }
 
     // Property type filter - handle both single value and array

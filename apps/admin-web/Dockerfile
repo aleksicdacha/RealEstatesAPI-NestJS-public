@@ -44,7 +44,7 @@ RUN npm run build
 # Production stage
 FROM base AS production
 
-WORKDIR /app
+WORKDIR /app/apps/admin-web
 
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
@@ -53,13 +53,18 @@ ENV PORT=3001
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/.next/static ./apps/admin-web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/public ./apps/admin-web/public
+# Copy dependencies for production
+COPY --from=deps /app/node_modules /app/node_modules
+COPY --from=deps /app/apps/admin-web/node_modules ./node_modules
+
+# Copy built Next.js application
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/public ./public
+COPY --from=builder /app/apps/admin-web/package.json ./package.json
+COPY --from=builder /app/apps/admin-web/next.config.ts ./next.config.ts
 
 USER nextjs
 
 EXPOSE 3001
 
-CMD ["node", "apps/admin-web/server.js"]
+CMD ["npm", "start"]
