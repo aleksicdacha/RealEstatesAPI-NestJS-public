@@ -78,11 +78,11 @@ async function seed() {
         ownerBirthplace: 'Niš',
         ownerIdCardNumber: '001234567',
         ownerIdCardIssuePlace: 'PU Niš',
-        transactionType: 'Seller',
-        paymentType: 'Cash',
+        transactionType: 'seller',
+        paymentType: 'cash',
         comment: 'Klijent je kooperativan, želi brzu prodaju.',
         moneyAmount: 85000,
-        status: 'Active',
+        status: 'active',
       },
       {
         name: 'Ana Petrović',
@@ -93,11 +93,11 @@ async function seed() {
         ownerBirthplace: 'Beograd',
         ownerIdCardNumber: '002345678',
         ownerIdCardIssuePlace: 'PU Beograd',
-        transactionType: 'Seller',
-        paymentType: 'BankTransfer',
+        transactionType: 'seller',
+        paymentType: 'bank-transfer',
         comment: 'Potrebno je dogovoriti termine razgledanja unapred.',
         moneyAmount: 95000,
-        status: 'Active',
+        status: 'active',
       },
       {
         name: 'Nikola Jovanović',
@@ -112,7 +112,7 @@ async function seed() {
         paymentType: 'Cash',
         comment: 'Fleksibilan po pitanju cene, može se pregovarati.',
         moneyAmount: 55000,
-        status: 'Active',
+        status: 'active',
       },
       {
         name: 'Jelena Nikolić',
@@ -127,7 +127,7 @@ async function seed() {
         paymentType: 'Loan',
         comment: 'Traži kredit, potrebna procena vrednosti.',
         moneyAmount: 70000,
-        status: 'Active',
+        status: 'active',
       },
       {
         name: 'Stefan Đorđević',
@@ -142,14 +142,14 @@ async function seed() {
         paymentType: 'Cash',
         comment: 'Traži stan na duži period, redovan klijent.',
         moneyAmount: null,
-        status: 'Active',
+        status: 'active',
       },
     ];
     for (const client of sampleClients) {
       const result = await AppDataSource.query(
         `INSERT INTO clients (
-          name, address, email, phone, "ownerJmbg", "ownerBirthplace", 
-          "ownerIdCardNumber", "ownerIdCardIssuePlace", "transactionType", 
+          name, address, email, phone, "ownerJmbg", "ownerBirthplace",
+          "ownerIdCardNumber", "ownerIdCardIssuePlace", "transactionType",
           "paymentType", comment, "moneyAmount", status
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
         [
@@ -168,7 +168,7 @@ async function seed() {
         code: 'NIS-001',
         description: 'Luksuzni trosoban stan u centru grada sa kompletnom renovacijom. Visokokvalitetni materijali, parket, podno grejanje. Uključeno parking mesto u garaži. Stan je potpuno namešten sa modernom opremom. Idealan za porodicu ili investiciju.',
         propertyType: 'Apartment',
-        status: 'Active',
+        status: 'active',
         price: 85000,
         salePrice: 80000,
         area: 72.5,
@@ -198,7 +198,7 @@ async function seed() {
         code: 'NIS-002',
         description: 'Prostran četvorosoban stan sa dva balkona i pogledom na park. Odličan raspored prostorija, dnevni boravak 28m2, master spavaća soba sa kupatilom. Centralno grejanje, klima uređaji u svim sobama.',
         propertyType: 'Apartment',
-        status: 'Active',
+        status: 'active',
         price: 95000,
         salePrice: 92000,
         area: 85,
@@ -228,7 +228,7 @@ async function seed() {
         code: 'NIS-003',
         description: 'Dvosoban stan u mirnom delu grada. Idealan za mlade bračne parove ili investiciju za izdavanje. Stan je kompletno renoviran 2022. godine.',
         propertyType: 'Apartment',
-        status: 'Active',
+        status: 'active',
         price: 55000,
         salePrice: 52000,
         area: 48,
@@ -258,7 +258,7 @@ async function seed() {
         code: 'NIS-004',
         description: 'Porodična kuća sa dvorištem od 400m2. Tri spavaće sobe, dnevni boravak, kuhinja sa trpezarijom. Garaža za dva automobila. Kompletno ograđeno dvorište sa voćnjakom.',
         propertyType: 'House',
-        status: 'Active',
+        status: 'active',
         price: 145000,
         salePrice: 140000,
         area: 120,
@@ -288,7 +288,7 @@ async function seed() {
         code: 'NIS-005',
         description: 'Poslovni prostor u samom centru grada. Idealan za kancelariju, ordinaciju ili prodavnicu. Potpuno adaptiran, klima uređaji, video nadzor.',
         propertyType: 'Commercial',
-        status: 'Active',
+        status: 'active',
         price: 78000,
         salePrice: 75000,
         area: 55,
@@ -320,10 +320,10 @@ async function seed() {
     for (const property of sampleProperties) {
       const propertyResult = await AppDataSource.query(
         `INSERT INTO properties (
-          "code", "description", "propertyType", "status", "price", "salePrice", 
+          "code", "description", "propertyType", "status", "price", "salePrice",
           "area", "address", "neighborhood", "lat", "lon", "floor", "numberOfFloors",
           "roomStructure", "bathrooms", "heating", "elevator", "terrace", "balcony",
-          "parking", "garage", "constructionYear", "registeredUntil", "orientation", 
+          "parking", "garage", "constructionYear", "registeredUntil", "orientation",
           "youtubeUrl", "specialOffer", "comment", "clientId", "createdAt", "updatedAt"
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
@@ -347,7 +347,7 @@ async function seed() {
       if (propertyImages.length > 0) {
         for (let i = 0; i < propertyImages.length; i++) {
           await AppDataSource.query(
-            `INSERT INTO property_images ("url", "order", "isFavorite", "propertyId", "createdAt", "updatedAt") 
+            `INSERT INTO property_images ("url", "order", "isFavorite", "propertyId", "createdAt", "updatedAt")
              VALUES ($1, $2, $3, $4, NOW(), NOW())`,
             [propertyImages[i], i + 1, i === 0, propertyId]
           );
