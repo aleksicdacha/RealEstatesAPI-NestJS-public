@@ -63,7 +63,6 @@ COPY --from=builder /app/apps/api/src/i18n /app/apps/api/dist/i18n
 
 # Copy necessary files
 COPY apps/api/src/migrations ./src/migrations
-COPY apps/api/src/data-source.ts ./src/data-source.ts
 
 # Create uploads directory
 RUN mkdir -p uploads logs
@@ -76,3 +75,4 @@ ENV NODE_ENV=production
 
 # Start command
 CMD ["node", "dist/main.js"]
+

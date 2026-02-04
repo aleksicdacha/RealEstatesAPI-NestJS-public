@@ -9,14 +9,11 @@
     "build": "nest build",
     "dev:user": "cd apps/user-web && npm run dev",
     "dev:admin": "cd admin-frontend && npm run dev",
-    "typeorm": "typeorm-ts-node-commonjs",
+    "typeorm": "node -r tsconfig-paths/register -r ts-node/register ../../node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "seed:users": "ts-node ../../seeds/create-admin.ts",
-    "seed:dev": "ts-node -r tsconfig-paths/register ../../seeds/local-development-seed.ts",
-    "seed:full": "ts-node -r tsconfig-paths/register ../../seeds/seed-with-properties.ts",
-    "seed:prod": "ts-node ../../seeds/production-seed.ts"
+    "seed:users": "ts-node -r tsconfig-paths/register ../../seeds/create-admin.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

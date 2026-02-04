@@ -33,18 +33,14 @@ jobs:
           username: ${{ secrets.HETZNER_USERNAME }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: 22
-          timeout: 30s
           script_stop: true
           script: |
             set -e
 
-            echo "🚀 Starting deployment..."
+
             echo "📅 $(date)"
             echo "🔗 Commit: ${{ github.sha }}"
-            echo "👤 Author: ${{ github.actor }}"
 
-            # Navigate to project directory
-            cd /root/RealEstatesAPI-NestJS || {
               echo "❌ Project directory not found. Running initial setup..."
               cd /root
               git clone --branch develop https://github.com/${{ github.repository }}.git RealEstatesAPI-NestJS
@@ -56,118 +52,107 @@ jobs:
             git reset --hard origin/develop
             git clean -fd
 
-            # Verify we're on the right commit
+
             echo "🔍 Current commit: $(git rev-parse HEAD)"
             echo "🔍 Expected commit: ${{ github.sha }}"
 
             echo "🐳 Ensuring Docker services are running..."
-            docker compose up -d postgres redis || {
-              echo "⚠️ Docker services may already be running"
-            }
-            sleep 10
 
-            echo "📦 Installing dependencies..."
             npm ci --prefer-offline --no-audit
 
             echo "🔧 Building shared packages..."
             cd packages/types && npm run build && cd ../..
 
             echo "🔧 Building shared packages (api-client)..."
-            cd packages/api-client && npm run build && cd ../..
+            docker compose up -d postgres redis
+            sleep 5
 
-            echo "🏗️ Building all applications..."
-            npm run build
-
-            echo "🗄️ Running database migrations..."
             cd apps/api
             npm run migration:run || echo "⚠️ Migration may have already run or failed"
             cd ../..
 
-            echo "🔄 Restarting PM2 processes..."
-            pm2 delete all 2>/dev/null || true
+            npm ci --prefer-offline
+
             pm2 kill 2>/dev/null || true
 
             # Start API
             echo "🚀 Starting API..."
             cd apps/api
-            pm2 start dist/main.js --name "api" -i 1
-            cd ../..
 
-            # Start Admin Web
-            echo "🚀 Starting Admin Web..."
-            cd apps/admin-web
             pm2 start npm --name "admin-web" -- start
             cd ../..
 
             # Start User Web
             echo "🚀 Starting User Web..."
             cd apps/user-web
-            pm2 start npm --name "user-web" -- start
+
             cd ../..
 
             pm2 save
             pm2 startup
 
             echo "✅ Deployment complete!"
-            echo "📊 PM2 Status:"
+            npm run migration:run || echo "⚠️ Migration may have already run"
             pm2 status
 
             echo ""
-            echo "🌐 Services:"
+
             SERVER_IP=$(hostname -I | awk '{print $1}')
             echo "   API:       http://$SERVER_IP:3000"
-            echo "   Admin:     http://$SERVER_IP:3001"
+
             echo "   User Web:  http://$SERVER_IP:3002"
 
-      - name: Verify Deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HETZNER_HOST }}
-          username: ${{ secrets.HETZNER_USERNAME }}
+
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: 22
-          script: |
             echo "🔍 Verifying deployment..."
 
             # Wait for services to start
             sleep 15
 
             # Check API health
-            if curl -s --max-time 10 http://localhost:3000/v1/properties/public > /dev/null 2>&1; then
+
               echo "✅ API is responding"
-            else
+              echo "⚠️ API may still be starting..."
               echo "⚠️ API may still be starting or has issues"
-              curl -v http://localhost:3000/v1/properties/public 2>&1 | head -10
+
             fi
+
 
             # Check PM2 processes
             echo ""
             echo "📊 PM2 Status:"
-            pm2 status
+
+
 
             # Show recent logs
             echo ""
             echo "📋 Recent API logs:"
-            pm2 logs api --lines 5 --nostream 2>/dev/null || echo "No API logs available"
+            pm2 logs api --lines 10 --nostream
+
 
       - name: Notify on failure
         if: failure()
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HETZNER_HOST }}
-          username: ${{ secrets.HETZNER_USERNAME }}
-          key: ${{ secrets.HETZNER_SSH_KEY }}
-          port: 22
+            echo "   API:       http://$(hostname -I | awk '{print $1}'):3000"
+            echo "   Admin:     http://$(hostname -I | awk '{print $1}'):3001"
+            echo "   User Web:  http://$(hostname -I | awk '{print $1}'):3002"
           script: |
             echo "❌ Deployment failed at $(date)"
+            echo "Check PM2 logs:"
+            pm2 logs --lines 50 --nostream
+
             echo "🔗 Failed commit: ${{ github.sha }}"
             echo "👤 Failed by: ${{ github.actor }}"
             echo ""
             echo "📋 Recent system logs:"
             journalctl -n 20 --no-pager
             echo ""
-            echo "📋 PM2 status:"
+
             pm2 status 2>/dev/null || echo "PM2 not available"
-            echo ""
-            echo "📋 Disk usage:"
-            df -h
+            sleep 10
+
+            # Check API
+            if curl -s http://localhost:3000/v1/properties/public > /dev/null; then

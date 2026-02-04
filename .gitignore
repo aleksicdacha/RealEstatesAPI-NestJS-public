@@ -1,13 +1,11 @@
 # compiled output
-dist/
-**/dist/
+/dist
 /node_modules
 /build
 build/
 build.old/
 *.old/
 .next/
-**/.next/
 apps/api/build
 apps/api/build.old
 apps/admin-web/build

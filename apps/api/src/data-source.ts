@@ -1,4 +1,11 @@
 import { DataSource } from 'typeorm';
+import { config } from 'dotenv';
+
+// Load environment variables
+config();
+
+// Register tsconfig paths for CLI commands
+require('tsconfig-paths/register');
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -7,8 +14,8 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'CHANGE_ME',
   database: process.env.DB_NAME || 'estates',
-  synchronize: false, // Must be false for migrations
-  logging: ['query', 'error', 'warn'], // Enable detailed logging
-  entities: ['dist/entities/**/*.entity.{ts,js}'],
-  migrations: ['src/migrations/*.{ts,js}'],
+  synchronize: true,  // Temporarily enabled for local dev (bypasses corrupted migrations)
+  logging: true,
+  entities: [__dirname + '/entities/**/*.entity.{ts,js}'],
+  migrations: [__dirname + '/migrations/*.{ts,js}'],
 });

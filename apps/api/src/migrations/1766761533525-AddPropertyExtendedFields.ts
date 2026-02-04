@@ -5,12 +5,12 @@ export class AddPropertyExtendedFields1766761533525 implements MigrationInterfac
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             ALTER TABLE "properties" 
-            ADD COLUMN IF NOT EXISTS "contractNumber" VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS "cadastralParcel" VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS "cadastralMunicipality" VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS "orientation" VARCHAR(20),
-            ADD COLUMN IF NOT EXISTS "youtubeUrl" VARCHAR(500),
-            ADD COLUMN IF NOT EXISTS "specialOffer" INTEGER CHECK ("specialOffer" BETWEEN 1 AND 20)
+            ADD COLUMN "contractNumber" VARCHAR(100),
+            ADD COLUMN "cadastralParcel" VARCHAR(100),
+            ADD COLUMN "cadastralMunicipality" VARCHAR(100),
+            ADD COLUMN "orientation" VARCHAR(20),
+            ADD COLUMN "youtubeUrl" VARCHAR(500),
+            ADD COLUMN "specialOffer" INTEGER CHECK ("specialOffer" BETWEEN 1 AND 20)
         `);
     }
 

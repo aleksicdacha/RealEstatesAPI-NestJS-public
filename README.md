@@ -4,35 +4,7 @@ A modern, full-stack real estate management application built with **NestJS** (b
 
 ---
 
-## 🚀 Quick Start
-
-### One-Click Deployment
-
-```bash
-# For LOCAL development
-./deploy.sh  # Select option 1
-
-# For PRODUCTION server
-./deploy.sh  # Select option 2
-```
-
-**That's it!** The script handles everything:
-- ✅ Environment setup
-- ✅ Database migrations
-- ✅ Seeding (local only)
-- ✅ Docker containers
-- ✅ Service startup
-- ✅ Health checks
-
-### Access Points
-
-**Local Development:**
-- API: http://localhost:3000
-- Admin Panel: http://localhost:3001 (login: `admin`/`admin123`)
-- Public Website: http://localhost:3002
-
-**Production:**
-- See deployment output for your server's IP addresses
+**For production server (46.224.231.217):**
 
 ---
 
@@ -51,8 +23,11 @@ A modern, full-stack real estate management application built with **NestJS** (b
 - **Database**: PostgreSQL 16 with TypeORM
 - **Authentication**: JWT with role-based access control
 - **Validation**: class-validator and class-transformer
-- **Documentation**: Swagger/OpenAPI
-- **Security**: Helmet, CORS, Rate limiting
+ssh root@46.224.231.217
+**📚 Documentation:**
+- **[Server Quick Reference](documentation/SERVER_QUICK_REFERENCE.md)** - All PM2 commands
+- **[Urgent Server Fix](documentation/URGENT_SERVER_FIX.md)** - Troubleshooting guide
+- **[Deployment Guide](documentation/HETZNER_DEPLOYMENT_GUIDE.md)** - Full setup
 - **File Upload**: Multer for image management
 - **Caching**: Redis 7 integration
 - **AI Features**: Google Gemini chatbot
@@ -61,8 +36,9 @@ A modern, full-stack real estate management application built with **NestJS** (b
 - **Framework**: Next.js 15 with App Router & React 19
 - **Admin UI**: PrimeReact with modern components
 - **Public UI**: Custom components with Tailwind CSS
-- **State Management**: TanStack Query (React Query)
-- **Data Tables**: TanStack Table (server-side pagination)
+### Backend (NestJS v11)
+- **Framework**: NestJS 11 with TypeScript
+- **Database**: PostgreSQL with TypeORM
 - **Forms**: React Hook Form with Zod validation
 - **Internationalization**: next-intl (SR/EN)
 - **Type Safety**: Full TypeScript integration
@@ -72,20 +48,15 @@ A modern, full-stack real estate management application built with **NestJS** (b
 ### Property Management
 - ✅ CRUD operations for properties
 - ✅ Advanced search and filtering
-- ✅ Image upload, crop, rotate, reorder
-- ✅ Google Maps integration
-- ✅ Multi-step wizard (Property → Client → Images → Location)
+- **Caching**: Redis integration
+- **Testing**: Jest with e2e testing
 - ✅ Geolocation support
 - ✅ Status tracking
 - ✅ Bulk operations
 
 ### Client Management
-- ✅ Client profiles and contact information
-- ✅ Transaction type tracking
-- ✅ Client-property relationships
-- ✅ Communication history
-
-### User Management
+- **Framework**: Next.js 15 with App Router
+- **UI Library**: PrimeReact with modern components
 - ✅ Role-based access control (Admin/User)
 - ✅ User profiles and permissions
 - ✅ Authentication and authorization
@@ -94,7 +65,6 @@ A modern, full-stack real estate management application built with **NestJS** (b
 - ✅ Real-time updates
 - ✅ Responsive design
 - ✅ Dark/Light theme support
-- ✅ Data export capabilities
 - ✅ Audit logging
 - ✅ Performance optimizations
 
@@ -102,7 +72,7 @@ A modern, full-stack real estate management application built with **NestJS** (b
 
 - **Node.js** 18+ and npm 8+
 - **PostgreSQL** 12+
-- **Redis** (optional, for caching)
+- **Styling**: Tailwind CSS + PrimeFlex
 
 ## 🛠️ Quick Start
 
@@ -116,12 +86,7 @@ cd RealEstatesAPI-NestJS
 ./scripts/setup.sh
 ```
 
-### 2. Configure Environment
-
-Update `.env` file with your configuration:
-
-```env
-# Database Configuration
+- ✅ Image upload and management
 DB_TYPE=postgres
 DB_HOST=localhost
 DB_PORT=5432
@@ -146,7 +111,7 @@ CORS_ORIGIN=http://localhost:3001,http://localhost:3000
 # Run migrations
 npm run migration:run
 
-# Seed initial data
+./setup.sh
 npm run seed:all
 ```
 

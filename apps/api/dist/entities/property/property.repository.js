@@ -46,7 +46,6 @@ let PropertyRepository = PropertyRepository_1 = class PropertyRepository extends
             queryBuilder.andWhere('client.transactionType = :clientTransactionType', {
                 clientTransactionType: options.clientTransactionType
             });
-            queryBuilder.andWhere('client.id IS NOT NULL');
         }
         if (options.propertyType) {
             const typeArray = Array.isArray(options.propertyType)
