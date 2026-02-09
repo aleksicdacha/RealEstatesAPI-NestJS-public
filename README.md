@@ -1,374 +1,473 @@
-# 🏠 Real Estate Management System
+# 🏠 Real Estate Management System - Monorepo
 
-A modern, full-stack real estate management application built with **NestJS** (backend) and **Next.js** (frontend) using the latest best practices and technologies.
+A full-stack Real Estate management platform built with **NestJS**, **Next.js**, **PostgreSQL**, and **TypeScript** in a **Turborepo** monorepo architecture.
 
-## 🏗️ Architecture
-
-### Backend (NestJS v11)
-- **Framework**: NestJS 11 with TypeScript
-- **Database**: PostgreSQL with TypeORM
-- **Authentication**: JWT with role-based access control
-- **Validation**: class-validator and class-transformer
-- **Documentation**: Swagger/OpenAPI
-- **Security**: Helmet, CORS, Rate limiting
-- **File Upload**: Multer for image management
-- **Caching**: Redis integration
-- **Testing**: Jest with e2e testing
-
-### Frontend (Next.js v15)
-- **Framework**: Next.js 15 with App Router
-- **UI Library**: PrimeReact with modern components
-- **State Management**: TanStack Query (React Query)
-- **Forms**: React Hook Form with Zod validation
-- **Styling**: Tailwind CSS + PrimeFlex
-- **Type Safety**: Full TypeScript integration
-
-## 🚀 Features
-
-### Property Management
-- ✅ CRUD operations for properties
-- ✅ Advanced search and filtering
-- ✅ Image upload and management
-- ✅ Geolocation support
-- ✅ Status tracking
-- ✅ Bulk operations
-
-### Client Management
-- ✅ Client profiles and contact information
-- ✅ Transaction type tracking
-- ✅ Client-property relationships
-- ✅ Communication history
-
-### User Management
-- ✅ Role-based access control (Admin/User)
-- ✅ User profiles and permissions
-- ✅ Authentication and authorization
-
-### Modern Features
-- ✅ Real-time updates
-- ✅ Responsive design
-- ✅ Dark/Light theme support
-- ✅ Data export capabilities
-- ✅ Audit logging
-- ✅ Performance optimizations
-
-## 📋 Prerequisites
-
-- **Node.js** 18+ and npm 8+
-- **PostgreSQL** 12+
-- **Redis** (optional, for caching)
-
-## 🛠️ Quick Start
-
-### 1. Clone and Setup
+## 🚀 Quick Start (One Command)
 
 ```bash
-git clone <repository-url>
-cd RealEstatesAPI-NestJS
-
-# Run automated setup
-./setup.sh
+./fresh-start.sh
 ```
 
-### 2. Configure Environment
+This will set up everything: Docker, Database, Migrations, Seed Data (10 properties, 5 clients, 4 users).
 
-Update `.env` file with your configuration:
-
-```env
-# Database Configuration
-DB_TYPE=postgres
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=your_password_here
-DB_NAME=estates
-DB_SYNC=true
-
-# JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key_here_min_32_chars
-JWT_EXPIRES_IN=7d
-
-# Application Configuration
-PORT=3000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:3001,http://localhost:3000
-```
-
-### 3. Database Setup
-
+**Then start development:**
 ```bash
-# Run migrations
-npm run migration:run
-
-# Seed initial data
-npm run seed:all
+npm run dev
 ```
 
-### 4. Start Application
-
-```bash
-# Start both backend and frontend
-./start.sh
-
-# Or start individually:
-npm run start:dev          # Backend only
-cd admin-frontend && npm run dev  # Frontend only
-```
-
-## � Postman Integration
-
-This project is **Postman-ready** with complete API collections and automated testing.
-
-### Quick Start with Postman:
-1. **Import the collection**: `postman/Real-Estate-API.postman_collection.json`
-2. **Import the environment**: `postman/Real-Estate-Development.postman_environment.json`
-3. **Start the API**: `npm run start:dev`
-4. **Login**: Use the Authentication > Login request (token auto-saves)
-5. **Test away**: All endpoints are ready with sample data
-
-📚 **Detailed Guide**: See `postman/README.md` for complete testing workflows.
-
-## �🔗 Application URLs
-
-- **Backend API**: http://localhost:3000
-- **Frontend Admin**: http://localhost:3001  
-- **API Base URL**: http://localhost:3000/v1
-- **Uploads**: http://localhost:3000/uploads
-
-## 📦 Available Scripts
-
-### Backend Scripts
-```bash
-npm run start:dev          # Start in development mode
-npm run start:prod         # Start in production mode
-npm run build              # Build for production
-npm run test               # Run tests
-npm run test:e2e           # Run e2e tests
-npm run lint               # Lint code
-npm run format             # Format code
-
-# Database scripts
-npm run migration:generate # Generate new migration
-npm run migration:run      # Run migrations
-npm run migration:revert   # Revert last migration
-npm run seed:all          # Seed all data
-npm run db:reset          # Reset database and reseed
-```
-
-### Frontend Scripts
-```bash
-cd admin-frontend
-npm run dev               # Start development server
-npm run build             # Build for production
-npm run start             # Start production server
-npm run lint              # Lint code
-npm run type-check        # Check TypeScript types
-```
-
-## 🐳 Docker Support
-
-### Development with Docker Compose
-
-```bash
-# Start all services (API, Admin, Database, Redis)
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-### Production Deployment
-
-```bash
-# Build production images
-docker-compose -f docker-compose.prod.yml build
-
-# Deploy
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-## 📁 Project Structure
-
-```
-RealEstatesAPI-NestJS/
-├── src/                          # Backend source code
-│   ├── auth/                     # Authentication module
-│   ├── common/                   # Shared utilities and config
-│   ├── entities/                 # Feature modules
-│   │   ├── client/              # Client management
-│   │   ├── property/            # Property management
-│   │   ├── property-image/      # Image management
-│   │   ├── upload/              # File upload handling
-│   │   └── user/                # User management
-│   └── migrations/              # Database migrations
-├── admin-frontend/              # Frontend application
-│   ├── src/
-│   │   ├── app/                 # Next.js app router
-│   │   ├── components/          # Reusable UI components
-│   │   ├── services/            # API service layer
-│   │   ├── providers/           # React context providers
-│   │   └── lib/                 # Utility functions
-├── seeds/                       # Database seeders
-├── uploads/                     # File storage
-├── docker-compose.yml           # Development containers
-└── README.md                    # This file
-```
-
-## 🔧 API Endpoints
-
-### Authentication
-- `POST /auth/login` - User login
-- `GET /auth/profile` - Get current user profile
-
-### Properties
-- `GET /v1/properties` - List properties with filtering
-- `POST /v1/properties` - Create new property
-- `GET /v1/properties/:id` - Get property details
-- `PATCH /v1/properties/:id` - Update property
-- `DELETE /v1/properties/:id` - Delete property
-
-### Users
-- `GET /v1/users` - List users
-- `POST /v1/users` - Create user
-- `PATCH /v1/users/:id` - Update user
-- `DELETE /v1/users/:id` - Delete user
-
-### File Upload
-- `POST /v1/upload/single` - Upload single file
-- `POST /v1/upload/multiple` - Upload multiple files
-
-Full API documentation available at: http://localhost:3000/api/docs
-
-## 🔒 Security Features
-
-- **JWT Authentication** with refresh token support
-- **Role-based Access Control** (RBAC)
-- **Input validation** with class-validator
-- **SQL injection protection** with TypeORM
-- **XSS protection** with Helmet
-- **CORS configuration** for cross-origin requests
-- **Rate limiting** to prevent abuse
-- **File upload security** with type validation
-
-## 🎨 UI/UX Features
-
-- **Responsive Design** - Works on all devices
-- **Modern UI** - Clean, professional interface
-- **Dark/Light Mode** - Theme switching support
-- **Real-time Updates** - Live data synchronization
-- **Advanced Search** - Powerful filtering options
-- **Drag & Drop** - Intuitive file uploads
-- **Toast Notifications** - User feedback system
-- **Loading States** - Enhanced user experience
-
-## 🧪 Testing
-
-```bash
-# Backend tests
-npm run test                # Unit tests
-npm run test:e2e           # End-to-end tests
-npm run test:cov           # Coverage report
-
-# Frontend tests
-cd admin-frontend
-npm run test               # Component tests
-npm run test:e2e           # E2E tests with Playwright
-```
-
-## 📊 Performance
-
-- **Lazy Loading** - Components and routes
-- **Image Optimization** - Next.js Image component
-- **Database Indexing** - Optimized queries
-- **Caching** - Redis for frequently accessed data
-- **Code Splitting** - Optimized bundle sizes
-- **Tree Shaking** - Unused code elimination
-
-## 🌍 Environment Support
-
-- **Development** - Hot reload, debugging tools
-- **Staging** - Production-like environment
-- **Production** - Optimized performance, security
-
-## 📈 Monitoring & Logging
-
-- **Winston Logger** - Structured logging
-- **Health Checks** - Application monitoring
-- **Error Tracking** - Comprehensive error handling
-- **Performance Metrics** - Response time tracking
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support and questions:
-
-- 📧 Email: support@realestate-app.com
-- 📚 Documentation: [API Docs](http://localhost:3000/api/docs)
-- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+Visit:
+- 🔐 **Admin Panel**: http://localhost:3001 (Login: `admin` / `admin123`)
+- 🌐 **Public Website**: http://localhost:3002
+- 🔌 **API**: http://localhost:3000
 
 ---
 
-**Built with ❤️ using modern web technologies**
-# unit tests
-$ npm run test
+## 📋 Table of Contents
 
-# e2e tests
-$ npm run test:e2e
+- [Project Overview](#project-overview)
+- [Architecture](#architecture)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Documentation](#documentation)
+- [Deployment](#deployment)
 
-# test coverage
-$ npm run test:cov
+---
+
+## 🎯 Project Overview
+
+### Features
+
+**Admin Panel** (apps/admin-web)
+- ✅ Property CRUD with image upload
+- ✅ Client management
+- ✅ User management
+- ✅ Dashboard with statistics
+- ✅ Role-based access control (Admin/User)
+
+**Public Website** (apps/user-web)
+- ✅ Property listings with filters
+- ✅ Interactive Google Maps
+- ✅ Property detail pages
+- ✅ Contact form with reCAPTCHA
+- ✅ AI Chatbot (Google Gemini)
+- ✅ Multilingual (Serbian/English)
+
+**Backend API** (apps/api)
+- ✅ RESTful API with NestJS
+- ✅ JWT Authentication
+- ✅ TypeORM with PostgreSQL
+- ✅ Public/Admin API separation
+- ✅ File upload handling
+- ✅ Email notifications
+- ✅ WebSocket support (Agent Chat)
+- ✅ Rate limiting & throttling
+
+---
+
+## 🏗️ Architecture
+
+### Monorepo Structure
+
+```
+RealEstatesAPI-NestJS/
+├── apps/
+│   ├── api/              # NestJS REST API (Port 3000)
+│   ├── admin-web/        # Next.js Admin Panel (Port 3001)
+│   └── user-web/         # Next.js Public Site (Port 3002)
+├── packages/
+│   ├── types/            # Shared TypeScript interfaces
+│   ├── api-client/       # Centralized API methods
+│   └── utils/            # Shared utility functions
+├── seeds/                # Database seed scripts
+├── documentation/        # Comprehensive guides
+├── docker-compose.yml    # Docker orchestration
+└── turbo.json           # Turborepo configuration
 ```
 
-## Deployment
+### Tech Stack
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Layer | Technology |
+|-------|------------|
+| **Backend** | NestJS 10, TypeORM, PostgreSQL, Redis |
+| **Frontend** | Next.js 15, React 18, PrimeReact, Tailwind CSS |
+| **Language** | TypeScript 5.x |
+| **Build** | Turborepo, npm workspaces |
+| **Database** | PostgreSQL 16 |
+| **Cache** | Redis 7 |
+| **Deployment** | Docker, PM2 |
+| **AI** | Google Gemini (Chatbot) |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 18+ and npm
+- **Docker** and Docker Compose
+- **Git**
+- **Linux/macOS** or WSL2 (for scripts)
+
+### Installation
+
+#### Option 1: Automated Setup (Recommended)
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+# Clone repository
+git clone <your-repo-url>
+cd RealEstatesAPI-NestJS
+
+# Run fresh start (handles everything)
+chmod +x fresh-start.sh
+./fresh-start.sh
+
+# Start development
+npm run dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### Option 2: Manual Setup
 
-## Resources
+```bash
+# 1. Install dependencies
+npm install
 
-Check out a few resources that may come in handy when working with NestJS:
+# 2. Start Docker services
+npm run docker:up
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# 3. Wait for PostgreSQL (10 seconds)
+sleep 10
 
-## Support
+# 4. Run migrations
+cd apps/api
+npm run migration:run
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# 5. Seed database
+cd ../..
+npm run seed
 
-## Stay in touch
+# 6. Start development
+npm run dev
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Environment Setup
 
-## License
+Create `.env` files (examples provided):
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+# Backend
+cp apps/api/.env.example apps/api/.env
+
+# Admin Web
+cp apps/admin-web/.env.local.example apps/admin-web/.env.local
+
+# User Web
+cp apps/user-web/.env.local.example apps/user-web/.env.local
+```
+
+Key environment variables:
+- `DB_PASSWORD` - PostgreSQL password
+- `JWT_SECRET` - JWT signing secret (min 32 chars)
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` - Google Maps API key
+- `GEMINI_API_KEY` - Google Gemini for chatbot (optional)
+
+---
+
+## 💻 Development
+
+### Start All Apps
+
+```bash
+npm run dev  # Starts API + Admin + User Web in parallel
+```
+
+### Start Individual Apps
+
+```bash
+npm run dev:api      # API only (http://localhost:3000)
+npm run dev:admin    # Admin only (http://localhost:3001)
+npm run dev:user     # User Web only (http://localhost:3002)
+```
+
+### Docker Commands
+
+```bash
+npm run docker:up     # Start PostgreSQL + Redis
+npm run docker:down   # Stop all containers
+npm run docker:logs   # View logs
+```
+
+### Database Commands
+
+```bash
+cd apps/api
+
+# Migrations
+npm run migration:generate -- src/migrations/YourName  # Create
+npm run migration:run                                  # Apply
+npm run migration:revert                               # Rollback
+
+# Seeding
+cd ../..
+npm run seed                    # Fresh seed (clears data)
+npm run seed:comprehensive      # Add to existing data
+```
+
+### Code Quality
+
+```bash
+npm run lint    # Run linters
+npm run test    # Run tests
+npm run build   # Build all apps
+```
+
+---
+
+## 📚 Documentation
+
+Comprehensive guides in the `documentation/` folder:
+
+### Essential Guides
+- 📖 **[FRESH_START_GUIDE.md](./FRESH_START_GUIDE.md)** - Complete setup guide
+- 🚀 **[QUICK_START.md](./QUICK_START.md)** - Quick reference card
+- 🔒 **[documentation/SECURITY-PUBLIC-API.md](./documentation/SECURITY-PUBLIC-API.md)** - Public/Admin API separation
+- 🤖 **[documentation/CHATBOT_GUIDE.md](./documentation/CHATBOT_GUIDE.md)** - AI Chatbot setup
+
+### Development Guides
+- 📝 **[documentation/MONOREPO_README.md](./documentation/MONOREPO_README.md)** - Monorepo structure
+- 🎨 **[documentation/COLOR_CONFIGURATION.md](./documentation/COLOR_CONFIGURATION.md)** - Theme customization
+- 📧 **[documentation/NEWSLETTER_HTML_GUIDE.md](./documentation/NEWSLETTER_HTML_GUIDE.md)** - Newsletter feature
+
+### Deployment
+- 🚀 **[documentation/DEPLOYMENT_MASTER_GUIDE.md](./documentation/DEPLOYMENT_MASTER_GUIDE.md)** - Production deployment
+- 🐳 **[documentation/DOCKER_NAMING_AUDIT.md](./documentation/DOCKER_NAMING_AUDIT.md)** - Docker setup
+
+---
+
+## 🗄️ Database Schema
+
+### Key Entities
+
+**Property**
+- Unique code (e.g., "NIS-001")
+- Type: Apartment, House, Office, Commercial, Garage, Land
+- Status: Active, Sold, Reserved, Inactive
+- Pricing, area, location (lat/lon)
+- Multiple images (OneToMany)
+- Linked client (OneToOne)
+
+**Client**
+- Owner/buyer information
+- Transaction type: Buyer, Seller, Rents, RentsOut
+- Payment type: Cash, Credit, Combined
+- Linked to one property
+
+**User**
+- JWT authentication
+- Roles: ADMIN, USER
+- Bcrypt password hashing
+
+**PropertyImage**
+- Multiple per property
+- Order and favorite flag
+- Relationship to Property
+
+### Sample Data
+
+After seeding, you'll have:
+- 👥 **4 Users** (admin, manager, 2 agents)
+- 🏠 **10 Properties** (apartments, houses, offices, garage)
+- 👤 **5 Clients** (buyers, sellers, renters)
+- 🖼️ **20+ Images** (assigned to properties)
+
+---
+
+## 🔐 Security
+
+### Authentication
+- JWT tokens (access + refresh)
+- Bcrypt password hashing (10 rounds)
+- Role-based guards (@Roles decorator)
+
+### API Separation
+⚠️ **Critical**: Two separate endpoints:
+- **Admin**: `/v1/properties` - Full data including sensitive fields
+- **Public**: `/v1/properties/public` - Sanitized data only
+
+Public API **MUST NOT** expose:
+- `salePrice` (internal agency price)
+- `comment` (internal notes)
+- `client` (owner information)
+- Full `address` (only `neighborhood`)
+
+See [documentation/SECURITY-PUBLIC-API.md](./documentation/SECURITY-PUBLIC-API.md)
+
+---
+
+## 🚀 Deployment
+
+### Production Build
+
+```bash
+# Build all apps
+npm run build
+
+# Start production servers
+cd apps/api && npm run start:prod
+cd apps/admin-web && npm start
+cd apps/user-web && npm start
+```
+
+### Docker Production
+
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### PM2 (Recommended)
+
+See [documentation/DEPLOYMENT_MASTER_GUIDE.md](./documentation/DEPLOYMENT_MASTER_GUIDE.md)
+
+---
+
+## 🧪 Testing
+
+### API Testing
+
+```bash
+# Test scripts (Node.js)
+node test-login.js              # Auth endpoints
+node test-upload.js             # File upload
+node test-api-comprehensive.js  # Full API test
+node test-public-api.js         # Public endpoints
+```
+
+### Postman Collection
+
+Import `postman/Real-Estate-API-v2-Complete.postman_collection.json`
+
+### Manual Testing
+
+```bash
+# Health check
+curl http://localhost:3000
+
+# Login
+curl -X POST http://localhost:3000/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+# Get properties
+curl http://localhost:3000/v1/properties/public
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**Port already in use**
+```bash
+lsof -i :3000  # Find process
+kill -9 <PID>  # Kill it
+```
+
+**PostgreSQL won't start**
+```bash
+docker-compose down -v
+docker volume prune
+./fresh-start.sh
+```
+
+**Migration errors**
+```bash
+cd apps/api
+npm run migration:revert  # Undo last
+npm run migration:run     # Try again
+```
+
+**Seed fails**
+```bash
+# Drop and recreate database
+docker exec estates_postgres psql -U postgres -c "DROP DATABASE estates;"
+docker exec estates_postgres psql -U postgres -c "CREATE DATABASE estates;"
+cd apps/api && npm run migration:run
+cd ../.. && npm run seed
+```
+
+**Dependencies issues**
+```bash
+rm -rf node_modules apps/*/node_modules packages/*/node_modules
+npm install
+```
+
+---
+
+## 📦 Project Commands Reference
+
+```bash
+# Development
+npm run dev              # All apps
+npm run dev:api          # API only
+npm run dev:admin        # Admin only
+npm run dev:user         # User Web only
+
+# Docker
+npm run docker:up        # Start services
+npm run docker:down      # Stop services
+npm run docker:logs      # View logs
+
+# Database
+npm run seed             # Seed database
+npm run fresh-start      # Complete reset
+
+# Build
+npm run build            # Build all apps
+npm run lint             # Lint all apps
+npm run test             # Test all apps
+```
+
+---
+
+## 🤝 Contributing
+
+1. Create feature branch
+2. Make changes
+3. Test thoroughly
+4. Create pull request
+
+---
+
+## 📄 License
+
+[Your License Here]
+
+---
+
+## 👥 Team
+
+[Your Team Information]
+
+---
+
+## 📞 Support
+
+- 📖 Documentation: `documentation/` folder
+- 🐛 Issues: [GitHub Issues]
+- 💬 Discussions: [GitHub Discussions]
+
+---
+
+## ⭐ Quick Links
+
+- **Fresh Start Guide**: [FRESH_START_GUIDE.md](./FRESH_START_GUIDE.md)
+- **Quick Reference**: [QUICK_START.md](./QUICK_START.md)
+- **API Documentation**: http://localhost:3000/api (when running)
+- **Database Credentials**: `documentation/DATABASE_CREDENTIALS.md`
+- **Admin Credentials**: `documentation/ADMIN_CREDENTIALS.md`
+
+---
+
+**Version**: 2.0.0  
+**Last Updated**: February 4, 2026  
+**Status**: ✅ Production Ready

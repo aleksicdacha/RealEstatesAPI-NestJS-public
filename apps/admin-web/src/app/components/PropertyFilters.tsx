@@ -48,7 +48,8 @@ export const PropertyFilters: React.FC<PropertyFiltersProps> = ({ onFilterChange
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const response = await fetch('http://localhost:3000/v1/properties/filters/options');
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const response = await fetch(`${apiUrl}/v1/properties/filters/options`);
         const data = await response.json();
         
         setCityOptions(data.cities.map((city: string) => ({ label: city, value: city })));

@@ -14,7 +14,10 @@ import { PropertyImage } from '../../services/property.service';
 
 type Image = PropertyImage;
 
-export function ImageManager({ 
+// API Base URL from environment
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+export function ImageManager({
   initialImages, 
   onImagesChange, 
   propertyId 
@@ -193,7 +196,7 @@ export function ImageManager({
         order: index + 1
       }));
 
-      const response = await fetch(`http://localhost:3000/v1/properties/${propertyId}/images/reorder`, {
+      const response = await fetch(`${API_BASE_URL}/v1/properties/${propertyId}/images/reorder`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -241,7 +244,7 @@ export function ImageManager({
       });
       
       try {
-        const response = await fetch('http://localhost:3000/v1/upload', {
+        const response = await fetch(`${API_BASE_URL}/v1/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -300,7 +303,7 @@ export function ImageManager({
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = `http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
+        img.src = `${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
       });
 
       // Calculate crop dimensions
@@ -360,7 +363,7 @@ export function ImageManager({
       }
 
       // Upload the cropped image to replace the original
-      const response = await fetch('http://localhost:3000/v1/upload', {
+      const response = await fetch(`${API_BASE_URL}/v1/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -425,7 +428,7 @@ export function ImageManager({
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = `http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
+        img.src = `${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
       });
 
       // Calculate new dimensions

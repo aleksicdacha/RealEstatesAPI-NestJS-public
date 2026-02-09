@@ -45,10 +45,11 @@ export class PropertyRepository extends Repository<Property> {
 
     // Client transaction type filter (prodaja/izdavanje)
     if (options.clientTransactionType) {
-      queryBuilder.andWhere('client.transactionType = :clientTransactionType', { clientTransactionType: options.clientTransactionType });
+      queryBuilder.andWhere('client.transactionType = :clientTransactionType', {
+        clientTransactionType: options.clientTransactionType
+      });
     }
 
-    // Property type filter - handle both single value and array
     if (options.propertyType) {
       const typeArray = Array.isArray(options.propertyType)
         ? options.propertyType

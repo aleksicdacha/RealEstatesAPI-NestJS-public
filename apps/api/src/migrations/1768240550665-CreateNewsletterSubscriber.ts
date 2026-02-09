@@ -30,7 +30,7 @@ export class CreateNewsletterSubscriber1768240550665 implements MigrationInterfa
                         isNullable: true,
                     },
                     {
-                        name: "subscribedAt",
+                        name: "createdAt",
                         type: "timestamp",
                         default: "now()",
                     },
@@ -39,18 +39,13 @@ export class CreateNewsletterSubscriber1768240550665 implements MigrationInterfa
                         type: "timestamp",
                         default: "now()",
                     },
-                    {
-                        name: "unsubscribedAt",
-                        type: "timestamp",
-                        isNullable: true,
-                    },
                 ],
             }),
+            true,
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable("newsletter_subscribers");
     }
-
 }

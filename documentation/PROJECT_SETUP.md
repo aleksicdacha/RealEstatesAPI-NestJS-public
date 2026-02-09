@@ -11,8 +11,6 @@ chmod +x setup.sh
 # Start the application
 chmod +x start.sh
 ./start.sh
-```
-
 ### Option 2: Manual Setup
 
 #### Prerequisites

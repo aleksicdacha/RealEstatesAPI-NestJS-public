@@ -97,7 +97,8 @@ export function Chatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/v1/chatbot/message', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
+      const response = await fetch(`${apiUrl}/chatbot/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -177,7 +178,8 @@ export function Chatbot() {
     const formData = new FormData(e.currentTarget);
     
     try {
-      const response = await fetch('http://localhost:3000/v1/chatbot/connect-agent', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
+      const response = await fetch(`${apiUrl}/chatbot/connect-agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,9 +198,10 @@ export function Chatbot() {
       if (data.success && data.conversationId) {
         setConversationId(data.conversationId);
         
-        // Initialize WebSocket connection
-        const newSocket = io('http://localhost:3000/agent-chat', {
-          transports: ['websocket'],
+        // Initialize WebSocket connection - use base URL without /v1 path
+        const wsBaseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1').replace(/\/v1\/?$/, '');
+        const newSocket = io(`${wsBaseUrl}/agent-chat`, {
+          transports: ['websocket', 'polling'],
         });
 
         newSocket.on('connect', () => {

@@ -81,7 +81,6 @@ export default function NewsletterSection({ locale, variant = 'landing' }: Newsl
 
   return (
     <section className={sectionClasses}>
-      {console.log('NewsletterSection JSX rendering')}
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className={titleClasses}>

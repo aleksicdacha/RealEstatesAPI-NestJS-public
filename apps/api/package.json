@@ -8,7 +8,12 @@
     "start:prod": "node dist/main",
     "build": "nest build",
     "dev:user": "cd apps/user-web && npm run dev",
-    "dev:admin": "cd admin-frontend && npm run dev"
+    "dev:admin": "cd admin-frontend && npm run dev",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
+    "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
+    "seed:users": "ts-node ../../seeds/create-admin.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -56,6 +61,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/sanitize-html": "^2.16.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.0"
   }
 }

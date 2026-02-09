@@ -52,12 +52,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      const response = await fetch('http://localhost:3000/v1/auth/refresh-token', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const refreshUrl = `${apiUrl}/v1/auth/refresh-token`;
+
+      const response = await fetch(refreshUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ refreshToken }),
+        mode: 'cors',
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -165,16 +170,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:3000/v1/auth/login', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const loginUrl = `${apiUrl}/v1/auth/login`;
+
+      console.log('[Auth] Attempting login to:', loginUrl);
+
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
+        mode: 'cors',
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ message: 'Login failed' }));
         throw new Error(error.message || 'Login failed');
       }
 
