@@ -10,6 +10,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@repo/types": "*",
     "axios": "^1.11.0"
   },
   "devDependencies": {
