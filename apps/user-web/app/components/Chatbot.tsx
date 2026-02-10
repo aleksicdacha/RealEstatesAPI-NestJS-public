@@ -205,20 +205,46 @@ export function Chatbot() {
         });
 
         newSocket.on('connect', () => {
-          console.log('Connected to agent chat');
+          console.log('✅ Connected to agent chat WebSocket');
           newSocket.emit('join-conversation', {
             conversationId: data.conversationId,
             userType: 'guest',
           });
         });
 
+        newSocket.on('disconnect', () => {
+          console.log('❌ Disconnected from agent chat WebSocket');
+        });
+
+        newSocket.on('connect_error', (error) => {
+          console.error('WebSocket connection error:', error);
+        });
+
         newSocket.on('new-message', (message: any) => {
-          if (message.senderType === 'agent') {
+          console.log('📨 Received new message:', message);
+          if (message.senderType === 'agent' || message.senderType === 'system') {
             setMessages(prev => [...prev, {
               role: 'bot',
               content: message.message,
               timestamp: message.createdAt,
             }]);
+          }
+        });
+
+        newSocket.on('conversation-history', (conversation: any) => {
+          console.log('📜 Received conversation history:', conversation);
+          // Load existing messages from the conversation if any
+          if (conversation?.messages && conversation.messages.length > 0) {
+            const loadedMessages = conversation.messages
+              .filter((msg: any) => msg.senderType !== 'guest') // Don't duplicate guest messages
+              .map((msg: any) => ({
+                role: 'bot' as const,
+                content: msg.message,
+                timestamp: msg.createdAt,
+              }));
+            if (loadedMessages.length > 0) {
+              setMessages(prev => [...prev, ...loadedMessages]);
+            }
           }
         });
 
