@@ -1,0 +1,19 @@
+{
+  "passwordReset": {
+    "subject": "Zahtev za resetovanje lozinke",
+    "greeting": "Zdravo",
+    "message": "Zatražili ste resetovanje lozinke. Kliknite na dugme ispod da nastavite:",
+    "button": "Resetuj lozinku",
+    "expiry": "Ovaj link će isteći za 1 sat.",
+    "ignore": "Ako niste zatražili ovo, molimo vas ignorišite ovaj email.",
+    "security": "Iz bezbednosnih razloga, ovaj link se može koristiti samo jednom.",
+    "footer": "Srdačan pozdrav,<br>Real Estate Tim"
+  },
+  "welcome": {
+    "subject": "Dobrodošli na Real Estate platformu",
+    "greeting": "Zdravo {name}",
+    "message": "Dobrodošli na našu platformu za upravljanje nekretninama!",
+    "info": "Vaš nalog je uspešno kreiran.",
+    "footer": "Srdačan pozdrav,<br>Real Estate Tim"
+  }
+}

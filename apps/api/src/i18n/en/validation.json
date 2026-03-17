@@ -1,0 +1,64 @@
+{
+  "email": {
+    "required": "Email is required",
+    "invalid": "Email must be a valid email address"
+  },
+  "password": {
+    "required": "Password is required",
+    "minLength": "Password must be at least {min} characters long",
+    "maxLength": "Password must not exceed {max} characters"
+  },
+  "username": {
+    "required": "Username is required",
+    "minLength": "Username must be at least {min} characters long",
+    "maxLength": "Username must not exceed {max} characters"
+  },
+  "role": {
+    "required": "Role is required",
+    "invalid": "Role must be one of: {roles}"
+  },
+  "pagination": {
+    "pagePositive": "Page must be a positive number",
+    "limitPositive": "Limit must be a positive number",
+    "limitMax": "Limit must not be greater than {max}",
+    "orderInvalid": "Order must be ASC or DESC"
+  },
+  "search": {
+    "minLength": "Search value must be at least {min} characters long",
+    "invalidField": "Invalid search field provided"
+  },
+  "property": {
+    "codeRequired": "Property code is required",
+    "typeRequired": "Property type is required",
+    "typeInvalid": "Property type must be one of the valid enum values",
+    "addressRequired": "Address is required",
+    "cityRequired": "City is required",
+    "priceRequired": "Price is required",
+    "pricePositive": "Price must be a positive number",
+    "sizeRequired": "Size is required",
+    "sizePositive": "Size must be a positive number",
+    "roomsPositive": "Number of rooms must be a positive number",
+    "floorNumber": "Floor must be a number",
+    "totalFloorsPositive": "Total floors must be a positive number",
+    "heatingInvalid": "Heating type must be one of the valid enum values",
+    "elevatorBoolean": "Elevator must be a boolean value",
+    "statusInvalid": "Status must be one of: AVAILABLE, RESERVED, SOLD, RENTED"
+  },
+  "client": {
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "emailInvalid": "Email must be a valid email address",
+    "phoneInvalid": "Phone number is invalid",
+    "statusInvalid": "Status must be one of the valid enum values: active, inactive, deleted",
+    "paymentTypeInvalid": "Payment type must be one of the valid enum values: cash, credit, combined",
+    "transactionTypeInvalid": "Transaction type must be one of the valid enum values: seller, rents, rents-out"
+  },
+  "file": {
+    "required": "File is required",
+    "tooLarge": "File size must not exceed {max}MB",
+    "invalidType": "File type must be one of: {types}"
+  },
+  "token": {
+    "required": "Token is required"
+  }
+}

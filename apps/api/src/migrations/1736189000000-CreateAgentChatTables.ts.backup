@@ -1,0 +1,171 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class CreateAgentChatTables1736189000000 implements MigrationInterface {
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        // Check if tables already exist (from fix_production_db.sql)
+        const conversationsTableExists = await queryRunner.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = 'agent_conversations'
+            );
+        `);
+
+        const messagesTableExists = await queryRunner.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = 'agent_messages'
+            );
+        `);
+
+        // Only create if they don't exist
+        if (!conversationsTableExists[0].exists) {
+            await queryRunner.query(`
+                CREATE TABLE "agent_conversations" (
+                    "id" SERIAL PRIMARY KEY,
+                    "guestName" VARCHAR,
+                    "guestEmail" VARCHAR,
+                    "guestPhone" VARCHAR,
+                    "initialMessage" TEXT,
+                    "userId" INTEGER,
+                    "agentId" INTEGER,
+                    "status" VARCHAR DEFAULT 'waiting',
+                    "unreadCount" INTEGER DEFAULT 0,
+                    "locale" VARCHAR(10) DEFAULT 'sr',
+                    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+        }
+
+        if (!messagesTableExists[0].exists) {
+            await queryRunner.query(`
+                CREATE TABLE "agent_messages" (
+                    "id" SERIAL PRIMARY KEY,
+                    "conversationId" INTEGER NOT NULL,
+                    "senderId" INTEGER,
+                    "senderType" VARCHAR DEFAULT 'guest',
+                    "message" TEXT NOT NULL,
+                    "isRead" BOOLEAN DEFAULT false,
+                    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+        }
+
+        // Create indexes if they don't exist
+        await queryRunner.query(`
+            CREATE INDEX IF NOT EXISTS "IDX_agent_conversations_status" ON "agent_conversations" ("status")
+        `);
+
+        await queryRunner.query(`
+            CREATE INDEX IF NOT EXISTS "IDX_agent_conversations_agentId" ON "agent_conversations" ("agentId")
+        `);
+
+        await queryRunner.query(`
+            CREATE INDEX IF NOT EXISTS "IDX_agent_messages_conversationId" ON "agent_messages" ("conversationId")
+        `);
+
+        // Add foreign key if it doesn't exist
+        const fkExists = await queryRunner.query(`
+            SELECT EXISTS (
+                SELECT 1 FROM pg_constraint 
+                WHERE conname = 'FK_agent_messages_conversation'
+            );
+        `);
+
+        if (!fkExists[0].exists) {
+            await queryRunner.query(`
+                ALTER TABLE "agent_messages"
+                ADD CONSTRAINT "FK_agent_messages_conversation"
+                FOREIGN KEY ("conversationId") 
+                REFERENCES "agent_conversations"("id") 
+                ON DELETE CASCADE
+            `);
+        }
+    }
+                    },
+                    {
+                        name: "senderType",
+                        type: "enum",
+                        enum: ["guest", "user", "agent", "system"],
+                        default: "'guest'",
+                    },
+                    {
+                        name: "message",
+                        type: "text",
+                    },
+                    {
+                        name: "isRead",
+                        type: "boolean",
+                        default: false,
+                    },
+                    {
+                        name: "createdAt",
+                        type: "timestamp",
+                        default: "CURRENT_TIMESTAMP",
+                    },
+                ],
+            }),
+            true
+        );
+
+        // Add foreign keys
+        await queryRunner.createForeignKey(
+            "agent_conversations",
+            new TableForeignKey({
+                columnNames: ["userId"],
+                referencedTableName: "users",
+                referencedColumnNames: ["id"],
+                onDelete: "SET NULL",
+            })
+        );
+
+        await queryRunner.createForeignKey(
+            "agent_conversations",
+            new TableForeignKey({
+                columnNames: ["agentId"],
+                referencedTableName: "users",
+                referencedColumnNames: ["id"],
+                onDelete: "SET NULL",
+            })
+        );
+
+        await queryRunner.createForeignKey(
+            "agent_messages",
+            new TableForeignKey({
+                columnNames: ["conversationId"],
+                referencedTableName: "agent_conversations",
+                referencedColumnNames: ["id"],
+                onDelete: "CASCADE",
+            })
+        );
+
+        await queryRunner.createForeignKey(
+            "agent_messages",
+            new TableForeignKey({
+                columnNames: ["senderId"],
+                referencedTableName: "users",
+                referencedColumnNames: ["id"],
+                onDelete: "SET NULL",
+            })
+        );
+
+        // Add indexes
+        await queryRunner.query(`CREATE INDEX "IDX_agent_conversations_status" ON "agent_conversations" ("status")`);
+        await queryRunner.query(`CREATE INDEX "IDX_agent_conversations_agentId" ON "agent_conversations" ("agentId")`);
+        await queryRunner.query(`CREATE INDEX "IDX_agent_messages_conversationId" ON "agent_messages" ("conversationId")`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        // Drop tables (CASCADE will handle foreign keys)
+        await queryRunner.query(`DROP TABLE IF EXISTS "agent_messages" CASCADE`);
+        await queryRunner.query(`DROP TABLE IF EXISTS "agent_conversations" CASCADE`);
+
+        // Drop indexes if they exist
+        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_agent_messages_conversationId"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_agent_conversations_agentId"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_agent_conversations_status"`);
+    }
+}

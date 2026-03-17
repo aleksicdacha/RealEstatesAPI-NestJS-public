@@ -1,0 +1,171 @@
+{
+  // ========================================
+  // Performance Optimizations for Monorepo
+  // ========================================
+  
+  // File watching exclusions (reduces CPU usage)
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/build/**": true,
+    "**/.angular/**": true,
+    "**/.turbo/**": true,
+    "**/uploads/**": true,
+    "**/.git/**": true,
+    "**/tmp/**": true,
+    "**/build.old/**": true,
+    "**/*.log": true,
+    "**/coverage/**": true
+  },
+
+  // Search exclusions (faster search)
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/build/**": true,
+    "**/.turbo/**": true,
+    "**/uploads/**": true,
+    "**/tmp/**": true,
+    "**/build.old/**": true,
+    "**/*.log": true,
+    "**/coverage/**": true,
+    "**/.git/**": true,
+    "**/package-lock.json": true,
+    "**/pnpm-lock.yaml": true
+  },
+
+  // Files to exclude from explorer (cleaner UI)
+  "files.exclude": {
+    "**/.turbo": true,
+    "**/build.old": true,
+    "**/*.js.map": true,
+    "**/.DS_Store": true
+  },
+
+  // ========================================
+  // TypeScript Performance
+  // ========================================
+  
+  // Use workspace TypeScript version
+  "typescript.tsdk": "node_modules/typescript/lib",
+  
+  // Enable TypeScript surveyor for better performance
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  
+  // Reduce TS server memory usage
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  
+  // Auto-fetch TypeScript types
+  "typescript.suggest.autoImports": true,
+  
+  // Experimental performance features
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  
+  // Disable automatic type acquisition for npm packages
+  "typescript.disableAutomaticTypeAcquisition": false,
+
+  // ========================================
+  // Editor Performance
+  // ========================================
+  
+  // Reduce file limit for parsing
+  "files.maxMemoryForLargeFilesMB": 4096,
+  
+  // Auto-save with delay (prevents constant rebuilds)
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  
+  // Git optimization
+  "git.autofetch": false,
+  "git.autorefresh": false,
+  "git.untrackedChanges": "hidden",
+  
+  // Disable minimap for performance
+  "editor.minimap.enabled": false,
+  
+  // Optimize rendering
+  "editor.renderWhitespace": "selection",
+  "editor.renderControlCharacters": false,
+  
+  // Bracket pair colorization (faster native implementation)
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+
+  // ========================================
+  // Extensions Control
+  // ========================================
+  
+  // Disable ESLint auto-fix on save (can be slow)
+  "eslint.autoFixOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never"
+  },
+  
+  // Format on save only for specific languages
+  "editor.formatOnSave": false,
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ========================================
+  // Monorepo Specific
+  // ========================================
+  
+  // Multi-root workspace improvements
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 10,
+  "workbench.editor.limit.perEditorGroup": true,
+  
+  // Explorer file nesting (cleaner view)
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.js.map",
+    "*.tsx": "${capture}.js, ${capture}.d.ts",
+    "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, .npmrc, .nvmrc",
+    "tsconfig.json": "tsconfig.*.json",
+    "next.config.*": "next-env.d.ts, postcss.config.*, tailwind.config.*",
+    "README.md": "*.md"
+  },
+
+  // ========================================
+  // Terminal & Tasks
+  // ========================================
+  
+  // Default terminal shell
+  "terminal.integrated.defaultProfile.linux": "bash",
+  
+  // Scrollback limit
+  "terminal.integrated.scrollback": 5000,
+
+  // ========================================
+  // Recommendations
+  // ========================================
+  
+  // Tailwind CSS
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  
+  // Path IntelliSense
+  "path-intellisense.mappings": {
+    "@": "${workspaceRoot}/src",
+    "@repo/types": "${workspaceRoot}/packages/types/src",
+    "@repo/utils": "${workspaceRoot}/packages/utils/src"
+  }
+}

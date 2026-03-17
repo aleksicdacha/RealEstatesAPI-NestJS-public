@@ -1,0 +1,39 @@
+{
+  "user": {
+    "notFound": "User not found",
+    "alreadyExists": "User with username {username} already exists",
+    "emailExists": "User with email {email} already exists",
+    "invalidCredentials": "Invalid credentials",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden"
+  },
+  "property": {
+    "notFound": "Property with ID {id} not found",
+    "codeExists": "Property with code {code} already exists",
+    "imageNotFound": "Property image not found"
+  },
+  "client": {
+    "notFound": "Client with ID {id} not found",
+    "emailExists": "Client with email {email} already exists",
+    "phoneExists": "Client with phone {phone} already exists"
+  },
+  "file": {
+    "uploadFailed": "File upload failed",
+    "notFound": "File not found",
+    "noFiles": "No files uploaded"
+  },
+  "auth": {
+    "invalidToken": "Invalid or expired token",
+    "tokenExpired": "Token has expired",
+    "passwordResetSent": "If an account exists with this email, a password reset link has been sent",
+    "passwordResetSuccess": "Password has been reset successfully",
+    "logoutSuccess": "Logged out successfully",
+    "registrationSuccess": "User registered successfully"
+  },
+  "general": {
+    "badRequest": "Bad request",
+    "internalError": "Internal server error",
+    "notFound": "Resource not found",
+    "conflict": "Resource conflict"
+  }
+}
