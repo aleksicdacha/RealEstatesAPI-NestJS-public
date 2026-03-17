@@ -20,32 +20,35 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.HETZNER_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
+      - name: Pull latest code on server
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} << 'EOF'
-            set -e
-            cd /root/RealEstatesAPI-NestJS
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} \
+            "cd /root/RealEstatesAPI-NestJS && \
+             git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/aleksicdacha/RealEstatesAPI-NestJS.git && \
+             git fetch origin main && \
+             git reset --hard origin/main && \
+             git remote set-url origin https://github.com/aleksicdacha/RealEstatesAPI-NestJS.git"
 
-            echo "==> Pulling latest code..."
-            git fetch origin main
-            git reset --hard origin/main
+      - name: Build Docker images
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} \
+            "cd /root/RealEstatesAPI-NestJS && \
+             docker compose -f docker-compose.prod.yml build api admin-web user-web"
 
-            echo "==> Building Docker images..."
-            docker compose -f docker-compose.prod.yml build api admin-web user-web
-
-            echo "==> Restarting containers..."
-            docker compose -f docker-compose.prod.yml up -d
-
-            echo "==> Status..."
-            sleep 10
-            docker compose -f docker-compose.prod.yml ps
-          EOF
+      - name: Restart containers
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} \
+            "cd /root/RealEstatesAPI-NestJS && \
+             docker compose -f docker-compose.prod.yml up -d && \
+             sleep 10 && \
+             docker compose -f docker-compose.prod.yml ps"
 
       - name: Verify API health
         run: |
-          sleep 10
+          sleep 15
           curl -sf "http://${{ secrets.HETZNER_HOST }}:8090/v1/properties/public?page=1&limit=1" \
             && echo "✅ API healthy" \
-            || echo "⚠️ API health check failed"
+            || echo "⚠️ API health check failed (may still be starting)"
