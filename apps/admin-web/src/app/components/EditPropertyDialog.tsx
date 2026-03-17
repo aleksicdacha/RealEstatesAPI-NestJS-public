@@ -11,6 +11,8 @@ import { ImageManager } from './ImageManager';
 import { propertyService } from '@/services/property.service';
 import { Property, UpdatePropertyDto } from '@/services/property.service';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 interface EditPropertyDialogProps {
   onCloseDialog: () => void;
   propertyData: Property;
@@ -90,7 +92,7 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
     images: propertyData.images?.map(img => ({
       ...img,
       // Clean URL - remove /uploads/ prefix if it exists, then add the correct base URL
-      displayUrl: `http://localhost:3000${img.url.startsWith('/uploads/') ? img.url : '/uploads/' + img.url}`,
+      displayUrl: `${API_BASE_URL}${img.url.startsWith('/uploads/') ? img.url : '/uploads/' + img.url}`,
       originalUrl: img.url // Keep original for server communication
     })) || []
   });
@@ -246,7 +248,7 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
         activeIndex={initialIndex}
         item={(item) => (
           <img
-            src={`http://localhost:3000${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
+            src={`${API_BASE_URL}${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
             alt="Uploaded Image"
             style={{ 
               width: '100%', 
@@ -257,7 +259,7 @@ export default function EditPropertyDialog({ onCloseDialog, propertyData, onSucc
         )}
         thumbnail={(item) => (
           <img
-            src={`http://localhost:3000${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
+            src={`${API_BASE_URL}${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
             alt="Uploaded Thumbnail"
             style={{ 
               width: '70px',        // Slightly larger thumbnails

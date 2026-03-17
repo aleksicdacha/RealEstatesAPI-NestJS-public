@@ -22,12 +22,44 @@ services:
       - "6379:6379"
     restart: unless-stopped
 
-  # NOTE: For local development, run apps directly via npm:
-  # - API:        npm run dev:api        (port 3000)
-  # - Admin Web:  npm run dev:admin      (port 3001)
-  # - User Web:   npm run dev:user       (port 3002)
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    container_name: estates_api
+    env_file:
+      - .env.development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-CHANGE_ME}
+      - DB_NAME=${DB_NAME:-estates}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-30m}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-7d}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/api/node_modules
+      - ./uploads:/app/apps/api/uploads
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    command: sh -c "npm install && npx nest start --watch"
+
+  # Frontend apps run directly via npm for hot-reload during development:
+  # - Admin Web: npm run dev:admin (port 3001)
+  # - User Web:  npm run dev:user  (port 3002)
 
 volumes:
   postgres_data:
-
 

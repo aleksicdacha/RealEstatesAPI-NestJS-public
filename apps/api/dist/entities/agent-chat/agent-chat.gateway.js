@@ -79,8 +79,18 @@ let AgentChatGateway = class AgentChatGateway {
         if (clientData) {
             clientData.conversationId = data.conversationId;
         }
-        console.log(`Client ${client.id} joined room ${room} as ${data.userType}`);
+        console.log(`✅ Client ${client.id} joined room ${room} as ${data.userType}`);
         const conversation = await this.agentChatService.getConversation(data.conversationId);
+        if (data.userType === 'guest') {
+            const welcomeMessage = await this.agentChatService.addMessage({
+                conversationId: data.conversationId,
+                message: conversation.locale === 'sr'
+                    ? 'Povezani ste sa našim timom. Agent će vam uskoro odgovoriti.'
+                    : 'You are connected to our team. An agent will respond to you shortly.',
+                senderType: agent_message_entity_1.MessageSenderType.SYSTEM,
+            });
+            client.emit('new-message', welcomeMessage);
+        }
         return {
             event: 'conversation-history',
             data: conversation,

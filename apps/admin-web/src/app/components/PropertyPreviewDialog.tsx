@@ -14,6 +14,8 @@ import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { googleMapsLoaderOptions } from '../utils/googleMapsLoader';
 import { customMapStyles } from '../utils/mapStyles';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 interface PropertyPreviewDialogProps {
   visible: boolean;
   property: Property | null;
@@ -55,7 +57,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       // Load property images
       if (property.id) {
         console.log('[PropertyPreview] Loading images for property ID:', property.id);
-        const imagesResponse = await fetch(`http://localhost:3000/v1/properties/${property.id}/images`);
+        const imagesResponse = await fetch(`${API_BASE_URL}/v1/properties/${property.id}/images`);
         console.log('[PropertyPreview] Response status:', imagesResponse.status);
         
         if (imagesResponse.ok) {
@@ -68,7 +70,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
             return a.order - b.order;
           });
           const imageUrls = sortedImages.map((img) => {
-            let imageUrl = img.url;
+            const imageUrl = img.url;
             
             // If URL is already full (starts with http), use as is
             if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
@@ -77,16 +79,16 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
             
             // If URL already starts with /uploads/, use as is
             if (imageUrl.startsWith('/uploads/')) {
-              return `http://localhost:3000${imageUrl}`;
+              return `${API_BASE_URL}${imageUrl}`;
             }
             
             // If URL is just the filename, add /uploads/ prefix
             if (!imageUrl.startsWith('/')) {
-              return `http://localhost:3000/uploads/${imageUrl}`;
+              return `${API_BASE_URL}/uploads/${imageUrl}`;
             }
             
             // Otherwise, add /uploads to the path
-            return `http://localhost:3000/uploads${imageUrl}`;
+            return `${API_BASE_URL}/uploads${imageUrl}`;
           });
           console.log('[PropertyPreview] Constructed image URLs:', imageUrls);
           setImages(imageUrls);
@@ -121,8 +123,9 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
     }
   };
 
-  const getHeatingTranslationKey = (heatingValue: string): string => {
+  const getHeatingTranslationKey = (heatingValue: string): string | null => {
     const heatingMap: Record<string, string> = {
+      // English enum values (current)
       'Central': 'heatingCentral',
       'Gas central': 'heatingGasCentral',
       'Central heating with solid fuel': 'heatingSolidFuel',
@@ -134,8 +137,20 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       'Fireplace': 'heatingFireplace',
       'Air conditioner': 'heatingAirConditioner',
       'The rest types': 'heatingOther',
+      // Serbian legacy values (stored in DB from old data)
+      'Centralno': 'heatingCentral',
+      'Gasno centralno': 'heatingGasCentral',
+      'Centralno grejanje na čvrsto gorivo': 'heatingSolidFuel',
+      'Električno centralno': 'heatingElectricCentral',
+      'Podno': 'heatingFloor',
+      'Nezavisno na gas': 'heatingGasIndependent',
+      'Nezavisno na čvrsto gorivo': 'heatingSolidFuelIndependent',
+      'Nezavisno na struju': 'heatingElectricIndependent',
+      'Kamin': 'heatingFireplace',
+      'Klima uređaj': 'heatingAirConditioner',
+      'Ostali tipovi': 'heatingOther',
     };
-    return heatingMap[heatingValue] || 'heatingOther';
+    return heatingMap[heatingValue] ?? null;
   };
 
   const getOrientationTranslationKey = (orientationValue: string): string => {
@@ -166,8 +181,9 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
     return typeMap[typeValue] || typeValue.toLowerCase();
   };
 
-  const getEquipmentTranslationKey = (equipmentValue: string): string => {
+  const getEquipmentTranslationKey = (equipmentValue: string): string | null => {
     const equipmentMap: Record<string, string> = {
+      // English values (current)
       'Swimming Pool': 'equipSwimmingPool',
       'Gym/Fitness Center': 'equipGym',
       'Balcony': 'equipBalcony',
@@ -205,8 +221,47 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       "Kids' Playroom": 'equipKidsPlayroom',
       'Gaming Room': 'equipGamingRoom',
       'Wellness/Yoga Room': 'equipWellnessRoom',
+      // Serbian legacy values (stored in DB from old data)
+      'Bazen': 'equipSwimmingPool',
+      'Teretana/Fitnes centar': 'equipGym',
+      'Balkon': 'equipBalcony',
+      'Bašta': 'equipGarden',
+      'Kamin': 'equipFireplace',
+      'Garaža': 'equipGarage',
+      'Parking mesto': 'equipParkingSpace',
+      'Sigurnosni sistem': 'equipSecuritySystem',
+      'Pogodno za kućne ljubimce': 'equipPetFriendly',
+      'Vešeraj': 'equipLaundryRoom',
+      'Ostava': 'equipStorageRoom',
+      'Pristup za invalidska kolica': 'equipWheelchairAccess',
+      'Garderober': 'equipWalkInCloset',
+      // 'Spa' is same in Serbian, already covered by English key above
+      'Igralište': 'equipPlayground',
+      'Letnja kuhinja': 'equipOutdoorKitchen',
+      'Pametna kuća integracija': 'equipSmartHome',
+      'Sigurnosne kamere': 'equipSecurityCameras',
+      'Video interfon': 'equipVideoDoorbell',
+      'Brzi internet': 'equipHighSpeedInternet',
+      'Pametne brave': 'equipSmartLocks',
+      'Solarni paneli': 'equipSolarPanels',
+      'Stanica za punjenje EV': 'equipEVCharging',
+      'Automatske roletne': 'equipAutomatedBlinds',
+      'Glasovna kontrola': 'equipVoiceControlled',
+      'Kućni audio sistem': 'equipWholeHomeAudio',
+      'Kućno kino': 'equipHomeTheater',
+      'Vinska podrumska': 'equipWineCellar',
+      'Rezervni generator': 'equipBackupGenerator',
+      'Privatni dok': 'equipPrivateDock',
+      'Panik soba': 'equipPanicRoom',
+      'Kamin na otvorenom': 'equipOutdoorFireplace',
+      'Džakuzi': 'equipJacuzzi',
+      'Kućna kancelarija': 'equipHomeOffice',
+      'Dečja soba za igru': 'equipKidsPlayroom',
+      'Gejming soba': 'equipGamingRoom',
+      'Wellness/Yoga soba': 'equipWellnessRoom',
+      'Klima uređaj': 'heatingAirConditioner',
     };
-    return equipmentMap[equipmentValue] || equipmentValue;
+    return equipmentMap[equipmentValue] ?? null;
   };
 
   const itemTemplate = (item: string) => {
@@ -303,7 +358,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
               
               {property.heating && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('heating')}:</strong> {t(getHeatingTranslationKey(property.heating))}</p>
+                  <p><strong>{t('heating')}:</strong> {(() => { const key = getHeatingTranslationKey(property.heating); return key ? t(key) : property.heating; })()}</p>
                 </div>
               )}
               
@@ -383,7 +438,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                     {property.additionalEquipment.map((equipment: string, index: number) => (
                       <Tag 
                         key={index} 
-                        value={t(getEquipmentTranslationKey(equipment))} 
+                        value={(() => { const key = getEquipmentTranslationKey(equipment); return key ? t(key) : equipment; })()}
                         className="mr-2 mb-2 rounded-full"
                       />
                     ))}

@@ -142,7 +142,33 @@ echo ""
 echo -e "${YELLOW}Step 8: Starting production services with Docker Compose...${NC}"
 docker compose -f docker-compose.prod.yml up -d
 
-echo -e "${GREEN}✓ All services started${NC}"
+echo -e "${GREEN}✓ Docker services started (API + PostgreSQL + Redis)${NC}"
+echo ""
+
+# Step 8b: Build Next.js apps and start with PM2
+echo -e "${YELLOW}Step 8b: Building and starting Next.js apps via PM2...${NC}"
+
+echo "  - Building admin-web..."
+cd apps/admin-web
+npm run build || { echo -e "${RED}✗ admin-web build failed${NC}"; exit 1; }
+cd ../..
+
+echo "  - Building user-web..."
+cd apps/user-web
+npm run build || { echo -e "${RED}✗ user-web build failed${NC}"; exit 1; }
+cd ../..
+
+echo "  - Starting PM2 processes..."
+pm2 start ecosystem.config.js --only realestates-admin,realestates-user
+
+# Persist PM2 process list so it survives server reboot
+pm2 save
+echo "  - Saved PM2 process list (survives reboot)"
+
+# Register PM2 as a systemd service (idempotent — safe to run multiple times)
+pm2 startup systemd -u root --hp /root 2>/dev/null | tail -1 | bash 2>/dev/null || true
+
+echo -e "${GREEN}✓ Next.js apps started via PM2 and registered for auto-start on reboot${NC}"
 echo ""
 
 # Step 9: Wait for services to initialize
@@ -210,18 +236,24 @@ echo -e "${GREEN}PRODUCTION DEPLOYMENT COMPLETE${NC}"
 echo "========================================="
 echo ""
 echo -e "${BLUE}Service URLs:${NC}"
-echo "  - API:       http://46.224.231.217:3000"
-echo "  - Admin-web: http://46.224.231.217:3001"
-echo "  - User-web:  http://46.224.231.217:3002"
+echo "  - API:       http://46.224.231.217:8090"
+echo "  - Admin-web: http://46.224.231.217:8081"
+echo "  - User-web:  http://46.224.231.217:8082"
 echo ""
 echo -e "${BLUE}Useful Commands:${NC}"
-echo "  - View logs:           docker compose -f docker-compose.prod.yml logs -f"
-echo "  - View API logs:       docker compose -f docker-compose.prod.yml logs -f api"
-echo "  - Restart service:     docker compose -f docker-compose.prod.yml restart api"
-echo "  - Stop all:            docker compose -f docker-compose.prod.yml down"
-echo "  - Restart all:         docker compose -f docker-compose.prod.yml restart"
-echo "  - Check status:        docker compose -f docker-compose.prod.yml ps"
-echo "  - Monitor DDoS:        watch -n 5 'sudo netstat -an | grep 92.118.207.21 | wc -l'"
+echo "  Docker (API + PostgreSQL + Redis):"
+echo "    docker compose -f docker-compose.prod.yml logs -f"
+echo "    docker compose -f docker-compose.prod.yml logs -f api"
+echo "    docker compose -f docker-compose.prod.yml restart api"
+echo "    docker compose -f docker-compose.prod.yml ps"
+echo ""
+echo "  PM2 (Admin + User Next.js apps):"
+echo "    pm2 status                         # check all processes"
+echo "    pm2 logs                           # tail all logs"
+echo "    pm2 logs realestates-admin         # admin-web logs"
+echo "    pm2 logs realestates-user          # user-web logs"
+echo "    pm2 reload ecosystem.config.js     # zero-downtime reload"
+echo "    pm2 save                           # persist after changes"
 echo ""
 echo -e "${BLUE}Rollback:${NC}"
 echo "  If issues occur:"

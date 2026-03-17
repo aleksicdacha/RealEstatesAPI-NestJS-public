@@ -110,12 +110,26 @@ export class AgentChatGateway
       clientData.conversationId = data.conversationId;
     }
 
-    console.log(`Client ${client.id} joined room ${room} as ${data.userType}`);
+    console.log(`✅ Client ${client.id} joined room ${room} as ${data.userType}`);
 
     // Load conversation history
     const conversation = await this.agentChatService.getConversation(
       data.conversationId,
     );
+
+    // If this is a guest joining, send them a welcome confirmation
+    if (data.userType === 'guest') {
+      const welcomeMessage = await this.agentChatService.addMessage({
+        conversationId: data.conversationId,
+        message: conversation.locale === 'sr'
+          ? 'Povezani ste sa našim timom. Agent će vam uskoro odgovoriti.'
+          : 'You are connected to our team. An agent will respond to you shortly.',
+        senderType: MessageSenderType.SYSTEM,
+      });
+
+      // Send the welcome message to the guest
+      client.emit('new-message', welcomeMessage);
+    }
 
     return {
       event: 'conversation-history',

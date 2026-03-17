@@ -483,7 +483,7 @@ export function ImageManager({
       }
 
       // Upload the resized image to replace the original
-      const response = await fetch('http://localhost:3000/v1/upload', {
+      const response = await fetch(`${API_BASE_URL}/v1/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -565,7 +565,7 @@ export function ImageManager({
     await new Promise<void>((resolve, reject) => {
       img.onload = () => resolve();
       img.onerror = reject;
-      img.src = `http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
+      img.src = `${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`;
     });
 
     // Store original dimensions
@@ -809,7 +809,7 @@ export function ImageManager({
                   // If we have a propertyId and this is a real image (not just uploaded), use the backend
                   if (propertyId && !id.toString().startsWith('uploaded-')) {
                     try {
-                      const response = await fetch(`http://localhost:3000/v1/properties/${propertyId}/images/${id}`, {
+                      const response = await fetch(`${API_BASE_URL}/v1/properties/${propertyId}/images/${id}`, {
                         method: 'PATCH',
                         headers: {
                           'Content-Type': 'application/json',
@@ -875,7 +875,7 @@ export function ImageManager({
                 const draggedImage = images.find(img => img.id === activeId);
                 return draggedImage ? (
                   <img 
-                    src={`http://localhost:3000${draggedImage.url.startsWith('/uploads/') ? draggedImage.url : '/uploads/' + draggedImage.url}`}
+                    src={`${API_BASE_URL}${draggedImage.url.startsWith('/uploads/') ? draggedImage.url : '/uploads/' + draggedImage.url}`}
                     alt="Dragging" 
                     style={{ 
                       width: "200px",
@@ -1038,7 +1038,7 @@ export function ImageManager({
                       className="react-crop-container"
                     >
                       <img 
-                        src={`http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`}
+                        src={`${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`}
                         alt="Crop preview" 
                         style={{ 
                           maxWidth: '600px',
@@ -1141,7 +1141,7 @@ export function ImageManager({
                         >
                           <img
                             ref={smartCropImageRef}
-                            src={`http://localhost:3000${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`}
+                            src={`${API_BASE_URL}${selectedImage.url.startsWith('/uploads/') ? selectedImage.url : '/uploads/' + selectedImage.url}`}
                             alt="Smart crop preview"
                             style={{
                               maxWidth: '450px',
@@ -1620,7 +1620,7 @@ function SortableImage({
         try {
           // If the image has a backend ID and we have a propertyId, try to delete it from the server
           if (image.id && !image.id.toString().startsWith('uploaded-') && propertyId) {
-            const deleteUrl = `http://localhost:3000/v1/properties/${propertyId}/images/${image.id}`;
+            const deleteUrl = `${API_BASE_URL}/v1/properties/${propertyId}/images/${image.id}`;
             
             const response = await fetch(deleteUrl, {
               method: 'DELETE',
@@ -1709,7 +1709,7 @@ function SortableImage({
         }}
       >
         <img 
-          src={`http://localhost:3000${image.url.startsWith('/uploads/') ? image.url : '/uploads/' + image.url}`}
+          src={`${API_BASE_URL}${image.url.startsWith('/uploads/') ? image.url : '/uploads/' + image.url}`}
           alt="Property" 
           style={{ 
             width: "100%",

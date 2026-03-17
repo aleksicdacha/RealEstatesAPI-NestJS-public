@@ -1,15 +1,15 @@
 import { DataSource } from 'typeorm';
-import { User } from '../src/entities/user/user.entity';
-import { Property } from '../src/entities/property/property.entity';
-import { Client } from '../src/entities/client/client.entity';
-import { PropertyImage } from '../src/entities/property-image/property-image.entity';
-import { Role } from '../src/entities/user/enums/role.enum';
-import { PropertyType } from '../src/entities/property/enums/property-type.enum';
-import { PropertyStatus } from '../src/entities/property/enums/property-status.enum';
-import { HeatingType } from '../src/entities/property/enums/heating.enum';
-import { ClientStatus } from '../src/entities/client/enums/client-status.enum';
-import { TransactionType } from '../src/entities/client/enums/transaction-type.enum';
-import { PaymentType } from '../src/entities/client/enums/payment-type.enum';
+import { User } from '../apps/api/src/entities/user/user.entity';
+import { Property } from '../apps/api/src/entities/property/property.entity';
+import { Client } from '../apps/api/src/entities/client/client.entity';
+import { PropertyImage } from '../apps/api/src/entities/property-image/property-image.entity';
+import { Role } from '../apps/api/src/entities/user/enums/role.enum';
+import { PropertyType } from '../apps/api/src/entities/property/enums/property-type.enum';
+import { PropertyStatus } from '../apps/api/src/entities/property/enums/property-status.enum';
+import { HeatingType } from '../apps/api/src/entities/property/enums/heating.enum';
+import { ClientStatus } from '../apps/api/src/entities/client/enums/client-status.enum';
+import { TransactionType } from '../apps/api/src/entities/client/enums/transaction-type.enum';
+import { PaymentType } from '../apps/api/src/entities/client/enums/payment-type.enum';
 import * as bcrypt from 'bcrypt';
 import * as dotenv from 'dotenv';
 

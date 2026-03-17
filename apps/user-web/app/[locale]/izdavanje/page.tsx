@@ -6,7 +6,10 @@ import { fetchProperties, Property } from '@/lib/api';
 import { PropertyCard } from '@/app/components/PropertyCard';
 import { PropertyMap } from '@/app/components/PropertyMap';
 import { FavouritePropertyCard } from '@/app/components/FavouritePropertyCard';
-import { PropertyFilters, PropertyFiltersData } from '@/app/components/PropertyFilters';
+import {
+  PropertyFilters,
+  PropertyFiltersData,
+} from '@/app/components/PropertyFilters';
 import { useFavourites } from '@/app/contexts/FavouritesContext';
 import { useTranslations } from 'next-intl';
 
@@ -16,8 +19,11 @@ export default function IzdavanjePage() {
   const t = useTranslations('Properties');
   const tFav = useTranslations('Favourites');
   const tWhy = useTranslations('WhyChooseUs');
+  const tCommon = useTranslations('Common');
   const [properties, setProperties] = useState<Property[]>([]);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
+    null,
+  );
   const [showMap, setShowMap] = useState(true);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<PropertyFiltersData>({});
@@ -35,7 +41,9 @@ export default function IzdavanjePage() {
     { value: 'area-desc', label: t('sortByAreaDesc') },
   ];
 
-  const currentSortLabel = sortOptions.find(opt => opt.value === currentSort)?.label || sortOptions[0].label;
+  const currentSortLabel =
+    sortOptions.find((opt) => opt.value === currentSort)?.label ||
+    sortOptions[0].label;
 
   const handleSortChange = (sortValue: string) => {
     setCurrentSort(sortValue);
@@ -53,7 +61,8 @@ export default function IzdavanjePage() {
     };
     if (sortOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [sortOpen]);
 
@@ -62,28 +71,34 @@ export default function IzdavanjePage() {
     setLoading(true);
     try {
       // Parse sort by
-      const [sortField, sortOrder] = (filterData.sortBy || 'createdAt-desc').split('-');
-      
+      const [sortField, sortOrder] = (
+        filterData.sortBy || 'createdAt-desc'
+      ).split('-');
+
       const params: any = {
         page: 1,
         limit: 50,
         sortBy: sortField,
         order: sortOrder.toUpperCase(),
-        clientTransactionType: 'rents'
+        clientTransactionType: 'rents',
       };
 
       // Add filters
       if (filterData.city) params.city = filterData.city;
-      if (filterData.propertyType) params.propertyType = filterData.propertyType;
+      if (filterData.propertyType)
+        params.propertyType = filterData.propertyType;
       if (filterData.location) params.neighborhoods = filterData.location;
-      if (filterData.priceFrom) params.minPrice = parseFloat(filterData.priceFrom);
+      if (filterData.priceFrom)
+        params.minPrice = parseFloat(filterData.priceFrom);
       if (filterData.priceTo) params.maxPrice = parseFloat(filterData.priceTo);
       if (filterData.areaFrom) params.minArea = parseFloat(filterData.areaFrom);
       if (filterData.areaTo) params.maxArea = parseFloat(filterData.areaTo);
-      if (filterData.numberOfRooms) params.roomStructure = filterData.numberOfRooms;
+      if (filterData.numberOfRooms)
+        params.roomStructure = filterData.numberOfRooms;
       if (filterData.floor) params.floors = filterData.floor;
       if (filterData.heating) params.heating = filterData.heating;
-      if (filterData.elevator !== undefined) params.elevator = filterData.elevator;
+      if (filterData.elevator !== undefined)
+        params.elevator = filterData.elevator;
 
       const data = await fetchProperties(params);
       setProperties(data.items);
@@ -120,7 +135,7 @@ export default function IzdavanjePage() {
             {/* Showing count */}
             <h2 className="text-lg font-medium text-gray-600">
               {loading
-                ? 'Loading...'
+                ? tCommon('loading')
                 : `${t('showing')} ${properties.length} ${t('properties')}`}
             </h2>
 

@@ -7,6 +7,8 @@ import { Tag } from 'primereact/tag';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 interface ImageUploaderProps {
   propertyId: string; // UUID of the current property
   propertyCode: string; // Property code from the wizard
@@ -210,14 +212,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ propertyId, onNext, prope
             activeIndex={0}
             item={(item) => (
               <img
-                src={`http://localhost:3000${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
+                src={`${API_BASE_URL}${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
                 alt="Uploaded Image"
                 style={{ width: "100%", objectFit: "cover" }}
               />
             )}
             thumbnail={(item) => (
               <img
-                src={`http://localhost:3000${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
+                src={`${API_BASE_URL}${item?.url.startsWith('/uploads/') ? item.url : '/uploads/' + item.url}`}
                 alt="Uploaded Thumbnail"
                 style={{ width: "60%", objectFit: "cover" }}
               />
