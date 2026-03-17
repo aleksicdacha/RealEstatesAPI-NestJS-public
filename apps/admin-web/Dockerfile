@@ -55,11 +55,11 @@ RUN adduser --system --uid 1001 nextjs
 
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/.next/static ./apps/admin-web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/public ./apps/admin-web/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-web/public ./public
 
 USER nextjs
 
 EXPOSE 3001
 
-CMD ["node", "apps/admin-web/server.js"]
+CMD ["node", "server.js"]
