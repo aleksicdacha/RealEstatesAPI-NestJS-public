@@ -1,0 +1,615 @@
+/* Google Fonts - Quicksand */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/*@tailwind base;*/
+/*@tailwind components;*/
+/*@tailwind utilities;*/
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-main: 'Quicksand', system-ui, -apple-system, sans-serif;
+}
+
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    --background: #0a0a0a;*/
+/*    --foreground: #ededed;*/
+/*  }*/
+
+/*  .p-menubar {*/
+/*    background: #000000;*/
+/*  }*/
+/*}*/
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Quicksand', var(--font-main), system-ui, -apple-system, sans-serif;
+  font-size: 14px; /* Increased by 1px */
+}
+
+/* Global font size */
+html {
+  font-size: 14px; /* Base font size - increased by 1px */
+}
+
+/* ============================================
+   FONT OVERRIDE - Quicksand za celu aplikaciju
+   ============================================ */
+
+/* Override PrimeReact default font */
+html, body,
+.p-component,
+.p-menubar,
+.p-datatable,
+.p-dialog,
+.p-button,
+.p-inputtext,
+.p-dropdown,
+.p-multiselect,
+.p-toast,
+.p-sidebar,
+.p-toolbar,
+.p-card,
+.p-panel,
+.p-tabview,
+.p-accordion,
+.p-breadcrumb,
+.p-paginator,
+.p-confirm-dialog,
+.p-fileupload {
+  font-family: 'Quicksand', var(--font-main), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Override PrimeReact component fonts - EXCLUDING PrimeIcons (pi-*) */
+/* PrimeIcons need 'primeicons' font-family to display correctly */
+[class^="p-"]:not([class*="pi-"]):not(.pi),
+[class*=" p-"]:not([class*=" pi-"]):not(.pi) {
+  font-family: 'Quicksand', var(--font-main), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Ensure PrimeIcons use their correct font */
+.pi, [class^="pi-"], [class*=" pi-"] {
+  font-family: 'primeicons' !important;
+}
+
+/* ============================================
+   Menubar & Navigation - Quicksand font
+   ============================================ */
+.p-menubar {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+.p-menubar .p-menuitem-text {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+  font-weight: 500;
+}
+
+.p-menubar .p-menuitem-link {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+/* ============================================
+   Buttons - Quicksand font with icons
+   ============================================ */
+.p-button {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+.p-button .p-button-label {
+  font-family: 'Quicksand', var(--font-main), system-ui, sans-serif !important;
+}
+
+/* Ensure button icons display correctly */
+.p-button .pi,
+.p-button [class^="pi-"] {
+  font-family: 'primeicons' !important;
+}
+
+/* Override PrimeReact component font sizes - increased by 1px */
+.p-component {
+  font-size: 14px; /* was 0.95rem (12.35px @ 13px base), now 14px */
+}
+
+.p-datatable {
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  font-size: 12px; /* was 0.85rem (11.05px @ 13px base), now 12px */
+}
+
+.p-button {
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
+}
+
+.p-inputtext {
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
+}
+
+.p-dropdown {
+  font-size: 13px; /* was 0.9rem (11.7px @ 13px base), now 13px */
+}
+
+/*Client form*/
+.client-dialog-width {
+  max-width: 50vw !important;
+}
+
+.client-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 1rem; /* Space between columns */
+}
+
+/*Property form*/
+.property-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+  gap: 1rem; /* Space between columns */
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Space between fields in the same column */
+}
+
+.p-field label {
+  font-weight: bold;
+}
+
+.p-button-disabled {
+  background-color: #d8d8d8 !important;
+  cursor: not-allowed !important;
+  color: #6b6b6b !important;
+  border: none;
+}
+
+.background-code {
+  background-color: #e2f0fb !important;
+}
+
+.fixed-width-multiselect {
+  width: 100%; /* Ensure the MultiSelect fits the parent container */
+  max-width: 100%; /* Optional: Set a maximum width for better control */
+}
+
+.fixed-width-multiselect .p-multiselect {
+  display: flex;
+  flex-direction: column;
+}
+
+.fixed-width-multiselect .p-multiselect-header .p-checkbox-label {
+  display: inline-block;
+  visibility: visible;
+  color: inherit;
+}
+
+/* Fix for Additional Equipment MultiSelect chip wrapping */
+.p-multiselect-panel .p-multiselect-items {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.p-multiselect .p-multiselect-label-container {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.p-multiselect .p-multiselect-token {
+  max-width: calc(100% - 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 2px;
+}
+
+.p-multiselect .p-multiselect-token-container {
+  max-height: 100px;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Specific styling for Additional Equipment MultiSelect */
+.additional-equipment-multiselect .p-multiselect-label-container {
+  max-width: 100%;
+  min-height: 40px;
+  max-height: 120px;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  display: flex;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.additional-equipment-multiselect .p-multiselect-token {
+  margin: 2px;
+  font-size: 13px; /* increased by 1px */
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.additional-equipment-multiselect .p-multiselect-label {
+  padding: 8px 12px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fixed-width-multiselect .p-multiselect-label-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow chips to wrap into multiple rows */
+  gap: 8px; /* Add spacing between chips */
+  align-items: flex-start; /* Align chips to the top */
+  /*min-height: 40px; !* Prevent collapse when no chips are selected *!*/
+  overflow: visible; /* Ensure content remains visible */
+}
+
+.fixed-width-multiselect .p-multiselect-token {
+  margin: 4px; /* Space around individual chips */
+  white-space: normal; /* Allow chip text to wrap if necessary */
+  word-break: break-word; /* Break long chip labels */
+}
+
+.fixed-width-multiselect .p-multiselect-input {
+  flex-basis: 100%; /* Force the input field to take a full row */
+  margin-top: 4px; /* Add a small gap from the chips */
+  border: none; /* Optional: Remove border for better styling */
+}
+
+.fixed-width-multiselect .p-multiselect-trigger {
+  flex-shrink: 0; /* Ensure the dropdown button doesn't move */
+}
+
+.fixed-width-multiselect .p-multiselect-panel {
+  max-height: 300px; /* Limit dropdown height */
+  overflow-y: auto; /* Enable scrolling for dropdown options */
+}
+
+.fixed-width-multiselect .p-multiselect-label {
+  display: flex
+;
+  flex-flow: wrap;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure the autocomplete dropdown (pac-container) appears on top - GMAPS*/
+.pac-container {
+  z-index: 10000 !important;
+}
+
+.half-width-btn {
+  width: 49%;
+}
+
+/* Timeline Component Styles */
+.timeline {
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline.timeline-left::before {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--surface-border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 3.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--surface-ground);
+  border: 2px solid var(--surface-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.timeline-content {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard specific styles */
+.dashboard-card-header {
+  border-bottom: 1px solid var(--surface-border);
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+}
+
+.stat-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Skeleton loading animations */
+.skeleton-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Equipment MultiSelect - Hide checkboxes on disabled section headers */
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"] .p-checkbox,
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"] .p-checkbox-box {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"] {
+  pointer-events: none !important;
+  cursor: default !important;
+  background: transparent !important;
+}
+
+.equipment-multiselect .p-multiselect-item[aria-disabled="true"]:hover {
+  background: transparent !important;
+}
+
+/* Compact input fields for price and area ranges */
+.compact-range-inputs {
+  max-width: 60% !important;
+}
+
+.compact-range-inputs .p-inputnumber,
+.compact-range-inputs .p-inputnumber-input {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.compact-range-inputs input {
+  width: 100% !important;
+}
+
+/* Dark Theme Styles */
+.dark-theme {
+  --background: #1a1a1a;
+  --foreground: #ffffff;
+  --surface-card: #2a2a2a;
+  --surface-section: #1e1e1e;
+  --text-color: #ffffff;
+  --text-color-secondary: #b8b8b8;
+}
+
+.dark-theme body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dark-theme .p-card {
+  background: var(--surface-card);
+  color: var(--text-color);
+  border: 1px solid #404040;
+}
+
+.dark-theme .p-card .p-card-title {
+  color: var(--text-color);
+}
+
+.dark-theme .p-card .p-card-content {
+  color: var(--text-color);
+}
+
+.dark-theme .p-button {
+  background: #404040;
+  border-color: #606060;
+  color: var(--text-color);
+}
+
+.dark-theme .p-button:hover {
+  background: #505050;
+  border-color: #707070;
+}
+
+.dark-theme .p-button.p-button-success {
+  background: #22c55e;
+  border-color: #16a34a;
+}
+
+.dark-theme .p-button.p-button-success:hover {
+  background: #16a34a;
+  border-color: #15803d;
+}
+
+.dark-theme .p-button.p-button-info {
+  background: #3b82f6;
+  border-color: #2563eb;
+}
+
+.dark-theme .p-button.p-button-info:hover {
+  background: #2563eb;
+  border-color: #1d4ed8;
+}
+
+.dark-theme .p-button.p-button-warning {
+  background: #f59e0b;
+  border-color: #d97706;
+}
+
+.dark-theme .p-button.p-button-warning:hover {
+  background: #d97706;
+  border-color: #b45309;
+}
+
+.dark-theme .p-button.p-button-secondary {
+  background: #6b7280;
+  border-color: #4b5563;
+}
+
+.dark-theme .p-button.p-button-secondary:hover {
+  background: #4b5563;
+  border-color: #374151;
+}
+
+.dark-theme .p-tabview .p-tabview-panels {
+  background: var(--surface-section);
+  border: 1px solid #404040;
+}
+
+.dark-theme .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  background: var(--surface-card);
+  border-color: #606060;
+  color: var(--text-color);
+}
+
+.dark-theme .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  background: var(--surface-section);
+  border-color: #404040;
+  color: var(--text-color-secondary);
+}
+
+.dark-theme .p-dialog {
+  background: var(--surface-card);
+  color: var(--text-color);
+  border: 1px solid #404040;
+}
+
+.dark-theme .p-dialog .p-dialog-header {
+  background: var(--surface-section);
+  color: var(--text-color);
+  border-bottom: 1px solid #404040;
+}
+
+.dark-theme .p-dialog .p-dialog-content {
+  background: var(--surface-card);
+  color: var(--text-color);
+}
+
+.dark-theme .text-gray-600 {
+  color: var(--text-color-secondary) !important;
+}
+
+.dark-theme .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+.dark-theme .text-green-600 {
+  color: #34d399 !important;
+}
+
+.dark-theme .text-orange-600 {
+  color: #fb923c !important;
+}
+
+.dark-theme .text-purple-600 {
+  color: #a78bfa !important;
+}
+
+.dark-theme .text-indigo-600 {
+  color: #818cf8 !important;
+}
+
+.dark-theme .text-emerald-600 {
+  color: #34d399 !important;
+}
+
+/* ============================================
+   PrimeReact Tag (Chip) - Rounded Full Override
+   ============================================ */
+/* Force rounded-full on all Tag components */
+.p-tag {
+  border-radius: 9999px !important;
+}
+
+/* Additional specificity for rounded-full className */
+.p-tag.rounded-full {
+  border-radius: 9999px !important;
+}
+
+/* Ensure all severity variants have rounded corners */
+.p-tag.p-tag-success,
+.p-tag.p-tag-info,
+.p-tag.p-tag-warning,
+.p-tag.p-tag-danger,
+.p-tag.p-tag-secondary,
+.p-tag.p-tag-contrast {
+  border-radius: 9999px !important;
+}
+
+/* ============================================
+   Admin Layout - Remove unwanted spacing
+   ============================================ */
+/* Ensure no extra padding/margin around the page */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove PrimeReact Menubar default margin/padding if it exists */
+.p-menubar {
+  margin: 0 !important;
+}
+
+/* Smooth transitions for navigation */
+button[class*="text-gray-700"] {
+  transition: all 0.3s ease;
+}
+
+/* ============================================
+   Admin Navbar - Clean Design Override
+   ============================================ */
+/* Ensure navbar buttons have no border and proper styling */
+header nav button {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Override any PrimeReact button styles in navbar */
+header nav button:hover {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+header nav button:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+

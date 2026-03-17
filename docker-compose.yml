@@ -25,7 +25,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: apps/api/Dockerfile
       target: development
     container_name: estates_api
     env_file:
@@ -48,25 +48,18 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - ./uploads:/app/uploads
+      - /app/apps/api/node_modules
+      - ./uploads:/app/apps/api/uploads
     depends_on:
       - postgres
       - redis
     restart: unless-stopped
-    command: npm run start:dev
+    command: sh -c "npm install && npx nest start --watch"
 
-  admin:
-    build:
-      context: ./admin-frontend
-      dockerfile: Dockerfile
-    container_name: estates_admin
-    ports:
-      - "3001:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
-    depends_on:
-      - api
-    restart: unless-stopped
+  # Frontend apps run directly via npm for hot-reload during development:
+  # - Admin Web: npm run dev:admin (port 3001)
+  # - User Web:  npm run dev:user  (port 3002)
 
 volumes:
   postgres_data:
+

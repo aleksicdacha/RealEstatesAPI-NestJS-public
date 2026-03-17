@@ -139,6 +139,11 @@ export class UpdatePropertyDTO {
   floor?: number;
 
   @IsOptional()
+  @IsString({ message: 'Room structure must be a string.' })
+  @MaxLength(50, { message: 'Room structure must not exceed 50 characters.' })
+  roomStructure?: string;
+
+  @IsOptional()
   @IsEnum(HeatingType, { message: 'Invalid heating type.' })
   heating?: HeatingType;
 
