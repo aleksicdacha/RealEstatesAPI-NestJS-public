@@ -13,6 +13,9 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
@@ -20,19 +23,17 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.HETZNER_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Pull latest code on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HETZNER_HOST }}
-          username: ${{ secrets.HETZNER_USER }}
-          key: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd /root/RealEstatesAPI-NestJS
-            git remote set-url origin "https://${{ secrets.GH_PAT }}@github.com/aleksicdacha/RealEstatesAPI-NestJS.git"
-            git fetch origin main
-            git reset --hard origin/main
-            git remote set-url origin "https://github.com/aleksicdacha/RealEstatesAPI-NestJS.git"
+      - name: Sync code to server
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='.env' \
+            --exclude='.env.production' \
+            --exclude='uploads' \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+            ./ ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }}:/root/RealEstatesAPI-NestJS/
 
       - name: Build and restart Docker containers
         uses: appleboy/ssh-action@v1.0.3
@@ -43,6 +44,7 @@ jobs:
           port: 22
           command_timeout: 20m
           script: |
+            set -e
             cd /root/RealEstatesAPI-NestJS
             docker compose -f docker-compose.prod.yml build api admin-web user-web
             docker compose -f docker-compose.prod.yml up -d
