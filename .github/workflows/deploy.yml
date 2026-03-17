@@ -21,34 +21,37 @@ jobs:
           ssh-keyscan -H "${{ secrets.HETZNER_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Pull latest code on server
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
-            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} \
-            "cd /root/RealEstatesAPI-NestJS && \
-             git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/aleksicdacha/RealEstatesAPI-NestJS.git && \
-             git fetch origin main && \
-             git reset --hard origin/main && \
-             git remote set-url origin https://github.com/aleksicdacha/RealEstatesAPI-NestJS.git"
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /root/RealEstatesAPI-NestJS
+            git remote set-url origin "https://${{ secrets.GH_PAT }}@github.com/aleksicdacha/RealEstatesAPI-NestJS.git"
+            git fetch origin main
+            git reset --hard origin/main
+            git remote set-url origin "https://github.com/aleksicdacha/RealEstatesAPI-NestJS.git"
 
-      - name: Build Docker images
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
-            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} \
-            "cd /root/RealEstatesAPI-NestJS && \
-             docker compose -f docker-compose.prod.yml build api admin-web user-web"
-
-      - name: Restart containers
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
-            ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} \
-            "cd /root/RealEstatesAPI-NestJS && \
-             docker compose -f docker-compose.prod.yml up -d && \
-             sleep 10 && \
-             docker compose -f docker-compose.prod.yml ps"
+      - name: Build and restart Docker containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
+          port: 22
+          command_timeout: 20m
+          script: |
+            cd /root/RealEstatesAPI-NestJS
+            docker compose -f docker-compose.prod.yml build api admin-web user-web
+            docker compose -f docker-compose.prod.yml up -d
+            sleep 10
+            docker compose -f docker-compose.prod.yml ps
 
       - name: Verify API health
         run: |
           sleep 15
           curl -sf "http://${{ secrets.HETZNER_HOST }}:8090/v1/properties/public?page=1&limit=1" \
             && echo "✅ API healthy" \
-            || echo "⚠️ API health check failed (may still be starting)"
+            || echo "⚠️ API health check failed"
