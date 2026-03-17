@@ -105,7 +105,7 @@ class ApiClient {
         return null;
       }
 
-      const response = await axios.post('http://localhost:3000/v1/auth/refresh-token', {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/v1/auth/refresh-token`, {
         refreshToken,
       });
 

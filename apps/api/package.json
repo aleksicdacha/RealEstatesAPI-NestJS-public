@@ -13,7 +13,8 @@
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:run -d src/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "seed:users": "ts-node ../../seeds/create-admin.ts"
+    "seed:users": "ts-node ../../seeds/create-admin.ts",
+    "seed:all": "node ../../seeds/seed-all.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

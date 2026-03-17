@@ -8,6 +8,8 @@ import { formatCurrency } from '../utils/currency';
 import { Card } from 'primereact/card';
 import { googleMapsLoaderOptions } from '../utils/googleMapsLoader';
 import { customMapStyles } from '../utils/mapStyles';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 import { useTranslations, useLocale } from 'next-intl';
 
 interface PropertyMapViewProps {
@@ -472,7 +474,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
                   borderRadius: '4px',
                 }}>
                   <img
-                    src={`http://localhost:3000${favoriteImage.url.startsWith('/uploads/') ? favoriteImage.url : '/uploads/' + favoriteImage.url}`}
+                    src={`${API_BASE_URL}${favoriteImage.url.startsWith('/uploads/') ? favoriteImage.url : '/uploads/' + favoriteImage.url}`}
                     alt={selectedProperty.code}
                     style={{
                       width: '100%',

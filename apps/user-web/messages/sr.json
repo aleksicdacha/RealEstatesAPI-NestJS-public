@@ -234,7 +234,26 @@
     "imageCounter": "od",
     "images": "slika",
     "similarProperties": "Slične nekretnine",
-    "backToList": "Nazad na listu"
+    "backToList": "Nazad na listu",
+    "basicInfo": "Osnovne informacije",
+    "pricePerM2": "Cena po m²",
+    "propertyType": "Tip nekretnine",
+    "bathrooms": "Kupatila",
+    "locationNote": "Tačna lokacija će biti dostupna nakon zakazanog razgledanja.",
+    "costs": "Troškovi",
+    "utilities": "Komunalije (mesečno)",
+    "bills": "Računi",
+    "onRequest": "Informacije dostupne na upit",
+    "similarPropertiesSoon": "Slične nekretnine će uskoro biti prikazane.",
+    "loanCalculator": "Kalkulator kredita",
+    "loanCalculatorSoon": "Kalkulator kredita će uskoro biti dostupan.",
+    "scheduleViewing": "Zakaži razgledanje",
+    "scheduleViewingBtn": "Zakaži razgledanje",
+    "contactUs": "Kontaktirajte nas",
+    "callUs": "Pozovite nas",
+    "shareAd": "Podeli oglas",
+    "loadingMap": "Učitavanje mape...",
+    "floorSuffix": "sprat"
   },
   "Contact": {
     "title": "Kontaktirajte nas",
@@ -549,7 +568,18 @@
     "subscribe": "Pretplati se",
     "submitting": "Šalje se...",
     "acceptTerms": "Prihvatam uslove korišćenja i politiku privatnosti",
-    "privacyNote": "Poštujemo vašu privatnost. Možete se odjaviti u bilo kom trenutku."
+    "privacyNote": "Poštujemo vašu privatnost. Možete se odjaviti u bilo kom trenutku.",
+    "unsubscribeLoading": "Odjavljujem...",
+    "unsubscribeSuccess": "Uspešno odjavljeni",
+    "unsubscribeError": "Greška",
+    "unsubscribeInvalidToken": "Nevažeći token za odjavu.",
+    "unsubscribeGenericError": "Došlo je do greške.",
+    "unsubscribeNetworkError": "Došlo je do greške prilikom odjave.",
+    "backToHome": "Nazad na početnu"
+  },
+  "Metadata": {
+    "title": "Olymp Nekretnine - Pronađite Vaš Dom",
+    "description": "Najbolja platforma za kupovinu i iznajmljivanje nekretnina"
   },
   "Footer": {
     "haveQuestions": "Imate pitanja?",

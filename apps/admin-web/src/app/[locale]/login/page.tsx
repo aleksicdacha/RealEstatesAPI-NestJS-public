@@ -61,7 +61,7 @@ export default function LoginPage() {
               </div>
               <div className="text-sm text-blue-700">
                 <div className="mb-1">
-                  <strong>{t('username')}:</strong> admin@google.com
+                  <strong>{t('username')}:</strong> admin
                 </div>
                 <div>
                   <strong>{t('password')}:</strong> admin123

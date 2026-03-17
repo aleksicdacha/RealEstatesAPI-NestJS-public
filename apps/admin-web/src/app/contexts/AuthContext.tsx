@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 interface User {
   id: number;
   username: string;
@@ -52,8 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const refreshUrl = `${apiUrl}/v1/auth/refresh-token`;
+      const refreshUrl = `${API_BASE_URL}/v1/auth/refresh-token`;
 
       const response = await fetch(refreshUrl, {
         method: 'POST',
@@ -170,8 +171,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const loginUrl = `${apiUrl}/v1/auth/login`;
+      const loginUrl = `${API_BASE_URL}/v1/auth/login`;
 
       console.log('[Auth] Attempting login to:', loginUrl);
 
@@ -219,7 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem('accessToken');
       
       if (token) {
-        await fetch('http://localhost:3000/v1/auth/logout', {
+        await fetch(`${API_BASE_URL}/v1/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

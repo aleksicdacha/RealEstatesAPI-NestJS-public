@@ -1,4 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
+const API_UPLOADS_BASE = API_BASE_URL.replace(/\/v1$/, '');
 
 export interface PropertyImage {
   id: string;
@@ -154,16 +155,16 @@ export function getImageUrl(imageUrl: string): string {
   
   // If URL starts with /uploads/, prepend the API URL
   if (imageUrl.startsWith('/uploads/')) {
-    return `http://localhost:3000${imageUrl}`;
+    return `${API_UPLOADS_BASE}${imageUrl}`;
   }
 
    // If URL starts with /assets/, prepend the API URL
   if (imageUrl.startsWith('/assets/')) {
-    return `http://localhost:3000${imageUrl}`;
+    return `${API_UPLOADS_BASE}${imageUrl}`;
   }
   
   // Otherwise, add /uploads/ prefix
-  return `http://localhost:3000/uploads/${imageUrl}`;
+  return `${API_UPLOADS_BASE}/uploads/${imageUrl}`;
 }
 
 export function getFavoriteImage(images: PropertyImage[]): PropertyImage | undefined {

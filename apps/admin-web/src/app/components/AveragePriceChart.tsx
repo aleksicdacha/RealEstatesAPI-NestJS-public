@@ -32,7 +32,8 @@ export default function AveragePriceChart() {
   const fetchStats = async (startDate?: string, endDate?: string) => {
     setLoading(true);
     try {
-      let url = 'http://localhost:3000/v1/properties/stats/average-price-by-type';
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      let url = `${apiBase}/v1/properties/stats/average-price-by-type`;
       const params = new URLSearchParams();
       
       if (startDate) params.append('startDate', startDate);

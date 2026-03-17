@@ -66,8 +66,10 @@
     "heroTitle": "Buy or rent a property",
     "heroHighlight": "without risk",
     "heroSubtitle": "Find the perfect property in the most sought-after cities in Serbia",
-    "noCosts": "No risk",    "verification": "Verified properties",
-    "support": "24/7 Support",    "verifiedProperties": "Verified properties",
+    "noCosts": "No risk",
+    "verification": "Verified properties",
+    "support": "24/7 Support",
+    "verifiedProperties": "Verified properties",
     "support247": "24/7 Support",
     "servicesTitle": "Our services",
     "servicesSubtitle": "Complete solution for all your real estate needs",
@@ -232,7 +234,26 @@
     "imageCounter": "of",
     "images": "images",
     "similarProperties": "Similar Properties",
-    "backToList": "Back to List"
+    "backToList": "Back to List",
+    "basicInfo": "Basic Information",
+    "pricePerM2": "Price per m²",
+    "propertyType": "Property type",
+    "bathrooms": "Bathrooms",
+    "locationNote": "Exact location will be provided once a property viewing is scheduled.",
+    "costs": "Costs",
+    "utilities": "Utilities (monthly)",
+    "bills": "Bills",
+    "onRequest": "Information available on request",
+    "similarPropertiesSoon": "Similar properties will be shown soon.",
+    "loanCalculator": "Loan Calculator",
+    "loanCalculatorSoon": "Loan calculator will be available soon.",
+    "scheduleViewing": "Schedule a Viewing",
+    "scheduleViewingBtn": "Schedule viewing",
+    "contactUs": "Contact us",
+    "callUs": "Call us",
+    "shareAd": "Share listing",
+    "loadingMap": "Loading map...",
+    "floorSuffix": "floor"
   },
   "Contact": {
     "title": "Contact Us",
@@ -334,7 +355,8 @@
     "showing": "Showing",
     "results": "results",
     "noResults": "No results found",
-    "tryDifferentFilters": "Try adjusting your filters"  },
+    "tryDifferentFilters": "Try adjusting your filters"
+  },
   "AboutUs": {
     "title": "About Us",
     "heroTitle": "Olymp Real Estate",
@@ -546,7 +568,18 @@
     "subscribe": "Subscribe",
     "submitting": "Submitting...",
     "acceptTerms": "I accept the terms of use and privacy policy",
-    "privacyNote": "We respect your privacy. You can unsubscribe at any time."
+    "privacyNote": "We respect your privacy. You can unsubscribe at any time.",
+    "unsubscribeLoading": "Unsubscribing...",
+    "unsubscribeSuccess": "Successfully unsubscribed",
+    "unsubscribeError": "Error",
+    "unsubscribeInvalidToken": "Invalid unsubscribe token.",
+    "unsubscribeGenericError": "An error occurred.",
+    "unsubscribeNetworkError": "An error occurred while unsubscribing.",
+    "backToHome": "Back to home"
+  },
+  "Metadata": {
+    "title": "Olymp Real Estate - Find Your Home",
+    "description": "The best platform for buying and renting properties"
   },
   "Footer": {
     "haveQuestions": "Have questions?",

@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { mainFont } from '@/app/config/fonts';
@@ -11,10 +11,18 @@ import CookieConsent from '@/app/components/CookieConsent';
 import { FavouritesProvider } from '@/app/contexts/FavouritesContext';
 import { GoogleMapsProvider } from '@/app/components/GoogleMapsProvider';
 
-export const metadata: Metadata = {
-  title: "Olymp Nekretnine - Pronađite Svoj Dom",
-  description: "Najbolja platforma za kupovinu i iznajmljivanje nekretnina",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Metadata' });
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
