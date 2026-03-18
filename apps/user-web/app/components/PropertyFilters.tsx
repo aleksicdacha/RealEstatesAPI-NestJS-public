@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { fetchLocations } from '@/lib/api';
+import { fetchPublicFilterOptions } from '@/lib/api';
 
 export interface PropertyFiltersData {
   city?: string;
@@ -126,22 +126,23 @@ export function PropertyFilters({ onFilterChange, transactionType }: PropertyFil
 
   // Load locations from API
   useEffect(() => {
-    const loadLocations = async () => {
-      const { cities: apiCities, neighborhoods: apiNeighborhoods } = await fetchLocations(transactionType);
+    const loadFilterOptions = async () => {
+      const { cities: apiCities, neighborhoods: apiNeighborhoods } = await fetchPublicFilterOptions();
       setCities(apiCities);
       setAllNeighborhoods(apiNeighborhoods);
       setFilteredNeighborhoods(apiNeighborhoods);
-      
-      // If there's only one city, auto-select it
+
+      // Auto-select city if only one exists, then trigger the initial properties load.
+      // This is the SINGLE trigger point — pages must NOT call loadProperties on their own mount.
+      const initialFilters: PropertyFiltersData = { ...filters };
       if (apiCities.length === 1) {
-        setFilters(prev => {
-          const newFilters = { ...prev, city: apiCities[0] };
-          onFilterChangeRef.current(newFilters);
-          return newFilters;
-        });
+        initialFilters.city = apiCities[0];
+        setFilters(initialFilters);
       }
+      onFilterChangeRef.current(initialFilters);
     };
-    loadLocations();
+    loadFilterOptions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionType]);
 
   // Filter neighborhoods by selected city

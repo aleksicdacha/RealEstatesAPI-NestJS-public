@@ -109,10 +109,6 @@ export default function ProdajaPage() {
     }
   };
 
-  useEffect(() => {
-    loadProperties(filters);
-  }, []);
-
   // Handle filter changes
   const handleFilterChange = (newFilters: PropertyFiltersData) => {
     setFilters(newFilters);
