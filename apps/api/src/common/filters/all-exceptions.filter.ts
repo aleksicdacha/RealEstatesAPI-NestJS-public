@@ -57,9 +57,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
           message = 'Database operation failed';
       }
     }
-    // Handle unknown errors
+    // Handle unknown errors — never expose raw message in production
     else if (exception instanceof Error) {
-      message = exception.message;
+      if (process.env.NODE_ENV === 'development') {
+        message = exception.message;
+      }
+      // production: message stays 'Internal server error'
     }
 
     // Log error details

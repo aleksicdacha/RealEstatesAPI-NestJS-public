@@ -6,6 +6,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,9 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
-  @Public() // Indicates that this route does not require authentication
+  // 5 attempts per 15 minutes — brute-force protection
+  @Throttle({ default: { limit: 5, ttl: 900000 } })
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -29,6 +32,8 @@ export class AuthController {
     return this.authService.logout(userId);
   }
 
+  // 3 accounts per hour from same IP
+  @Throttle({ default: { limit: 3, ttl: 3600000 } })
   @Public()
   @Post('register')
   async register(@Body() createUserDto: any) {
@@ -40,6 +45,8 @@ export class AuthController {
     return this.authService.refreshToken(refreshToken);
   }
 
+  // 3 requests per 15 minutes — prevents email bombing
+  @Throttle({ default: { limit: 3, ttl: 900000 } })
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
@@ -47,6 +54,8 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
+  // 5 attempts per 15 minutes
+  @Throttle({ default: { limit: 5, ttl: 900000 } })
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
