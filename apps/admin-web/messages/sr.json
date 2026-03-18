@@ -187,6 +187,7 @@
     "deleted": "Obrisan",
     "statusActive": "Aktivan",
     "statusInactive": "Neaktivan",
+    "statusDeleted": "Obrisan",
     "statusSold": "Prodat",
     "statusReserved": "Rezervisan",
     "filterByStatus": "Filtriraj po statusu",

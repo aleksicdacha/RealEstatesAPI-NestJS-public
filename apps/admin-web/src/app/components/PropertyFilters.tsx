@@ -69,21 +69,20 @@ export const PropertyFilters: React.FC<PropertyFiltersProps> = ({ onFilterChange
   }, []);
 
   const propertyTypeOptions = [
-    { label: t('typeApartment'), value: 'Apartment' },
-    { label: t('typeHouse'), value: 'House' },
-    { label: t('typeApartmentInHouse'), value: 'ApartmentInHouse' },
-    { label: t('typeCommercialSpace'), value: 'CommercialSpace' },
-    { label: t('typeOffice'), value: 'Office' },
-    { label: t('typeLand'), value: 'Land' },
-    { label: t('typeVacationHome'), value: 'VacationHome' },
-    { label: t('typeDuplex'), value: 'Duplex' },
+    { label: t('typeApartment'), value: 'apartment' },
+    { label: t('typeHouse'), value: 'house' },
+    { label: t('typeApartmentInHouse'), value: 'apartment-in-house' },
+    { label: t('typeCommercialSpace'), value: 'commercial-space' },
+    { label: t('typeOffice'), value: 'office' },
+    { label: t('typeLand'), value: 'land' },
+    { label: t('typeVacationHome'), value: 'vacation-home' },
+    { label: t('typeDuplex'), value: 'duplex' },
   ];
 
   const statusOptions = [
     { label: t('statusActive'), value: 'active' },
     { label: t('statusInactive'), value: 'inactive' },
-    { label: t('statusSold'), value: 'sold' },
-    { label: t('statusReserved'), value: 'reserved' },
+    { label: t('statusDeleted'), value: 'deleted' },
   ];
 
   const structureOptions = [
@@ -136,17 +135,17 @@ export const PropertyFilters: React.FC<PropertyFiltersProps> = ({ onFilterChange
   ];
 
   const heatingOptions = [
-    { label: t('heatingCentral'), value: 'Central' },
-    { label: t('heatingGasCentral'), value: 'Gas central' },
-    { label: t('heatingSolidFuel'), value: 'Central heating with solid fuel' },
-    { label: t('heatingElectricCentral'), value: 'Electric central' },
-    { label: t('heatingFloor'), value: 'Floor' },
-    { label: t('heatingGasIndependent'), value: 'Independently on gas' },
-    { label: t('heatingSolidFuelIndependent'), value: 'Independent on solid fuel' },
-    { label: t('heatingElectricIndependent'), value: 'Independently on electricity' },
-    { label: t('heatingFireplace'), value: 'Fireplace' },
-    { label: t('heatingAirConditioner'), value: 'Air conditioner' },
-    { label: t('heatingOther'), value: 'The rest types' },
+    { label: t('heatingCentral'), value: 'central' },
+    { label: t('heatingGasCentral'), value: 'gas-central' },
+    { label: t('heatingSolidFuel'), value: 'solid-fuel-central' },
+    { label: t('heatingElectricCentral'), value: 'electric-central' },
+    { label: t('heatingFloor'), value: 'floor' },
+    { label: t('heatingGasIndependent'), value: 'independent-on-gas' },
+    { label: t('heatingSolidFuelIndependent'), value: 'independent-on-solid-fuel' },
+    { label: t('heatingElectricIndependent'), value: 'independent-on-electricity' },
+    { label: t('heatingFireplace'), value: 'fireplace' },
+    { label: t('heatingAirConditioner'), value: 'air-conditioner' },
+    { label: t('heatingOther'), value: 'other' },
   ];
 
   // Additional equipment options with icons - comprehensive list

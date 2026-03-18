@@ -62,17 +62,17 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     }
     // Serbian translations
     const heatingMap: { [key: string]: string } = {
-      'Central': 'Centralno',
-      'Gas central': 'Centralno na gas',
-      'Central heating with solid fuel': 'Centralno na čvrsto gorivo',
-      'Electric central': 'Centralno električno',
-      'Floor': 'Podno',
-      'Independently on gas': 'Nezavisno na gas',
-      'Independent on solid fuel': 'Nezavisno na čvrsto gorivo',
-      'Independently on electricity': 'Nezavisno na struju',
-      'Fireplace': 'Kamin',
-      'Air conditioner': 'Klima',
-      'The rest types': 'Ostali tipovi'
+      'central': 'Centralno',
+      'gas-central': 'Centralno na gas',
+      'solid-fuel-central': 'Centralno na čvrsto gorivo',
+      'electric-central': 'Centralno električno',
+      'floor': 'Podno',
+      'independent-on-gas': 'Nezavisno na gas',
+      'independent-on-solid-fuel': 'Nezavisno na čvrsto gorivo',
+      'independent-on-electricity': 'Nezavisno na struju',
+      'fireplace': 'Kamin',
+      'air-conditioner': 'Klima',
+      'other': 'Ostali tipovi'
     };
     return heatingMap[heating] || heating;
   };
@@ -81,26 +81,26 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
   const translatePropertyType = (type: string): string => {
     if (locale === 'en') {
       const typeMapEn: { [key: string]: string } = {
-        'Apartment': 'Apartment',
-        'House': 'House',
-        'ApartmentInHouse': 'Apartment in House',
-        'CommercialSpace': 'Commercial Space',
-        'Office': 'Office',
-        'Land': 'Land',
-        'VacationHome': 'Vacation Home',
-        'Duplex': 'Duplex'
+        'apartment': 'Apartment',
+        'house': 'House',
+        'apartment-in-house': 'Apartment in House',
+        'commercial-space': 'Commercial Space',
+        'office': 'Office',
+        'land': 'Land',
+        'vacation-home': 'Vacation Home',
+        'duplex': 'Duplex'
       };
       return typeMapEn[type] || type;
     }
     const typeMap: { [key: string]: string } = {
-      'Apartment': 'Stan',
-      'House': 'Kuća',
-      'ApartmentInHouse': 'Stan u kući',
-      'CommercialSpace': 'Lokal',
-      'Office': 'Poslovni prostor',
-      'Land': 'Plac',
-      'VacationHome': 'Vikendica',
-      'Duplex': 'Dupleks'
+      'apartment': 'Stan',
+      'house': 'Kuća',
+      'apartment-in-house': 'Stan u kući',
+      'commercial-space': 'Lokal',
+      'office': 'Poslovni prostor',
+      'land': 'Plac',
+      'vacation-home': 'Vikendica',
+      'duplex': 'Dupleks'
     };
     return typeMap[type] || type;
   };
@@ -385,20 +385,20 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     `;
     
     switch (propertyType) {
-      case 'House':
+      case 'house':
         return createSVGMarker('#2196f3', houseIcon);
-      case 'Apartment':
+      case 'apartment':
         return createSVGMarker('#e91e63', apartmentIcon);
-      case 'ApartmentInHouse':
+      case 'apartment-in-house':
         return createSVGMarker('#2196f3', houseIcon); // House color with house icon
-      case 'Office':
-      case 'CommercialSpace':
+      case 'office':
+      case 'commercial-space':
         return createSVGMarker('#4caf50', officeIcon);
-      case 'Land':
+      case 'land':
         return createSVGMarker('#795548', landIcon);
-      case 'VacationHome':
+      case 'vacation-home':
         return createSVGMarker('#ff9800', vacationHomeIcon);
-      case 'Duplex':
+      case 'duplex':
         return createSVGMarker('#9c27b0', duplexIcon);
       default:
         return createSVGMarker('#e91e63', apartmentIcon);

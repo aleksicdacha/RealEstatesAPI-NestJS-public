@@ -1,135 +1,173 @@
-// Property Types
+// ============================================================
+// Enums — values MUST match apps/api/src/entities/*/enums/*.ts
+// This is the single source of truth for all frontend apps.
+// ============================================================
+
 export enum PropertyType {
-  APARTMENT = 'APARTMENT',
-  HOUSE = 'HOUSE',
-  LAND = 'LAND',
-  OFFICE = 'OFFICE',
-  COMMERCIAL = 'COMMERCIAL',
-  GARAGE = 'GARAGE',
-  STUDIO = 'STUDIO',
-  PENTHOUSE = 'PENTHOUSE',
-  VILLA = 'VILLA',
-  COTTAGE = 'COTTAGE',
+  Apartment = 'apartment',
+  House = 'house',
+  ApartmentInHouse = 'apartment-in-house',
+  Office = 'office',
+  CommercialSpace = 'commercial-space',
+  Land = 'land',
+  VacationHome = 'vacation-home',
+  Duplex = 'duplex',
 }
 
 export enum PropertyStatus {
-  AVAILABLE = 'AVAILABLE',
-  RESERVED = 'RESERVED',
-  SOLD = 'SOLD',
-  RENTED = 'RENTED',
-}
-
-export enum TransactionType {
-  SALE = 'SALE',
-  RENT = 'RENT',
+  Active = 'active',
+  Inactive = 'inactive',
+  Deleted = 'deleted',
 }
 
 export enum HeatingType {
-  CENTRAL = 'CENTRAL',
-  GAS = 'GAS',
-  ELECTRIC = 'ELECTRIC',
-  DISTRICT = 'DISTRICT',
-  WOOD = 'WOOD',
-  HEAT_PUMP = 'HEAT_PUMP',
-  OTHER = 'OTHER',
+  Central = 'central',
+  GasCentral = 'gas-central',
+  SolidFuelCentral = 'solid-fuel-central',
+  ElectricCentral = 'electric-central',
+  Floor = 'floor',
+  IndependentOnGas = 'independent-on-gas',
+  IndependentOnSolidFuel = 'independent-on-solid-fuel',
+  IndependentOnElectricity = 'independent-on-electricity',
+  Fireplace = 'fireplace',
+  AirConditioner = 'air-conditioner',
+  Other = 'other',
 }
 
-export interface Property {
-  id: number;
-  code: string;
-  title: string;
-  description: string;
-  type: PropertyType;
-  transactionType: TransactionType;
-  status: PropertyStatus;
-  price: number;
-  area: number;
-  rooms: number;
-  bedrooms: number;
-  bathrooms: number;
-  floor: number;
-  totalFloors: number;
-  hasElevator: boolean;
-  hasParking: boolean;
-  hasGarage: boolean;
-  hasBalcony: boolean;
-  hasTerrace: boolean;
-  hasGarden: boolean;
-  hasBasement: boolean;
-  yearBuilt: number;
-  heatingType: HeatingType;
-  address: string;
-  city: string;
-  neighborhood: string;
-  postalCode: string;
-  latitude: number;
-  longitude: number;
-  images: PropertyImage[];
-  featuredImage?: string;
+export enum Orientation {
+  North = 'north',
+  South = 'south',
+  East = 'east',
+  West = 'west',
+  NorthEast = 'northeast',
+  NorthWest = 'northwest',
+  SouthEast = 'southeast',
+  SouthWest = 'southwest',
+}
+
+export enum TransactionType {
+  Seller = 'seller',
+  Buyer = 'buyer',
+  Rents = 'rents',
+  RentsOut = 'rents-out',
+}
+
+export enum ClientStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+  Deleted = 'deleted',
+}
+
+export enum PaymentType {
+  Cash = 'cash',
+  Credit = 'credit',
+  Combined = 'combined',
+}
+
+export enum UserRole {
+  Admin = 'admin',
+  User = 'user',
+}
+
+// ============================================================
+// Interfaces — match actual API response shapes
+// ============================================================
+
+export interface PropertyImage {
+  id: string;
+  url: string;
+  order: number;
+  isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface PropertyImage {
-  id: number;
-  url: string;
-  thumbnailUrl: string;
-  alt: string;
-  order: number;
-  width: number;
-  height: number;
+export interface Client {
+  id: string;
+  ownerName: string;
+  ownerJmbg?: string;
+  ownerIdCardNumber?: string;
+  clientTransactionType: TransactionType;
+  status: ClientStatus;
+  paymentType?: PaymentType;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface PropertySearchParams {
-  search?: string;
-  type?: PropertyType[];
-  transactionType?: TransactionType;
-  status?: PropertyStatus[];
-  minPrice?: number;
-  maxPrice?: number;
-  minArea?: number;
-  maxArea?: number;
-  rooms?: number[];
-  bedrooms?: number[];
-  city?: string;
+/** Full property — admin API only */
+export interface Property {
+  guid: string;
+  code: string;
+  propertyType: PropertyType;
+  status: PropertyStatus;
+  price: number;
+  salePrice?: number;
+  area: number;
+  description?: string;
+  address?: string;
   neighborhood?: string;
-  hasParking?: boolean;
-  hasElevator?: boolean;
-  hasGarden?: boolean;
-  hasBalcony?: boolean;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'ASC' | 'DESC';
+  city?: string;
+  lat: number;
+  lon: number;
+  floor?: number;
+  roomStructure?: string;
+  heating?: HeatingType;
+  orientation?: Orientation;
+  bathrooms?: number;
+  elevator?: boolean;
+  additionalEquipment?: string[];
+  constructionYear?: number;
+  specialOffer?: number;
+  youtubeUrl?: string;
+  comment?: string;
+  contractNumber?: string;
+  cadastralParcel?: string;
+  cadastralMunicipality?: string;
+  images: PropertyImage[];
+  client?: Client;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-// User Types
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  AGENT = 'AGENT',
-  USER = 'USER',
+/** Sanitized public property — user-web only (no sensitive fields) */
+export interface PublicProperty {
+  guid: string;
+  code: string;
+  propertyType: PropertyType;
+  price: number;
+  area?: number;
+  description?: string;
+  neighborhood?: string;
+  lat: number;
+  lon: number;
+  floor?: number;
+  roomStructure?: string;
+  heating?: HeatingType;
+  orientation?: Orientation;
+  bathrooms?: number;
+  elevator?: boolean;
+  additionalEquipment?: string[];
+  constructionYear?: number;
+  specialOffer?: number;
+  youtubeUrl?: string;
+  images?: Array<{
+    id: string;
+    url: string;
+    isPrimary: boolean;
+    displayOrder: number;
+  }>;
 }
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   role: UserRole;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
@@ -142,64 +180,44 @@ export interface LoginCredentials {
   password: string;
 }
 
-// Client Types
-export interface Client {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+export interface PaginatedResponse<T> {
+  items: T[];
+  meta: {
+    totalItems: number;
+    itemCount: number;
+    itemsPerPage: number;
+    totalPages: number;
+    currentPage: number;
+  };
 }
 
-// Contact Form
+export interface PropertyFilterParams {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  order?: 'ASC' | 'DESC';
+  searchField?: string;
+  searchValue?: string;
+  status?: string;
+  propertyType?: string;
+  clientTransactionType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minArea?: number;
+  maxArea?: number;
+  city?: string;
+  neighborhoods?: string;
+  roomStructure?: string;
+  floors?: string;
+  heating?: string;
+  features?: string;
+  elevator?: boolean;
+}
+
 export interface ContactFormData {
   name: string;
   email: string;
   phone: string;
   message: string;
-  propertyId?: number;
-  preferredContactMethod?: 'email' | 'phone';
-}
-
-// Map Types
-export interface MapBounds {
-  north: number;
-  south: number;
-  east: number;
-  west: number;
-}
-
-export interface MapMarker {
-  id: number;
-  position: {
-    lat: number;
-    lng: number;
-  };
-  property: Property;
-}
-
-// Filter Options
-export interface FilterOptions {
-  types: PropertyType[];
-  cities: string[];
-  neighborhoods: string[];
-  priceRanges: PriceRange[];
-  areaRanges: AreaRange[];
-  roomOptions: number[];
-  bedroomOptions: number[];
-}
-
-export interface PriceRange {
-  label: string;
-  min: number;
-  max: number;
-}
-
-export interface AreaRange {
-  label: string;
-  min: number;
-  max: number;
+  propertyGuid?: string;
 }

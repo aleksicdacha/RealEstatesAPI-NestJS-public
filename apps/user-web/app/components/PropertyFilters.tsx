@@ -21,29 +21,29 @@ export interface PropertyFiltersData {
 
 // Property types
 const propertyTypes = [
-  { value: 'Apartment', label: 'apartment' },
-  { value: 'House', label: 'house' },
-  { value: 'Land', label: 'land' },
-  { value: 'Office', label: 'office' },
-  { value: 'CommercialSpace', label: 'commercial' },
-  { value: 'VacationHome', label: 'vacationHome' },
-  { value: 'ApartmentInHouse', label: 'apartmentInHouse' },
-  { value: 'Duplex', label: 'duplex' },
+  { value: 'apartment', label: 'apartment' },
+  { value: 'house', label: 'house' },
+  { value: 'land', label: 'land' },
+  { value: 'office', label: 'office' },
+  { value: 'commercial-space', label: 'commercial' },
+  { value: 'vacation-home', label: 'vacationHome' },
+  { value: 'apartment-in-house', label: 'apartmentInHouse' },
+  { value: 'duplex', label: 'duplex' },
 ];
 
 // Heating types
 const heatingTypes = [
-  { value: 'Central', label: 'centralHeating' },
-  { value: 'Gas central', label: 'gasHeating' },
-  { value: 'Electric central', label: 'electricHeating' },
-  { value: 'Central heating with solid fuel', label: 'solidFuel' },
-  { value: 'Floor', label: 'floorHeating' },
-  { value: 'Independently on gas', label: 'independentGas' },
-  { value: 'Independently on solid fuel', label: 'independentSolidFuel' },
-  { value: 'Independently on electricity', label: 'independentElectricity' },
-  { value: 'Fireplace', label: 'fireplace' },
-  { value: 'Air conditioner', label: 'airConditioner' },
-  { value: 'The rest types', label: 'otherHeating' },
+  { value: 'central', label: 'centralHeating' },
+  { value: 'gas-central', label: 'gasHeating' },
+  { value: 'electric-central', label: 'electricHeating' },
+  { value: 'solid-fuel-central', label: 'solidFuel' },
+  { value: 'floor', label: 'floorHeating' },
+  { value: 'independent-on-gas', label: 'independentGas' },
+  { value: 'independent-on-solid-fuel', label: 'independentSolidFuel' },
+  { value: 'independent-on-electricity', label: 'independentElectricity' },
+  { value: 'fireplace', label: 'fireplace' },
+  { value: 'air-conditioner', label: 'airConditioner' },
+  { value: 'other', label: 'otherHeating' },
 ];
 
 interface PropertyFiltersProps {
