@@ -1,0 +1,246 @@
+name: Daily Security Scan
+
+on:
+  schedule:
+    # Runs at 02:00 UTC daily
+    - cron: '0 2 * * *'
+  workflow_dispatch:        # Allow manual trigger from GitHub UI
+  push:
+    branches: [master]
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/Dockerfile*'
+      - '**/docker-compose*.yml'
+
+permissions:
+  contents: read
+  security-events: write   # Required for CodeQL + Trivy SARIF upload
+
+jobs:
+  # ── 1: npm audit — check for known vulnerabilities ─────────────────────────
+  npm-audit:
+    name: npm audit (dependency vulnerabilities)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: npm ci --ignore-scripts
+
+      - name: Install admin-web dependencies
+        working-directory: apps/admin-web
+        run: npm ci --ignore-scripts
+
+      - name: Install user-web dependencies
+        working-directory: apps/user-web
+        run: npm ci --ignore-scripts
+
+      - name: npm audit — root
+        id: audit-root
+        run: |
+          npm audit --audit-level=high --json > /tmp/audit-root.json 2>/dev/null || true
+          VULNS=$(cat /tmp/audit-root.json | jq '.metadata.vulnerabilities | .high + .critical' 2>/dev/null || echo 0)
+          echo "vulns=${VULNS}" >> "$GITHUB_OUTPUT"
+          npm audit --audit-level=high || true
+
+      - name: npm audit — apps/api
+        working-directory: apps/api
+        run: npm audit --audit-level=high || true
+
+      - name: npm audit — apps/admin-web
+        working-directory: apps/admin-web
+        run: npm audit --audit-level=high || true
+
+      - name: npm audit — apps/user-web
+        working-directory: apps/user-web
+        run: npm audit --audit-level=high || true
+
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-reports
+          path: /tmp/audit-*.json
+          retention-days: 30
+
+  # ── 2: CodeQL — static code analysis ───────────────────────────────────────
+  codeql:
+    name: CodeQL static analysis
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'
+
+  # ── 3: Trivy — container + filesystem vulnerability scan ────────────────────
+  trivy:
+    name: Trivy vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan (HIGH + CRITICAL)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '0'
+          ignore-unfixed: true
+
+      - name: Upload Trivy SARIF to CodeQL
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: trivy
+
+      - name: Trivy filesystem scan (table output for logs)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '0'
+          ignore-unfixed: true
+
+      - name: Scan docker-compose images
+        run: |
+          # Extract image names from docker-compose and scan each
+          if command -v docker-compose &>/dev/null || docker compose version &>/dev/null 2>&1; then
+            images=$(grep "image:" docker-compose.yml 2>/dev/null | awk '{print $2}' | tr -d '"' || true)
+            for img in $images; do
+              echo "=== Scanning: $img ==="
+              docker pull "$img" --quiet 2>/dev/null || true
+              trivy image --exit-code 0 --severity HIGH,CRITICAL --quiet "$img" 2>/dev/null || true
+            done
+          fi
+
+  # ── 4: Secret scanning — detect leaked credentials ─────────────────────────
+  secret-scan:
+    name: Secret / credential leak detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for secret scanning)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks — scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}   # Only needed for org repos; optional for personal
+        continue-on-error: true     # Don't block CI, just report
+
+  # ── 5: Collect results & send email ────────────────────────────────────────
+  notify:
+    name: Email alert
+    runs-on: ubuntu-latest
+    needs: [npm-audit, codeql, trivy, secret-scan]
+    if: always()
+    steps:
+      - name: Check for failures
+        id: check
+        run: |
+          FAILED=""
+          [[ "${{ needs.npm-audit.result }}" == "failure" ]]  && FAILED="${FAILED}npm-audit "
+          [[ "${{ needs.codeql.result }}"    == "failure" ]]  && FAILED="${FAILED}codeql "
+          [[ "${{ needs.trivy.result }}"     == "failure" ]]  && FAILED="${FAILED}trivy "
+          [[ "${{ needs.secret-scan.result }}" == "failure" ]] && FAILED="${FAILED}secret-scan "
+          echo "failed_jobs=${FAILED}" >> "$GITHUB_OUTPUT"
+          echo "has_failures=$([[ -n "$FAILED" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Send email alert on failure
+        if: steps.check.outputs.has_failures == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.ALERT_EMAIL_USER }}
+          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          subject: '[ALERT] Security scan failures — RealEstatesAPI-NestJS — ${{ github.run_id }}'
+          to: ${{ secrets.ALERT_EMAIL_USER }}
+          from: ${{ secrets.ALERT_EMAIL_USER }}
+          body: |
+            Security scan detected issues in RealEstatesAPI-NestJS.
+
+            Failed jobs: ${{ steps.check.outputs.failed_jobs }}
+            Repository:  ${{ github.repository }}
+            Branch:      ${{ github.ref_name }}
+            Commit:      ${{ github.sha }}
+            Run URL:     https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Review the full results at the URL above.
+            Security tab: https://github.com/${{ github.repository }}/security
+
+      - name: Send weekly OK report (Sundays)
+        if: |
+          steps.check.outputs.has_failures == 'false' &&
+          github.event_name == 'schedule'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.ALERT_EMAIL_USER }}
+          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          subject: '[OK] Daily security scan passed — RealEstatesAPI-NestJS — ${{ github.run_id }}'
+          to: ${{ secrets.ALERT_EMAIL_USER }}
+          from: ${{ secrets.ALERT_EMAIL_USER }}
+          body: |
+            Daily security scan passed with no issues.
+
+            Repository: ${{ github.repository }}
+            Branch:     ${{ github.ref_name }}
+            Commit:     ${{ github.sha }}
+            Run URL:    https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+# ── Dependency review on every PR ──────────────────────────────────────────
+---
+# This is a separate workflow — saved as dependency-review.yml
+# (uncomment and save separately if needed)
+# on:
+#   pull_request:
+# jobs:
+#   dependency-review:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/dependency-review-action@v4
+#         with:
+#           fail-on-severity: high

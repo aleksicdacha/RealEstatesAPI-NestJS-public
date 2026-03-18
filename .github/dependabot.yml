@@ -1,0 +1,72 @@
+# =============================================================================
+#  Dependabot — automated dependency security updates
+#
+#  GitHub will open PRs automatically when vulnerabilities are found in deps.
+#  Requires: Settings → Security → Dependabot → enable all three options
+# =============================================================================
+version: 2
+
+updates:
+  # Root workspace
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    groups:
+      security-updates:
+        patterns: ["*"]
+        update-types: ["patch", "minor"]
+    labels:
+      - "security"
+      - "dependencies"
+
+  # apps/api
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    schedule:
+      interval: "daily"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "security"
+      - "api"
+
+  # apps/admin-web
+  - package-ecosystem: "npm"
+    directory: "/apps/admin-web"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    labels:
+      - "security"
+      - "admin-web"
+
+  # apps/user-web
+  - package-ecosystem: "npm"
+    directory: "/apps/user-web"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    labels:
+      - "security"
+      - "user-web"
+
+  # Docker images in docker-compose
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "security"
+      - "docker"
+
+  # GitHub Actions themselves
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "security"
+      - "github-actions"

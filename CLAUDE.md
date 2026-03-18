@@ -1,0 +1,75 @@
+# Real Estate Platform - Claude Context
+
+## Project Overview
+Turborepo monorepo - Real Estate agency platform built with NestJS + Next.js.
+
+**Apps:**
+- `apps/api` - NestJS 10 REST API (:3000)
+- `apps/admin-web` - Next.js 15 admin panel with PrimeReact (:3001)
+- `apps/user-web` - Next.js 15 public website with next-intl i18n (:3002)
+
+**Packages:**
+- `packages/types` - Shared TypeScript interfaces (build before using: `cd packages/types && npm run build`)
+- `packages/api-client` - Centralized API methods
+- `packages/utils` - Shared utilities
+
+**Stack:** TypeScript, PostgreSQL, TypeORM, Redis (optional), Docker Compose, Google Gemini AI
+
+## Critical Patterns
+
+### Custom Repository Pattern (NestJS)
+- Repositories extend `Repository<Entity>` and inject `DataSource`
+- **Do NOT use `@InjectRepository()`** - provide custom repository as a service directly
+- See `apps/api/src/entities/property/property.repository.ts` as canonical example
+
+### Security: Public vs Admin API Split
+- **Admin** `/v1/properties` - full data including salePrice, comment, client
+- **Public** `/v1/properties/public` - sanitized via `PublicPropertyDto`
+- Public API MUST hide: `address`, `salePrice`, `comment`, `client`, `createdAt`, `updatedAt`
+- **user-web MUST NEVER call admin endpoints**
+
+### Property Identifiers
+- `id` - auto-increment PK, internal only, never expose in URLs
+- `guid` - UUIDv4, this is the public identifier for URLs/API responses
+- `code` - human-readable (e.g. "NIS-001")
+
+## Dev Commands
+```bash
+# From workspace root
+npm run dev          # Run all apps (Turborepo parallel)
+npm run docker:up    # Start PostgreSQL + Redis
+npm run docker:down
+npm run docker:logs
+
+# From apps/api
+npm run migration:generate -- src/migrations/MigrationName
+npm run migration:run
+npm run migration:revert
+npm run seed:users
+```
+
+## Environment Variables
+
+`apps/api/.env`:
+- DB_HOST, DB_PORT=5432, DB_USERNAME, DB_PASSWORD, DB_NAME=estates
+- JWT_SECRET (min 32 chars)
+- GEMINI_API_KEY (optional, has fallback)
+- CORS_ORIGIN=http://localhost:3001,http://localhost:3002
+
+`apps/user-web/.env.local`:
+- NEXT_PUBLIC_API_URL=http://localhost:3000/v1
+- NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+
+## Common Pitfalls
+1. TypeORM migrations: use `cd apps/api && npm run migration:*`, NOT `nest generate`
+2. Many controllers exist but guards may not be applied - verify `@UseGuards()` on routes
+3. Rebuild `@repo/types` after interface changes
+4. Port conflicts: API=3000, Admin=3001, User=3002, PostgreSQL=5432, Redis=6379
+5. `specialOffer`: integer 1-20, lower = higher priority on homepage
+
+## Key Reference Files
+- `documentation/SECURITY-PUBLIC-API.md` - Public/admin API separation
+- `apps/api/src/app.module.ts` - NestJS root module
+- `apps/user-web/lib/api.ts` - Frontend API client
+- `apps/api/src/entities/property/property.repository.ts` - Repository pattern
+- `postman/Real-Estate-API-v2-Complete.postman_collection.json` - API testing
