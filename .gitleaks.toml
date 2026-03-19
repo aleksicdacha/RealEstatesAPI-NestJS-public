@@ -35,6 +35,9 @@ paths = [
     '''production-deployment-master\.sh''',
     '''server-create-env\.sh''',
     '''create-prod-env\.sh''',
+    # Old directory structure in closed PR commits — Maps API key was hardcoded, now removed
+    '''admin-frontend/src/app/components/googleMapsLoader\.ts''',
+    '''.*googleMapsLoader\.ts''',
 ]
 
 regexes = [
