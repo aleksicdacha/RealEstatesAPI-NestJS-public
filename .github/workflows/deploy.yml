@@ -11,6 +11,8 @@ jobs:
     name: Build & Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Dependabot has no access to secrets — skip deploy for automated dependency updates
+    if: github.actor != 'dependabot[bot]'
 
     steps:
       - name: Checkout code
