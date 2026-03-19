@@ -98,6 +98,7 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        continue-on-error: true   # SARIF upload requires GHAS; skip gracefully on private free repos
         with:
           category: '/language:${{ matrix.language }}'
 
@@ -123,6 +124,7 @@ jobs:
       - name: Upload Trivy SARIF to CodeQL
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true   # Requires GHAS; skip gracefully on private free repos
         with:
           sarif_file: 'trivy-results.sarif'
           category: trivy
@@ -175,6 +177,8 @@ jobs:
     steps:
       - name: Check for failures
         id: check
+        env:
+          ALERT_EMAIL_USER: ${{ secrets.ALERT_EMAIL_USER }}
         run: |
           FAILED=""
           [[ "${{ needs.npm-audit.result }}" == "failure" ]]  && FAILED="${FAILED}npm-audit "
@@ -183,9 +187,10 @@ jobs:
           [[ "${{ needs.secret-scan.result }}" == "failure" ]] && FAILED="${FAILED}secret-scan "
           echo "failed_jobs=${FAILED}" >> "$GITHUB_OUTPUT"
           echo "has_failures=$([[ -n "$FAILED" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "email_ready=$([[ -n "$ALERT_EMAIL_USER" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Send email alert on failure
-        if: steps.check.outputs.has_failures == 'true'
+        if: steps.check.outputs.has_failures == 'true' && steps.check.outputs.email_ready == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -211,6 +216,7 @@ jobs:
       - name: Send weekly OK report (Sundays)
         if: |
           steps.check.outputs.has_failures == 'false' &&
+          steps.check.outputs.email_ready == 'true' &&
           github.event_name == 'schedule'
         uses: dawidd6/action-send-mail@v3
         with:
