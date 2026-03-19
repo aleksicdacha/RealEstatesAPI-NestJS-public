@@ -53,9 +53,10 @@ PORT=3000
 BASE_URL='http://localhost:3000'
 FILE_UPLOAD_PATH=./uploads
 
-JWT_SECRET=CHANGE_ME_DEV
+# Generate with: openssl rand -hex 64
+JWT_SECRET=CHANGE_ME
 JWT_EXPIRES_IN=30m
-JWT_REFRESH_SECRET=CHANGE_ME_DEV
+JWT_REFRESH_SECRET=CHANGE_ME
 JWT_REFRESH_EXPIRES_IN=7d
 
 DB_TYPE=postgres
@@ -162,7 +163,7 @@ echo "   Host: localhost"
 echo "   Port: 5432"
 echo "   Database: estates"
 echo "   Username: postgres"
-echo "   Password: CHANGE_ME"
+echo "   Password: (see .env.development)"
 echo ""
 
 echo "🔐 Default Admin Credentials:"
