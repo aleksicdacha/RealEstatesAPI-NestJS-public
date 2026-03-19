@@ -27,6 +27,14 @@ paths = [
     '''.*\.md$''',
     # Setup scripts — contain placeholder tokens by design
     '''deploy/server-hardening/setup-server\.sh''',
+    # Template/helper scripts where credential placeholders are expected
+    # (sanitized via git-filter-repo; historical commits may still show CHANGE_ME)
+    '''scripts/create-prod-env\.sh''',
+    '''scripts/setup-local-dev\.sh''',
+    '''scripts/setup-production.*\.sh''',
+    '''production-deployment-master\.sh''',
+    '''server-create-env\.sh''',
+    '''create-prod-env\.sh''',
 ]
 
 regexes = [
