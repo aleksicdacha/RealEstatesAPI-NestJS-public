@@ -22,9 +22,25 @@ updates:
       - "security"
       - "dependencies"
 
-  # Docker images in docker-compose
+  # Docker base images
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "security"
+      - "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/apps/admin-web"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "security"
+      - "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/apps/user-web"
     schedule:
       interval: "weekly"
     labels:
