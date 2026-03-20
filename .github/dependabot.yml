@@ -22,37 +22,6 @@ updates:
       - "security"
       - "dependencies"
 
-  # apps/api
-  - package-ecosystem: "npm"
-    directory: "/apps/api"
-    schedule:
-      interval: "daily"
-      time: "03:00"
-    open-pull-requests-limit: 10
-    labels:
-      - "security"
-      - "api"
-
-  # apps/admin-web
-  - package-ecosystem: "npm"
-    directory: "/apps/admin-web"
-    schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
-    labels:
-      - "security"
-      - "admin-web"
-
-  # apps/user-web
-  - package-ecosystem: "npm"
-    directory: "/apps/user-web"
-    schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
-    labels:
-      - "security"
-      - "user-web"
-
   # Docker images in docker-compose
   - package-ecosystem: "docker"
     directory: "/"
