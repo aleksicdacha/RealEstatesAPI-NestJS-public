@@ -37,5 +37,8 @@
     "typeorm": "^0.3.21",
     "pg": "^8.13.1",
     "dotenv": "^16.4.7"
+  },
+  "overrides": {
+    "socket.io-parser": "4.2.6"
   }
 }
