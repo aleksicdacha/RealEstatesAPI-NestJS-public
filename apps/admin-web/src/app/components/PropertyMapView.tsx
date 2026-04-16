@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
@@ -8,8 +8,7 @@ import { formatCurrency } from '../utils/currency';
 import { Card } from 'primereact/card';
 import { googleMapsLoaderOptions } from '../utils/googleMapsLoader';
 import { customMapStyles } from '../utils/mapStyles';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+import { getImageSrc } from '../utils/image';
 import { useTranslations, useLocale } from 'next-intl';
 
 interface PropertyMapViewProps {
@@ -44,7 +43,9 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
   height = '600px',
   hoveredPropertyId = null,
 }) => {
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null,
+  );
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [zoom, setZoom] = useState(13);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -62,17 +63,17 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     }
     // Serbian translations
     const heatingMap: { [key: string]: string } = {
-      'central': 'Centralno',
+      central: 'Centralno',
       'gas-central': 'Centralno na gas',
       'solid-fuel-central': 'Centralno na čvrsto gorivo',
       'electric-central': 'Centralno električno',
-      'floor': 'Podno',
+      floor: 'Podno',
       'independent-on-gas': 'Nezavisno na gas',
       'independent-on-solid-fuel': 'Nezavisno na čvrsto gorivo',
       'independent-on-electricity': 'Nezavisno na struju',
-      'fireplace': 'Kamin',
+      fireplace: 'Kamin',
       'air-conditioner': 'Klima',
-      'other': 'Ostali tipovi'
+      other: 'Ostali tipovi',
     };
     return heatingMap[heating] || heating;
   };
@@ -81,26 +82,26 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
   const translatePropertyType = (type: string): string => {
     if (locale === 'en') {
       const typeMapEn: { [key: string]: string } = {
-        'apartment': 'Apartment',
-        'house': 'House',
+        apartment: 'Apartment',
+        house: 'House',
         'apartment-in-house': 'Apartment in House',
         'commercial-space': 'Commercial Space',
-        'office': 'Office',
-        'land': 'Land',
+        office: 'Office',
+        land: 'Land',
         'vacation-home': 'Vacation Home',
-        'duplex': 'Duplex'
+        duplex: 'Duplex',
       };
       return typeMapEn[type] || type;
     }
     const typeMap: { [key: string]: string } = {
-      'apartment': 'Stan',
-      'house': 'Kuća',
+      apartment: 'Stan',
+      house: 'Kuća',
       'apartment-in-house': 'Stan u kući',
       'commercial-space': 'Lokal',
-      'office': 'Poslovni prostor',
-      'land': 'Plac',
+      office: 'Poslovni prostor',
+      land: 'Plac',
       'vacation-home': 'Vikendica',
-      'duplex': 'Dupleks'
+      duplex: 'Dupleks',
     };
     return typeMap[type] || type;
   };
@@ -116,11 +117,14 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
   // Update map bounds when properties change
   useEffect(() => {
     console.log('🗺️ PropertyMapView received properties:', properties.length);
-    
+
     if (!isLoaded || !mapRef.current) return;
 
-    const validProperties = properties.filter(p => p.lat && p.lon);
-    console.log('🗺️ Valid properties with coordinates:', validProperties.length);
+    const validProperties = properties.filter((p) => p.lat && p.lon);
+    console.log(
+      '🗺️ Valid properties with coordinates:',
+      validProperties.length,
+    );
 
     if (validProperties.length === 0) {
       // No properties, reset to default center
@@ -130,7 +134,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     }
 
     const bounds = new google.maps.LatLngBounds();
-    
+
     validProperties.forEach((property) => {
       bounds.extend({ lat: property.lat!, lng: property.lon! });
     });
@@ -139,7 +143,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     if (!bounds.isEmpty()) {
       const padding = { top: 50, right: 50, bottom: 50, left: 50 };
       mapRef.current.fitBounds(bounds, padding);
-      
+
       // If only one property, set a reasonable zoom level
       if (validProperties.length === 1) {
         setTimeout(() => {
@@ -167,13 +171,13 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     if (clustererRef.current) {
       clustererRef.current.clearMarkers();
     }
-    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current.clear();
 
     // Create new markers
-    const validProperties = properties.filter(p => p.lat && p.lon);
+    const validProperties = properties.filter((p) => p.lat && p.lon);
     const markers: google.maps.Marker[] = [];
-    
+
     validProperties.forEach((property) => {
       const marker = new google.maps.Marker({
         position: { lat: property.lat!, lng: property.lon! },
@@ -205,7 +209,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
       if (clustererRef.current) {
         clustererRef.current.clearMarkers();
       }
-      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current.forEach((marker) => marker.setMap(null));
     };
   }, [properties, isLoaded]);
 
@@ -214,7 +218,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     if (!hoveredPropertyId) {
       // Reset all markers to normal size
       markersRef.current.forEach((marker, id) => {
-        const property = properties.find(p => p.id === id);
+        const property = properties.find((p) => p.id === id);
         if (property) {
           marker.setIcon({
             url: getMarkerIcon(property.propertyType),
@@ -229,13 +233,13 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
 
     // Highlight the hovered marker
     const hoveredMarker = markersRef.current.get(hoveredPropertyId);
-    const hoveredProperty = properties.find(p => p.id === hoveredPropertyId);
-    
+    const hoveredProperty = properties.find((p) => p.id === hoveredPropertyId);
+
     if (hoveredMarker && hoveredProperty) {
       // Reset all other markers
       markersRef.current.forEach((marker, id) => {
         if (id !== hoveredPropertyId) {
-          const property = properties.find(p => p.id === id);
+          const property = properties.find((p) => p.id === id);
           if (property) {
             marker.setIcon({
               url: getMarkerIcon(property.propertyType),
@@ -288,11 +292,15 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
   };
 
   // Get marker icon based on property type - custom SVG icons
-  const getMarkerIcon = (propertyType: string, isHighlighted: boolean = false) => {
+  const getMarkerIcon = (
+    propertyType: string,
+    isHighlighted: boolean = false,
+  ) => {
     // Create custom SVG marker with building icon
     const createSVGMarker = (color: string, icon: string) => {
       // Add pulse animation and glow effect for highlighted markers
-      const glowFilter = isHighlighted ? `
+      const glowFilter = isHighlighted
+        ? `
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
           <feMerge>
@@ -300,7 +308,8 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
-      ` : '';
+      `
+        : '';
 
       const svg = `
         <svg width="40" height="48" viewBox="0 0 40 48" xmlns="http://www.w3.org/2000/svg">
@@ -383,7 +392,7 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
         <rect x="5" y="9" width="2" height="3" fill="#9c27b0"/>
       </g>
     `;
-    
+
     switch (propertyType) {
       case 'house':
         return createSVGMarker('#2196f3', houseIcon);
@@ -407,18 +416,21 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
 
   if (loadError) {
     return (
-      <div style={{ 
-        padding: '20px', 
-        textAlign: 'center',
-        backgroundColor: '#fee',
-        border: '1px solid #fcc',
-        borderRadius: '8px',
-        margin: '20px'
-      }}>
+      <div
+        style={{
+          padding: '20px',
+          textAlign: 'center',
+          backgroundColor: '#fee',
+          border: '1px solid #fcc',
+          borderRadius: '8px',
+          margin: '20px',
+        }}
+      >
         <h3 style={{ color: '#c33' }}>Error loading Google Maps</h3>
         <p>Please check your Google Maps API key configuration in .env.local</p>
         <p style={{ fontSize: '12px', color: '#666' }}>
-          Make sure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set and the API key is valid.
+          Make sure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set and the API key is
+          valid.
         </p>
       </div>
     );
@@ -426,13 +438,15 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
 
   if (!isLoaded) {
     return (
-      <div style={{ 
-        padding: '20px', 
-        textAlign: 'center',
-        backgroundColor: '#f0f9ff',
-        border: '1px solid #bae6fd',
-        borderRadius: '8px'
-      }}>
+      <div
+        style={{
+          padding: '20px',
+          textAlign: 'center',
+          backgroundColor: '#f0f9ff',
+          border: '1px solid #bae6fd',
+          borderRadius: '8px',
+        }}
+      >
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-3"></div>
         <p>Loading maps...</p>
       </div>
@@ -456,202 +470,313 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
               pixelOffset: new google.maps.Size(0, -40),
             }}
           >
-            <div style={{ 
-              width: '240px', 
-              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            }}>
+            <div
+              style={{
+                width: '240px',
+                fontFamily:
+                  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              }}
+            >
               {/* Image */}
-              {selectedProperty.images && selectedProperty.images.length > 0 && (() => {
-                // Find favorite image or use first one
-                console.log('🖼️ Property images:', selectedProperty.images.map(img => ({ url: img.url, isFavorite: img.isFavorite })));
-                const favoriteImage = selectedProperty.images.find(img => img.isFavorite) || selectedProperty.images[0];
-                console.log('⭐ Selected favorite image:', favoriteImage);
-                return (
-                <div style={{ 
-                  marginBottom: '12px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  borderRadius: '4px',
-                }}>
-                  <img
-                    src={`${API_BASE_URL}${favoriteImage.url.startsWith('/uploads/') ? favoriteImage.url : '/uploads/' + favoriteImage.url}`}
-                    alt={selectedProperty.code}
-                    style={{
-                      width: '100%',
-                      height: '140px',
-                      objectFit: 'cover',
-                      cursor: 'pointer',
-                      display: 'block',
-                    }}
-                    onClick={handlePropertyDetailsClick}
-                  />
-                  {/* Status Badge - minimal */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    backgroundColor: selectedProperty.status === 'active' ? '#10b981' : '#f59e0b',
-                    padding: '5px 10px',
-                    borderRadius: '2px',
-                    fontSize: '10px',
-                    fontWeight: '500',
-                    color: 'white',
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                  }}>
-                    {translateStatus(selectedProperty.status)}
-                  </div>
-                </div>
-              )})()}
-              
+              {selectedProperty.images &&
+                selectedProperty.images.length > 0 &&
+                (() => {
+                  // Find favorite image or use first one
+                  console.log(
+                    '🖼️ Property images:',
+                    selectedProperty.images.map((img) => ({
+                      url: img.url,
+                      isFavorite: img.isFavorite,
+                    })),
+                  );
+                  const favoriteImage =
+                    selectedProperty.images.find((img) => img.isFavorite) ||
+                    selectedProperty.images[0];
+                  console.log('⭐ Selected favorite image:', favoriteImage);
+                  return (
+                    <div
+                      style={{
+                        marginBottom: '12px',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <img
+                        src={getImageSrc(favoriteImage.url)}
+                        alt={selectedProperty.code}
+                        style={{
+                          width: '100%',
+                          height: '140px',
+                          objectFit: 'cover',
+                          cursor: 'pointer',
+                          display: 'block',
+                        }}
+                        onClick={handlePropertyDetailsClick}
+                      />
+                      {/* Status Badge - minimal */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          backgroundColor:
+                            selectedProperty.status === 'active'
+                              ? '#10b981'
+                              : '#f59e0b',
+                          padding: '5px 10px',
+                          borderRadius: '2px',
+                          fontSize: '10px',
+                          fontWeight: '500',
+                          color: 'white',
+                          letterSpacing: '0.5px',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {translateStatus(selectedProperty.status)}
+                      </div>
+                    </div>
+                  );
+                })()}
+
               {/* Content */}
-              <div style={{ cursor: 'pointer' }} onClick={handlePropertyDetailsClick}>
+              <div
+                style={{ cursor: 'pointer' }}
+                onClick={handlePropertyDetailsClick}
+              >
                 {/* Code & Type */}
-                <div style={{ 
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '10px',
-                }}>
-                  <div style={{ 
-                    fontWeight: '600', 
-                    fontSize: '16px',
-                    color: '#111827',
-                    letterSpacing: '-0.02em',
-                  }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: '600',
+                      fontSize: '16px',
+                      color: '#111827',
+                      letterSpacing: '-0.02em',
+                    }}
+                  >
                     {selectedProperty.code}
                   </div>
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#6b7280',
-                    fontWeight: '500',
-                  }}>
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      color: '#6b7280',
+                      fontWeight: '500',
+                    }}
+                  >
                     {translatePropertyType(selectedProperty.propertyType)}
                   </div>
                 </div>
-                
+
                 {/* Address - with Material icon */}
-                <div style={{ 
-                  fontSize: '12px', 
-                  color: '#6b7280', 
-                  marginBottom: '3px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '6px',
-                }}>
-                  <i className="pi pi-map-marker" style={{ fontSize: '12px', marginTop: '2px', color: '#9ca3af' }}></i>
-                  <span style={{ flex: 1, lineHeight: '1.5' }}>{selectedProperty.address}</span>
+                <div
+                  style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginBottom: '3px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '6px',
+                  }}
+                >
+                  <i
+                    className="pi pi-map-marker"
+                    style={{
+                      fontSize: '12px',
+                      marginTop: '2px',
+                      color: '#9ca3af',
+                    }}
+                  ></i>
+                  <span style={{ flex: 1, lineHeight: '1.5' }}>
+                    {selectedProperty.address}
+                  </span>
                 </div>
-                
+
                 {/* Neighborhood */}
                 {selectedProperty.neighborhood && (
-                  <div style={{ 
-                    fontSize: '11px', 
-                    color: '#9ca3af', 
-                    marginBottom: '12px',
-                    paddingLeft: '18px',
-                  }}>
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      color: '#9ca3af',
+                      marginBottom: '12px',
+                      paddingLeft: '18px',
+                    }}
+                  >
                     {selectedProperty.neighborhood}
                   </div>
                 )}
-                
+
                 {/* Divider */}
-                <div style={{ 
-                  height: '1px', 
-                  backgroundColor: '#e5e7eb', 
-                  margin: '12px 0',
-                }}></div>
-                
+                <div
+                  style={{
+                    height: '1px',
+                    backgroundColor: '#e5e7eb',
+                    margin: '12px 0',
+                  }}
+                ></div>
+
                 {/* Price - prominent */}
-                <div style={{ 
-                  marginBottom: '12px',
-                }}>
-                  <div style={{ fontSize: '10px', color: '#6b7280', marginBottom: '3px', fontWeight: '500' }}>
+                <div
+                  style={{
+                    marginBottom: '12px',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '10px',
+                      color: '#6b7280',
+                      marginBottom: '3px',
+                      fontWeight: '500',
+                    }}
+                  >
                     {locale === 'en' ? 'Price' : 'Cena'}
                   </div>
-                  <div style={{ fontSize: '18px', fontWeight: '700', color: '#059669', letterSpacing: '-0.02em' }}>
+                  <div
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '700',
+                      color: '#059669',
+                      letterSpacing: '-0.02em',
+                    }}
+                  >
                     {formatCurrency(selectedProperty.price)}
                   </div>
                 </div>
-                
+
                 {/* Details Grid - clean and minimal */}
-                <div style={{ 
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '12px',
-                  marginBottom: '12px',
-                  paddingBottom: '12px',
-                  borderBottom: '1px solid #f3f4f6',
-                }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '12px',
+                    marginBottom: '12px',
+                    paddingBottom: '12px',
+                    borderBottom: '1px solid #f3f4f6',
+                  }}
+                >
                   <div>
-                    <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '3px', fontWeight: '500' }}>
+                    <div
+                      style={{
+                        fontSize: '10px',
+                        color: '#9ca3af',
+                        marginBottom: '3px',
+                        fontWeight: '500',
+                      }}
+                    >
                       {locale === 'en' ? 'Area' : 'Površina'}
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>
+                    <div
+                      style={{
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        color: '#111827',
+                      }}
+                    >
                       {selectedProperty.area} m²
                     </div>
                   </div>
                   {selectedProperty.floor && (
                     <div>
-                      <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '3px', fontWeight: '500' }}>
+                      <div
+                        style={{
+                          fontSize: '10px',
+                          color: '#9ca3af',
+                          marginBottom: '3px',
+                          fontWeight: '500',
+                        }}
+                      >
                         {locale === 'en' ? 'Floor' : 'Sprat'}
                       </div>
-                      <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          color: '#111827',
+                        }}
+                      >
                         {selectedProperty.floor}
                       </div>
                     </div>
                   )}
                   {selectedProperty.bathrooms && (
                     <div>
-                      <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '3px', fontWeight: '500' }}>
+                      <div
+                        style={{
+                          fontSize: '10px',
+                          color: '#9ca3af',
+                          marginBottom: '3px',
+                          fontWeight: '500',
+                        }}
+                      >
                         {locale === 'en' ? 'Bathrooms' : 'Kupatila'}
                       </div>
-                      <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          color: '#111827',
+                        }}
+                      >
                         {selectedProperty.bathrooms}
                       </div>
                     </div>
                   )}
                 </div>
-                
+
                 {/* Heating info - minimal badge */}
                 {selectedProperty.heating && (
-                  <div style={{
-                    marginBottom: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}>
-                    <i className="pi pi-sun" style={{ fontSize: '11px', color: '#9ca3af' }}></i>
+                  <div
+                    style={{
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <i
+                      className="pi pi-sun"
+                      style={{ fontSize: '11px', color: '#9ca3af' }}
+                    ></i>
                     <span style={{ fontSize: '11px', color: '#6b7280' }}>
                       {translateHeating(selectedProperty.heating)}
                     </span>
                   </div>
                 )}
-                
+
                 {/* CTA Button - Material Design */}
-                <button style={{ 
-                  width: '100%',
-                  padding: '10px 14px', 
-                  backgroundColor: '#3b82f6',
-                  border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  color: 'white',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12)',
-                  letterSpacing: '0.3px',
-                  textTransform: 'uppercase',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#2563eb';
-                  e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.16)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#3b82f6';
-                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.12)';
-                }}>
+                <button
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    backgroundColor: '#3b82f6',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    color: 'white',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12)',
+                    letterSpacing: '0.3px',
+                    textTransform: 'uppercase',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#2563eb';
+                    e.currentTarget.style.boxShadow =
+                      '0 2px 6px rgba(0, 0, 0, 0.16)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#3b82f6';
+                    e.currentTarget.style.boxShadow =
+                      '0 1px 3px rgba(0, 0, 0, 0.12)';
+                  }}
+                >
                   {locale === 'en' ? 'View Details' : 'Prikaži detalje'}
                 </button>
               </div>
@@ -679,9 +804,16 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
           gap: '8px',
         }}
       >
-        <i className="pi pi-home" style={{ fontSize: '14px', color: '#6b7280' }}></i>
-        <span style={{ fontWeight: '600', color: '#059669' }}>{properties.filter(p => p.lat && p.lon).length}</span>
-        <span style={{ color: '#9ca3af' }}>{locale === 'en' ? 'results' : 'rezultata'}</span>
+        <i
+          className="pi pi-home"
+          style={{ fontSize: '14px', color: '#6b7280' }}
+        ></i>
+        <span style={{ fontWeight: '600', color: '#059669' }}>
+          {properties.filter((p) => p.lat && p.lon).length}
+        </span>
+        <span style={{ color: '#9ca3af' }}>
+          {locale === 'en' ? 'results' : 'rezultata'}
+        </span>
       </div>
     </div>
   );

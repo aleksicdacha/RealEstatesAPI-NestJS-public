@@ -224,22 +224,21 @@ npm run build   # Build all apps
 
 ## 📚 Documentation
 
-Comprehensive guides in the `documentation/` folder:
-
 ### Essential Guides
-- 📖 **[FRESH_START_GUIDE.md](./FRESH_START_GUIDE.md)** - Complete setup guide
-- 🚀 **[QUICK_START.md](./QUICK_START.md)** - Quick reference card
-- 🔒 **[documentation/SECURITY-PUBLIC-API.md](./documentation/SECURITY-PUBLIC-API.md)** - Public/Admin API separation
-- 🤖 **[documentation/CHATBOT_GUIDE.md](./documentation/CHATBOT_GUIDE.md)** - AI Chatbot setup
-
-### Development Guides
+- 🔒 **[documentation/SECURITY-PUBLIC-API.md](./documentation/SECURITY-PUBLIC-API.md)** - Public/Admin API separation (CRITICAL)
 - 📝 **[documentation/MONOREPO_README.md](./documentation/MONOREPO_README.md)** - Monorepo structure
-- 🎨 **[documentation/COLOR_CONFIGURATION.md](./documentation/COLOR_CONFIGURATION.md)** - Theme customization
+- 🤖 **[documentation/CHATBOT_GUIDE.md](./documentation/CHATBOT_GUIDE.md)** - AI Chatbot setup
 - 📧 **[documentation/NEWSLETTER_HTML_GUIDE.md](./documentation/NEWSLETTER_HTML_GUIDE.md)** - Newsletter feature
+- 🌱 **[documentation/SEEDING_GUIDE.md](./documentation/SEEDING_GUIDE.md)** - Database seeding
 
 ### Deployment
 - 🚀 **[documentation/DEPLOYMENT_MASTER_GUIDE.md](./documentation/DEPLOYMENT_MASTER_GUIDE.md)** - Production deployment
-- 🐳 **[documentation/DOCKER_NAMING_AUDIT.md](./documentation/DOCKER_NAMING_AUDIT.md)** - Docker setup
+- 🖥️ **[documentation/HETZNER_DEPLOYMENT_GUIDE.md](./documentation/HETZNER_DEPLOYMENT_GUIDE.md)** - Hetzner server setup
+- ⚙️ **[documentation/GITHUB_ACTIONS_SETUP.md](./documentation/GITHUB_ACTIONS_SETUP.md)** - CI/CD configuration
+
+### AI Context
+- 🤖 **[.github/AGENTS.md](./.github/AGENTS.md)** - Living project context & change log
+- 📋 **[.github/copilot-instructions.md](./.github/copilot-instructions.md)** - AI coding instructions
 
 ---
 

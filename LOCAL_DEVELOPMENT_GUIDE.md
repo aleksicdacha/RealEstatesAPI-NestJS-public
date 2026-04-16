@@ -1,506 +1,372 @@
-# 🏗️ Local Development Environment - Complete Setup Guide
+# Local Development Guide
 
-## Overview
-
-This guide explains how to set up the complete Real Estate Platform for local development with **one command**. The setup includes PostgreSQL, Redis, NestJS API, and two Next.js frontends.
+Complete guide for setting up, developing, and deploying the Real Estate Platform.
 
 ## Architecture
 
-### Local Development Setup
-
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   Your Computer                          │
-├─────────────────────────────────────────────────────────┤
-│                                                           │
-│  🐳 Docker Containers:                                   │
-│     ├── PostgreSQL (port 5432)                           │
-│     └── Redis (port 6379)                                │
-│                                                           │
-│  💻 Running Locally (npm):                               │
-│     ├── API (NestJS)         → http://localhost:3000    │
-│     ├── Admin Web (Next.js)  → http://localhost:3001    │
-│     └── User Web (Next.js)   → http://localhost:3002    │
-│                                                           │
-└─────────────────────────────────────────────────────────┘
+Docker Containers:
+  PostgreSQL (port 5432)
+  Redis (port 6379)
+
+Running via npm:
+  API (NestJS)         → http://localhost:3000
+  Admin Web (Next.js)  → http://localhost:3001
+  User Web (Next.js)   → http://localhost:3002
 ```
 
-### Why This Setup?
+Databases run in Docker (or locally). Apps run via npm for hot reload.
 
-- **Docker for databases**: Easy setup, isolated, no conflicts
-- **npm for apps**: Hot reload, fast development, easier debugging
-- **Consistent enums**: All enum values use lowercase with kebab-case
+---
 
 ## Prerequisites
 
-1. **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop)
-2. **Node.js 20+** - [Download](https://nodejs.org/)
-3. **npm 10+** - Comes with Node.js
-4. **Git** - For cloning the repository
+| Tool | Version | Check |
+|------|---------|-------|
+| Node.js | 20+ | `node -v` |
+| npm | 10+ | `npm -v` |
+| Docker | Latest | `docker -v` (for Docker mode) |
+| PostgreSQL | 16+ | `psql --version` (for manual mode) |
 
-### Verify Installation
+---
+
+## Quick Start (One Command)
 
 ```bash
-docker --version        # Should show Docker version
-node --version          # Should show v20.x.x or higher
-npm --version           # Should show 10.x.x or higher
+# Interactive — choose Docker or manual DB mode:
+./fresh-start.sh
+
+# Or specify directly:
+./fresh-start.sh docker     # PostgreSQL + Redis in Docker
+./fresh-start.sh manual     # Use local PostgreSQL
+
+# Skip npm install if deps are already current:
+./fresh-start.sh docker --skip-install
 ```
 
-## 🚀 Quick Start (Automated Setup)
+The script will:
+1. Check prerequisites (Node 20+, Docker/psql)
+2. Create `apps/api/.env` if missing (with safe dev defaults)
+3. Install dependencies + build shared packages
+4. Start PostgreSQL + Redis (Docker or verify local)
+5. Seed all tables (users, properties, images, clients, representatives, subscribers)
+6. Report completion with login credentials and URLs
 
-### One-Command Setup
+After completion:
 
 ```bash
-# Navigate to project root
-cd /path/to/RealEstatesAPI-NestJS
-
-# Run setup script
-./scripts/setup-local-dev.sh
+npm run dev    # Starts API + Admin + User via Turborepo
 ```
 
-**That's it!** The script will:
+---
 
-1. ✅ Create `.env.development` file
-2. ✅ Start PostgreSQL and Redis in Docker
-3. ✅ Install all dependencies
-4. ✅ Run database migrations
-5. ✅ Seed database with sample data
-6. ✅ Show you how to start the apps
+## Manual Setup (Step by Step)
 
-**Time:** ~5-10 minutes (depending on internet speed)
+If you prefer manual control or the script fails.
 
-### After Setup Completes
+### 1. Environment File
 
-Start all apps at once:
+Create `apps/api/.env`:
 
-```bash
-npm run dev
-```
-
-Or start individually in separate terminals:
-
-```bash
-# Terminal 1 - API
-npm run dev:api
-
-# Terminal 2 - Admin Web
-npm run dev:admin
-
-# Terminal 3 - User Web
-npm run dev:user
-```
-
-## 📋 Manual Setup (Step by Step)
-
-If you prefer manual setup or the script fails:
-
-### Step 1: Environment Configuration
-
-Create `.env.development` at project root:
-
-```bash
-cat > .env.development << 'EOF'
+```env
 NODE_ENV=development
-PORT=3000
-
-BASE_URL='http://localhost:3000'
-FILE_UPLOAD_PATH=./uploads
-
-JWT_SECRET=CHANGE_ME_DEV
-JWT_EXPIRES_IN=30m
-JWT_REFRESH_SECRET=CHANGE_ME_DEV
-JWT_REFRESH_EXPIRES_IN=7d
-
-DB_TYPE=postgres
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
-DB_PASSWORD=CHANGE_ME
+DB_PASSWORD=<your-password>
 DB_NAME=estates
-DB_SYNC=false
-
+JWT_SECRET=<min-32-chars>
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_SECRET=<min-32-chars>
+JWT_REFRESH_EXPIRES_IN=30d
+PORT=3000
+CORS_ORIGIN=http://localhost:3001,http://localhost:3002
+FRONTEND_URL=http://localhost:3002
 REDIS_HOST=localhost
 REDIS_PORT=6379
-
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USER=your-email@gmail.com
-MAIL_PASSWORD=your-app-password
-MAIL_FROM=Real Estate Admin <noreply@realestates.com>
-FRONTEND_URL=http://localhost:3002
-
-CORS_ORIGIN=http://localhost:3001,http://localhost:3002
-
-GEMINI_API_KEY=your-gemini-api-key-here
-EOF
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=10485760
 ```
 
-### Step 2: Start Docker Services
+Optional (for full features):
+```env
+GEMINI_API_KEY=<key>           # Chatbot (has fallback without it)
+SMTP_HOST=smtp.gmail.com       # Email
+SMTP_PORT=587
+SMTP_USER=<email>
+SMTP_PASSWORD=<app-password>
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=<key>  # Google Maps
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=<key>   # reCAPTCHA
+RECAPTCHA_SECRET_KEY=<key>
+```
 
+### 2. Start Database
+
+**Docker mode:**
 ```bash
-# Start PostgreSQL and Redis
-npm run docker:up
-
-# Wait for PostgreSQL to be ready (about 10 seconds)
+npm run docker:up                  # Starts postgres + redis
+# Wait for PostgreSQL:
 docker exec estates_postgres pg_isready -U postgres
 ```
 
-### Step 3: Install Dependencies
-
+**Manual mode:**
 ```bash
-# Install workspace dependencies
-npm install
-
-# Install API dependencies
-cd apps/api && npm install && cd ../..
-
-# Install admin-web dependencies
-cd apps/admin-web && npm install && cd ../..
-
-# Install user-web dependencies
-cd apps/user-web && npm install && cd ../..
+sudo systemctl start postgresql    # Start PostgreSQL
+createdb estates                   # Create database
+psql -d estates -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 ```
 
-### Step 4: Run Migrations
+### 3. Install Dependencies
 
 ```bash
-cd apps/api
-npm run migration:run
+npm install                        # Root + all workspaces
+cd packages/types && npm run build # Build shared types
 cd ../..
 ```
 
-### Step 5: Seed Database
+### 4. Seed Database
 
 ```bash
-cd apps/api
-npx ts-node ../../seeds/local-comprehensive-seed.ts
-cd ../..
+npm run seed
 ```
 
-### Step 6: Start Applications
+This runs `seeds/seed.ts` which:
+- Auto-creates all tables (`synchronize: true`)
+- Seeds 5 users (2 admin, 3 agent)
+- Seeds 15 properties covering all `PropertyType` values
+- Seeds 40+ property images
+- Seeds 8 clients covering all `TransactionType`, `PaymentType`, `ClientStatus` values
+- Seeds 2 representatives
+- Seeds 3 newsletter subscribers
+
+### 5. Start Apps
 
 ```bash
-# All at once
+# All at once:
 npm run dev
 
-# Or individually
-npm run dev:api        # Terminal 1
-npm run dev:admin      # Terminal 2
-npm run dev:user       # Terminal 3
+# Or individually in separate terminals:
+npm run dev:api      # API on :3000
+npm run dev:admin    # Admin on :3001
+npm run dev:user     # User on :3002
 ```
 
-## 🗄️ Database Information
+---
 
-### Connection Details
+## Service URLs
 
-- **Host:** localhost
-- **Port:** 5432
-- **Database:** estates
-- **Username:** postgres
-- **Password:** CHANGE_ME
-
-### Default Admin User
-
-After seeding:
-
-- **Username:** admin
-- **Password:** admin123
-
-### Seeded Data
-
-The comprehensive seed creates:
-
-- **10 Users**: Various roles (admin, agents, managers)
-- **15 Properties**: Diverse types (apartments, houses, land, offices, etc.)
-- **15 Clients**: Linked to properties with various transaction types
-- **Property Images**: Auto-linked from `/uploads` folder if available
-
-### Enum Values (Lowercase + Kebab-Case)
-
-All enum values use consistent lowercase formatting:
-
-**PropertyStatus:**
-- `active`
-- `inactive`
-- `deleted`
-
-**PropertyType:**
-- `apartment`
-- `house`
-- `land`
-- `office`
-- `commercial-space`
-- `vacation-home`
-- `duplex`
-- `apartment-in-house`
-
-**HeatingType:**
-- `central`
-- `gas-central`
-- `solid-fuel-central`
-- `electric-central`
-- `floor`
-- `independent-on-gas`
-- `independent-on-solid-fuel`
-- `independent-on-electricity`
-- `fireplace`
-- `air-conditioner`
-- `other`
-
-**ClientStatus:**
-- `active`
-- `inactive`
-- `deleted`
-
-**TransactionType:**
-- `seller`
-- `buyer`
-- `rents`
-- `rents-out`
-
-**PaymentType:**
-- `cash`
-- `credit`
-- `combined`
-
-## 🌐 Access URLs
-
-After starting all services:
-
-| Service | URL | Description |
+| Service | URL | Credentials |
 |---------|-----|-------------|
-| **API** | http://localhost:3000 | NestJS REST API |
-| **API Docs** | http://localhost:3000/api | Swagger documentation |
-| **Admin Panel** | http://localhost:3001 | PrimeReact admin interface |
-| **Public Website** | http://localhost:3002 | Next.js public website |
-| **PostgreSQL** | localhost:5432 | Database (use pgAdmin/DBeaver) |
-| **Redis** | localhost:6379 | Cache (use Redis CLI) |
+| API | http://localhost:3000 | — |
+| Swagger | http://localhost:3000/api | — |
+| Admin Panel | http://localhost:3001 | admin / admin123 |
+| Public Website | http://localhost:3002 | — |
 
-## 🔧 Common Development Tasks
+---
 
-### Database Migrations
+## Development Commands
 
 ```bash
-# Generate migration after entity changes
+# Start/stop
+npm run dev                  # All apps (Turborepo parallel)
+npm run dev:api              # API only
+npm run dev:admin            # Admin only
+npm run dev:user             # User web only
+npm run docker:up            # Start Docker DB + Redis
+npm run docker:down          # Stop Docker services
+
+# Build
+npm run build                # Build all apps
+cd packages/types && npm run build   # Rebuild shared types (after interface changes)
+
+# Database
 cd apps/api
 npm run migration:generate -- src/migrations/DescriptiveName
-
-# Run migrations
 npm run migration:run
-
-# Revert last migration
 npm run migration:revert
-```
 
-### Reset Database
+# Seed
+npm run seed                 # From project root — comprehensive seed
 
-```bash
-# Stop Docker services
-npm run docker:down
+# Logs
+npm run docker:logs          # Docker container logs
+docker logs estates_postgres # PostgreSQL logs only
 
-# Start fresh (deletes all data)
-docker-compose down -v
-npm run docker:up
-
-# Wait for PostgreSQL, then run migrations and seed
-cd apps/api
-npm run migration:run
-npx ts-node ../../seeds/local-comprehensive-seed.ts
-```
-
-### View Logs
-
-```bash
-# Docker services
-npm run docker:logs
-
-# API (if running in terminal)
-# Just check the terminal where you ran `npm run dev:api`
-
-# Database logs
-docker logs estates_postgres
-```
-
-### Database CLI Access
-
-```bash
-# Connect to PostgreSQL
+# Database CLI
 docker exec -it estates_postgres psql -U postgres -d estates
-
-# Useful commands inside psql:
-\dt                # List tables
-\d properties      # Describe properties table
-\d+ clients        # Detailed client table info
-SELECT * FROM users LIMIT 5;
-\q                 # Quit
 ```
 
-### Stop Everything
+---
+
+## Database Reset
 
 ```bash
-# Stop apps (Ctrl+C in terminal where npm run dev is running)
+# Docker mode — full reset:
+docker compose down -v       # Remove volumes (deletes all data)
+npm run docker:up            # Restart containers
+npm run seed                 # Re-seed
 
-# Stop Docker services
-npm run docker:down
-
-# Or stop and remove volumes (deletes database)
-docker-compose down -v
+# Quick re-seed (keeps containers, truncates + re-seeds):
+npm run seed
 ```
 
-## 🐛 Troubleshooting
+---
 
-### Port Already in Use
+## Enum Reference
+
+All enums use lowercase/kebab-case values in the database.
+
+| Enum | Values |
+|------|--------|
+| **PropertyType** | `apartment`, `house`, `apartment-in-house`, `office`, `commercial-space`, `land`, `vacation-home`, `duplex` |
+| **PropertyStatus** | `active`, `inactive`, `deleted` |
+| **HeatingType** | `central`, `gas-central`, `solid-fuel-central`, `electric-central`, `floor`, `independent-on-gas`, `independent-on-solid-fuel`, `independent-on-electricity`, `fireplace`, `air-conditioner`, `other` |
+| **Orientation** | `north`, `south`, `east`, `west`, `northeast`, `northwest`, `southeast`, `southwest` |
+| **TransactionType** | `seller`, `buyer`, `rents`, `rents-out` |
+| **PaymentType** | `cash`, `credit`, `combined` |
+| **ClientStatus** | `active`, `inactive`, `deleted` |
+| **Role** | `ADMIN`, `USER` |
+
+---
+
+## Deployment to Hetzner
+
+### Prerequisites on Server
+
+- Ubuntu 24.04, Docker, Node.js 20+, PM2, Nginx
+- SSL certificates (Let's Encrypt)
+- Required env files on server (never committed to git):
+  - `apps/api/.env` (production DB credentials, JWT secrets)
+  - `apps/admin-web/.env.production`
+  - `apps/user-web/.env.production`
+
+### Production Docker
 
 ```bash
-# Check what's using port 3000, 3001, 3002, or 5432
-sudo lsof -i :3000
-sudo lsof -i :5432
+# Start full stack (API + DB + Redis + Frontends):
+docker compose -f docker-compose.prod.yml up -d
 
-# Kill the process
-sudo kill -9 <PID>
+# Check health:
+docker compose -f docker-compose.prod.yml ps
 ```
 
-### PostgreSQL Won't Start
+All production ports are bound to `127.0.0.1` — Nginx handles external access.
+
+### PM2 Deployment (Current Setup)
+
+The platform uses PM2 for process management on the server:
 
 ```bash
-# Check Docker is running
-docker ps
+# Build everything
+npm run build
 
-# View PostgreSQL logs
+# Start with PM2
+pm2 start ecosystem.config.js
+
+# Monitor
+pm2 status
+pm2 logs realestates-api
+```
+
+PM2 config (`ecosystem.config.js`): 3 processes — api, admin, user — with 450MB memory limit, crash recovery, auto-restart.
+
+### CI/CD (GitHub Actions)
+
+Push to `develop` branch triggers automatic deployment:
+1. SSH into server
+2. `git pull`
+3. `docker compose up -d` (postgres + redis)
+4. `npm ci` + build packages + build apps
+5. Run migrations
+6. PM2 restart all
+7. Health check
+
+Required GitHub Secrets: `HETZNER_HOST`, `HETZNER_USERNAME`, `HETZNER_SSH_KEY`
+
+### Deployment Orchestration
+
+All projects are deployed via the portfolio deploy playbook:
+
+```bash
+# From portfolio/deploy/
+./deploy-playbook.sh deploy-realestate    # Deploy real estate platform
+./deploy-playbook.sh run-migrations       # Run DB migrations
+./deploy-playbook.sh test                 # Health check
+./deploy-playbook.sh status               # PM2 + Docker status
+```
+
+### Production Port Mapping
+
+| Service | Internal | External (via Nginx) |
+|---------|----------|---------------------|
+| API | :3000 | :8090 |
+| Admin | :3001 | :8081 |
+| User Web | :3002 | :8082 |
+| PostgreSQL | :5432 | Internal only |
+| Redis | :6379 | Internal only |
+
+### Generate Production Secrets
+
+```bash
+openssl rand -base64 48    # JWT secrets
+openssl rand -base64 16    # Database password
+```
+
+---
+
+## Troubleshooting
+
+### Port in use
+```bash
+sudo lsof -i :3000 && sudo kill -9 $(sudo lsof -t -i :3000)
+```
+
+### PostgreSQL won't start
+```bash
 docker logs estates_postgres
-
-# Reset PostgreSQL
-docker-compose down -v
-docker-compose up -d postgres
+docker compose down -v && npm run docker:up
 ```
 
-### Migration Fails
-
+### Migration fails
 ```bash
-# Check database connection
-docker exec estates_postgres pg_isready -U postgres
-
-# View migration status
 cd apps/api
 npx typeorm migration:show -d src/data-source.ts
-
-# If stuck, reset and retry
-npm run docker:down
-docker-compose down -v
-npm run docker:up
-# Wait 10 seconds
-npm run migration:run
+# If stuck, reset: docker compose down -v, then docker:up + seed
 ```
 
-### Enum Values Wrong Case
+### API can't connect to DB
+Verify `apps/api/.env` has `DB_HOST=localhost` (not `postgres` — that's only inside Docker network).
 
-If database has old uppercase values:
-
+### Shared types not found
 ```bash
-# Connect to database
-docker exec -it estates_postgres psql -U postgres -d estates
-
-# Fix property types
-UPDATE properties SET "propertyType" = LOWER(REPLACE("propertyType", 'Apartment', 'apartment'));
-UPDATE properties SET "propertyType" = LOWER(REPLACE("propertyType", 'House', 'house'));
-# ... or just reseed
-
-# Or easier: Reset database
-docker-compose down -v
-docker-compose up -d
-cd apps/api
-npm run migration:run
-npx ts-node ../../seeds/local-comprehensive-seed.ts
+cd packages/types && npm run build
 ```
 
-### API Can't Connect to Database
+---
 
-Check `apps/api/.env`:
-
-```env
-DB_HOST=localhost  # Must be localhost, NOT postgres
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=CHANGE_ME
-DB_NAME=estates
-```
-
-### Hot Reload Not Working
-
-```bash
-# Restart the specific app
-# Press Ctrl+C in terminal, then:
-npm run dev:api    # or dev:admin or dev:user
-```
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 RealEstatesAPI-NestJS/
 ├── apps/
-│   ├── api/              # NestJS REST API
-│   │   ├── src/
-│   │   │   ├── entities/    # TypeORM entities
-│   │   │   ├── migrations/  # Database migrations
-│   │   │   └── ...
-│   │   └── .env            # API environment (created manually)
-│   ├── admin-web/        # Next.js admin panel
-│   └── user-web/         # Next.js public website
+│   ├── api/                 NestJS REST API
+│   │   ├── src/entities/    TypeORM entities
+│   │   ├── src/migrations/  Database migrations
+│   │   └── .env             API config (not committed)
+│   ├── admin-web/           Next.js admin panel
+│   └── user-web/            Next.js public website
+├── packages/
+│   ├── types/               Shared TypeScript interfaces
+│   ├── api-client/          API methods (partial)
+│   └── utils/               Shared utilities
 ├── seeds/
-│   └── local-comprehensive-seed.ts  # Database seeding script
-├── scripts/
-│   ├── setup-local-dev.sh          # Automated local setup
-│   └── setup-production.sh         # Production deployment
-├── uploads/              # Property images
-├── .env.development      # Docker environment
-├── docker-compose.yml    # Local Docker config
-├── package.json          # Workspace root
-└── turbo.json           # Turborepo config
+│   └── seed.ts              Canonical seed script
+├── fresh-start.sh           One-command setup
+├── docker-compose.yml       Dev Docker (postgres + redis)
+├── docker-compose.prod.yml  Production Docker (full stack)
+├── ecosystem.config.js      PM2 configuration
+├── turbo.json               Turborepo config
+└── .github/
+    ├── AGENTS.md            Living project context
+    └── copilot-instructions.md  AI coding instructions
 ```
-
-## 🔐 Security Notes (Local Dev)
-
-- Default credentials are **ONLY** for local development
-- Never use these in production:
-  - Database password: `CHANGE_ME`
-  - JWT secrets: Use the provided long strings
-  - Admin password: `admin123`
-
-For production, use strong random values:
-
-```bash
-# Generate strong secrets
-openssl rand -base64 48   # For JWT secrets
-openssl rand -base64 16   # For passwords
-```
-
-## 📚 Next Steps
-
-After setup:
-
-1. **Explore API**: http://localhost:3000/api (Swagger docs)
-2. **Login to Admin**: http://localhost:3001 (admin/admin123)
-3. **View Public Site**: http://localhost:3002
-4. **Create Content**: Add properties, clients, users via admin panel
-5. **Test API**: Use Postman collection in `/postman/` directory
-6. **Read Docs**: Check `/documentation/` for detailed guides
-
-## 📖 Additional Documentation
-
-- `/.github/copilot-instructions.md` - Development guidelines
-- `/documentation/MONOREPO_README.md` - Architecture details
-- `/documentation/SECURITY-PUBLIC-API.md` - API security patterns
-- `/documentation/CHATBOT_GUIDE.md` - Chatbot setup
-- `/scripts/SETUP_README.md` - Scripts reference
-
-## 🆘 Need Help?
-
-1. Check `/documentation/` directory
-2. Review error logs in terminal
-3. Check Docker logs: `npm run docker:logs`
-4. Reset everything: `docker-compose down -v && ./scripts/setup-local-dev.sh`
-5. Review `AI_PROJECT_CONTEXT.md`
-
----
-
-**Happy Coding! 🚀**

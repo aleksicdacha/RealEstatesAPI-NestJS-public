@@ -96,7 +96,7 @@ services:
     env_file:
       - apps/admin-web/.env.production
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"   # loopback only — nginx proxies as :8081
     environment:
       - NODE_ENV=production
       - PORT=3001
@@ -126,7 +126,7 @@ services:
     env_file:
       - apps/user-web/.env.production
     ports:
-      - "3002:3002"
+      - "127.0.0.1:3002:3002"   # loopback only — nginx proxies as :8082
     environment:
       - NODE_ENV=production
       - PORT=3002
