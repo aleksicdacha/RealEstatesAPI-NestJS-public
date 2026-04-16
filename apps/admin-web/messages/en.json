@@ -187,6 +187,7 @@
     "deleted": "Deleted",
     "statusActive": "Active",
     "statusInactive": "Inactive",
+    "statusDeleted": "Deleted",
     "statusSold": "Sold",
     "statusReserved": "Reserved",
     "filterByStatus": "Filter by Status",

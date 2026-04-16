@@ -9,6 +9,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import * as bodyParser from 'body-parser';
+import helmet from 'helmet';
+import * as hpp from 'hpp';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -18,42 +20,78 @@ async function bootstrap() {
   const port = configService.get<number>('PORT') || 3000;
   const nodeEnv = configService.get<string>('NODE_ENV') || 'development';
 
-  // Increase body size limits to allow rich newsletter HTML payloads
+  // ── Security middleware (must be first) ─────────────────────────────────
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],  // Allow inline styles for Swagger UI
+          imgSrc: ["'self'", 'data:', 'https:'],
+          scriptSrc: ["'self'"],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'", 'https:', 'data:'],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],            // Clickjacking protection
+          upgradeInsecureRequests: [],
+        },
+      },
+      crossOriginEmbedderPolicy: false,          // Needed for Swagger UI
+      hsts: {
+        maxAge: 31536000,                        // 1 year
+        includeSubDomains: true,
+        preload: true,
+      },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    }),
+  );
+
+  // HTTP Parameter Pollution protection
+  app.use(hpp());
+
+  // Body size limits — keep 2MB for newsletter HTML payloads
+  // Protected from DoS by rate limiting on the newsletter endpoint
   app.use(bodyParser.json({ limit: '2mb' }));
   app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
 
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // CORS Configuration - Allow production and development origins
+  // ── CORS — strict allowlist, no fallthrough ────────────────────────────────
+  // Reads CORS_ORIGIN env for easy per-env override:
+  //   CORS_ORIGIN=http://localhost:3001,http://localhost:3002
+  const corsEnv = configService.get<string>('CORS_ORIGIN') || '';
   const allowedOrigins = [
+    ...corsEnv.split(',').map((o) => o.trim()).filter(Boolean),
+    // Fallback hardcoded list (edit if IP/domain changes)
     'http://46.224.231.217:3001',
     'http://46.224.231.217:3002',
     'http://localhost:3001',
     'http://localhost:3002',
     'http://localhost:3000',
-  ];
+  ].filter((v, i, a) => a.indexOf(v) === i);   // deduplicate
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, Postman, or same-origin)
+      // Allow requests with no origin (server-to-server, Postman in dev)
       if (!origin) return callback(null, true);
 
-      // Allow all origins in development for testing
+      // In development allow all origins
       if (nodeEnv === 'development') return callback(null, true);
 
-      // Check if origin is in allowed list
-      if (allowedOrigins.indexOf(origin) !== -1) {
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        // Still allow in production but log it
-        logger.warn(`CORS request from unauthorized origin: ${origin}`);
-        callback(null, true); // Allow anyway for now
+        // In production: REJECT — do NOT fall through
+        logger.warn(`CORS blocked request from unauthorized origin: ${origin}`);
+        callback(new Error(`Origin ${origin} not allowed by CORS`), false);
       }
     },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
+    maxAge: 86400,   // Pre-flight cache 24h
   });
 
   // API Versioning

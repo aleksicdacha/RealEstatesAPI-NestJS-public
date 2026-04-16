@@ -101,35 +101,17 @@ export async function fetchProperties(params?: {
   return response.json();
 }
 
-export async function fetchLocations(transactionType?: 'sale' | 'rent'): Promise<{ cities: string[], neighborhoods: string[] }> {
+export async function fetchPublicFilterOptions(): Promise<{ cities: string[], neighborhoods: string[] }> {
   try {
-    const params = new URLSearchParams({ limit: '1000' });
-    if (transactionType) {
-      const clientType = transactionType === 'sale' ? 'seller' : 'rents';
-      params.append('clientTransactionType', clientType);
-    }
-    const response = await fetch(`${API_BASE_URL}/properties/public?${params.toString()}`, {
+    const response = await fetch(`${API_BASE_URL}/properties/filters/options`, {
       cache: 'no-store',
     });
-
     if (!response.ok) {
       return { cities: [], neighborhoods: [] };
     }
-
-    const data: PaginatedResponse<Property> = await response.json();
-    const neighborhoods = Array.from(new Set(
-      data.items
-        .map(p => p.neighborhood)
-        .filter((n): n is string => !!n)
-    )).sort();
-
-    // Extract cities from neighborhoods
-    // For now, return known cities with Serbian letters
-    const cities = ['Niš', 'Beograd'];
-
-    return { cities, neighborhoods };
+    return response.json();
   } catch (error) {
-    console.error('Error fetching locations:', error);
+    console.error('Error fetching filter options:', error);
     return { cities: [], neighborhoods: [] };
   }
 }

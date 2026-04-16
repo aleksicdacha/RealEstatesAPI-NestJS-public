@@ -53,9 +53,10 @@ PORT=3000
 BASE_URL='http://localhost:3000'
 FILE_UPLOAD_PATH=./uploads
 
-JWT_SECRET=CHANGE_ME_DEV
+# Generate with: openssl rand -hex 64
+JWT_SECRET=CHANGE_ME
 JWT_EXPIRES_IN=30m
-JWT_REFRESH_SECRET=CHANGE_ME_DEV
+JWT_REFRESH_SECRET=CHANGE_ME
 JWT_REFRESH_EXPIRES_IN=7d
 
 DB_TYPE=postgres
@@ -72,9 +73,9 @@ REDIS_PORT=6379
 # Email Configuration
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USER=your-email@gmail.com
+MAIL_USER=aleksic.dacha@gmail.com
 MAIL_PASSWORD=your-app-password
-MAIL_FROM=Real Estate Admin <noreply@realestates.com>
+MAIL_FROM=Real Estate Admin <aleksic.dacha@gmail.com>
 FRONTEND_URL=http://localhost:3002
 
 # CORS Configuration
@@ -162,7 +163,7 @@ echo "   Host: localhost"
 echo "   Port: 5432"
 echo "   Database: estates"
 echo "   Username: postgres"
-echo "   Password: CHANGE_ME"
+echo "   Password: (see .env.development)"
 echo ""
 
 echo "🔐 Default Admin Credentials:"

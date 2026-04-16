@@ -1,13 +1,13 @@
 export const translatePropertyType = (propertyType: string, t: (key: string) => string): string => {
   const typeMap: Record<string, string> = {
-    'Apartment': t('typeApartment'),
-    'House': t('typeHouse'),
-    'ApartmentInHouse': t('typeApartmentInHouse'),
-    'CommercialSpace': t('typeCommercialSpace'),
-    'Office': t('typeOffice'),
-    'Land': t('typeLand'),
-    'VacationHome': t('typeVacationHome'),
-    'Duplex': t('typeDuplex'),
+    'apartment': t('typeApartment'),
+    'house': t('typeHouse'),
+    'apartment-in-house': t('typeApartmentInHouse'),
+    'commercial-space': t('typeCommercialSpace'),
+    'office': t('typeOffice'),
+    'land': t('typeLand'),
+    'vacation-home': t('typeVacationHome'),
+    'duplex': t('typeDuplex'),
   };
   
   return typeMap[propertyType] || propertyType;

@@ -77,9 +77,9 @@ REDIS_PORT=6379
 # Email
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USER=your-production-email@gmail.com
+MAIL_USER=aleksic.dacha@gmail.com
 MAIL_PASSWORD=your-app-password
-MAIL_FROM=Real Estate <noreply@yourdomain.com>
+MAIL_FROM=Real Estate <aleksic.dacha@gmail.com>
 FRONTEND_URL=https://yourdomain.com
 
 # CORS (your production domains)

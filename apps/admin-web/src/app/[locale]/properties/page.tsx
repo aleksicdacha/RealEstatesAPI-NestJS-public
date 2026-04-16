@@ -222,14 +222,14 @@ export default function PropertiesPage() {
     <MultiSelect
       value={propertyTypeFilter}
       options={[
-        { label: t('typeApartment'), value: 'Apartment' },
-        { label: t('typeHouse'), value: 'House' },
-        { label: t('typeApartmentInHouse'), value: 'ApartmentInHouse' },
-        { label: t('typeCommercialSpace'), value: 'CommercialSpace' },
-        { label: t('typeOffice'), value: 'Office' },
-        { label: t('typeLand'), value: 'Land' },
-        { label: t('typeVacationHome'), value: 'VacationHome' },
-        { label: t('typeDuplex'), value: 'Duplex' },
+        { label: t('typeApartment'), value: 'apartment' },
+        { label: t('typeHouse'), value: 'house' },
+        { label: t('typeApartmentInHouse'), value: 'apartment-in-house' },
+        { label: t('typeCommercialSpace'), value: 'commercial-space' },
+        { label: t('typeOffice'), value: 'office' },
+        { label: t('typeLand'), value: 'land' },
+        { label: t('typeVacationHome'), value: 'vacation-home' },
+        { label: t('typeDuplex'), value: 'duplex' },
       ]}
       onChange={(e) => setPropertyTypeFilter(e.value)}
       placeholder={t('filterByType')}
@@ -348,7 +348,7 @@ export default function PropertiesPage() {
               area: 0,
               price: 0,
               salePrice: 0,
-              propertyType: 'Apartment',
+              propertyType: 'apartment',
               status: 'active',
               address: '',
               createdAt: new Date().toISOString()

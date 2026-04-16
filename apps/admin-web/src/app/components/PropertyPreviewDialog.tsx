@@ -125,18 +125,18 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
 
   const getHeatingTranslationKey = (heatingValue: string): string | null => {
     const heatingMap: Record<string, string> = {
-      // English enum values (current)
-      'Central': 'heatingCentral',
-      'Gas central': 'heatingGasCentral',
-      'Central heating with solid fuel': 'heatingSolidFuel',
-      'Electric central': 'heatingElectricCentral',
-      'Floor': 'heatingFloor',
-      'Independently on gas': 'heatingGasIndependent',
-      'Independent on solid fuel': 'heatingSolidFuelIndependent',
-      'Independently on electricity': 'heatingElectricIndependent',
-      'Fireplace': 'heatingFireplace',
-      'Air conditioner': 'heatingAirConditioner',
-      'The rest types': 'heatingOther',
+      // API enum values (source of truth)
+      'central': 'heatingCentral',
+      'gas-central': 'heatingGasCentral',
+      'solid-fuel-central': 'heatingSolidFuel',
+      'electric-central': 'heatingElectricCentral',
+      'floor': 'heatingFloor',
+      'independent-on-gas': 'heatingGasIndependent',
+      'independent-on-solid-fuel': 'heatingSolidFuelIndependent',
+      'independent-on-electricity': 'heatingElectricIndependent',
+      'fireplace': 'heatingFireplace',
+      'air-conditioner': 'heatingAirConditioner',
+      'other': 'heatingOther',
       // Serbian legacy values (stored in DB from old data)
       'Centralno': 'heatingCentral',
       'Gasno centralno': 'heatingGasCentral',
@@ -169,16 +169,16 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
 
   const getPropertyTypeTranslationKey = (typeValue: string): string => {
     const typeMap: Record<string, string> = {
-      'House': 'typeHouse',
-      'Apartment': 'typeApartment',
-      'ApartmentInHouse': 'typeApartmentInHouse',
-      'CommercialSpace': 'typeCommercialSpace',
-      'Office': 'typeOffice',
-      'Land': 'typeLand',
-      'VacationHome': 'typeVacationHome',
-      'Duplex': 'typeDuplex',
+      'house': 'typeHouse',
+      'apartment': 'typeApartment',
+      'apartment-in-house': 'typeApartmentInHouse',
+      'commercial-space': 'typeCommercialSpace',
+      'office': 'typeOffice',
+      'land': 'typeLand',
+      'vacation-home': 'typeVacationHome',
+      'duplex': 'typeDuplex',
     };
-    return typeMap[typeValue] || typeValue.toLowerCase();
+    return typeMap[typeValue] || typeValue;
   };
 
   const getEquipmentTranslationKey = (equipmentValue: string): string | null => {
@@ -694,20 +694,20 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                         `;
 
                         switch (propertyType) {
-                          case 'House':
+                          case 'house':
                             return createSVGMarker('#2196f3', houseIcon);
-                          case 'Apartment':
+                          case 'apartment':
                             return createSVGMarker('#e91e63', apartmentIcon);
-                          case 'ApartmentInHouse':
+                          case 'apartment-in-house':
                             return createSVGMarker('#2196f3', houseIcon);
-                          case 'Office':
-                          case 'CommercialSpace':
+                          case 'office':
+                          case 'commercial-space':
                             return createSVGMarker('#4caf50', officeIcon);
-                          case 'Land':
+                          case 'land':
                             return createSVGMarker('#795548', landIcon);
-                          case 'VacationHome':
+                          case 'vacation-home':
                             return createSVGMarker('#ff9800', vacationHomeIcon);
-                          case 'Duplex':
+                          case 'duplex':
                             return createSVGMarker('#9c27b0', duplexIcon);
                           default:
                             return createSVGMarker('#e91e63', apartmentIcon);

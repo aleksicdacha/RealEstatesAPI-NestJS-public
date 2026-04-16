@@ -1,0 +1,54 @@
+# =============================================================================
+#  .gitleaks.toml — Gitleaks secret scan configuration
+#
+#  Extends the default ruleset with allowlists for test/example files
+#  that intentionally contain placeholder values.
+# =============================================================================
+
+[extend]
+# Use the default Gitleaks ruleset as base
+useDefault = true
+
+[allowlist]
+description = "Ignore placeholder values in example/template files"
+paths = [
+    # Example and template files with placeholder credentials
+    '''.*\.example$''',
+    '''.*\.template$''',
+    '''.*\.example\.env$''',
+    '''\.env\.example''',
+    '''msmtp\.conf\.template''',
+    # Test files
+    '''test-.*\.js$''',
+    '''.*\.test\.ts$''',
+    '''.*\.spec\.ts$''',
+    # Documentation
+    '''documentation/.*''',
+    '''.*\.md$''',
+    # Setup scripts — contain placeholder tokens by design
+    '''deploy/server-hardening/setup-server\.sh''',
+    # Template/helper scripts where credential placeholders are expected
+    # (sanitized via git-filter-repo; historical commits may still show CHANGE_ME)
+    '''scripts/create-prod-env\.sh''',
+    '''scripts/setup-local-dev\.sh''',
+    '''scripts/setup-production.*\.sh''',
+    '''production-deployment-master\.sh''',
+    '''server-create-env\.sh''',
+    '''create-prod-env\.sh''',
+    # Old directory structure in closed PR commits — Maps API key was hardcoded, now removed
+    '''admin-frontend/src/app/components/googleMapsLoader\.ts''',
+    '''.*googleMapsLoader\.ts''',
+]
+
+regexes = [
+    # Common placeholder patterns
+    '''CHANGE_ME''',
+    '''REPLACE_WITH''',
+    '''YOUR_.*HERE''',
+    '''YOUR_EMAIL''',
+    '''YOUR_APP_PASSWORD''',
+    '''YOUR_GMAIL''',
+    '''ghp_REPLACE_WITH_YOUR_GITHUB_PAT''',
+    '''CHANGE_ME_STRONG_PASSWORD''',
+    '''CHANGE_ME_AT_LEAST_32''',
+]

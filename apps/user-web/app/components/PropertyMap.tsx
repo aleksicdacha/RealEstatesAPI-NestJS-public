@@ -125,41 +125,41 @@ function getMarkerIcon(propertyType: string): string {
   const iconBase = 'data:image/svg+xml;base64,';
   
   const icons: { [key: string]: { color: string, icon: string } } = {
-    'Apartment': {
+    'apartment': {
       color: '#EA580C',
       icon: '<path d="M10 11h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z" fill="white"/>'
     },
-    'House': {
+    'house': {
       color: '#16A34A',
       icon: '<path d="M10 16v6h4v-4h4v4h4v-6l-6-4.5z" fill="white"/><path d="M16 8l-8 6h2v8h5v-5h2v5h5v-8h2z" fill="white" opacity="0.5"/>'
     },
-    'Office': {
+    'office': {
       color: '#2563EB',
       icon: '<rect x="10" y="10" width="12" height="12" fill="white"/><path d="M11 12h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2z" fill="currentColor"/>'
     },
-    'Land': {
+    'land': {
       color: '#A855F7',
       icon: '<path d="M10 18h12v2H10zm1-2l2-3 3 2 2-3 2 3z" fill="white"/><circle cx="13" cy="14" r="1" fill="white"/><circle cx="19" cy="14" r="1" fill="white"/>'
     },
-    'CommercialSpace': {
+    'commercial-space': {
       color: '#DC2626',
       icon: '<rect x="11" y="11" width="10" height="10" rx="1" fill="white"/><path d="M13 13h2v2h-2zm0 3h2v2h-2zm3-3h2v2h-2zm0 3h2v2h-2z" fill="currentColor"/>'
     },
-    'VacationHome': {
+    'vacation-home': {
       color: '#0891B2',
       icon: '<path d="M16 9l-7 5v7h4v-4h6v4h4v-7z" fill="white"/><circle cx="19" cy="13" r="1.5" fill="yellow"/>'
     },
-    'ApartmentInHouse': {
+    'apartment-in-house': {
       color: '#F59E0B',
       icon: '<path d="M10 16v6h3v-4h6v4h3v-6l-6-4.5z" fill="white"/><rect x="14" y="13" width="4" height="5" fill="white" opacity="0.7"/>'
     },
-    'Duplex': {
+    'duplex': {
       color: '#EC4899',
       icon: '<path d="M10 15v7h4v-5h4v5h4v-7l-6-4z" fill="white"/><line x1="16" y1="11" x2="16" y2="22" stroke="white" stroke-width="1"/>'
     },
   };
   
-  const config = icons[propertyType] || icons['Apartment'];
+  const config = icons[propertyType] || icons['apartment'];
   const svg = `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg">
     <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="${config.color}"/>
     <circle cx="16" cy="16" r="9" fill="${config.color}" opacity="0.9"/>

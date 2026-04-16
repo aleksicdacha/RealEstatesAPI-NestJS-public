@@ -81,6 +81,12 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => [
         {
+          // Global default — overridden per-route with @Throttle({ default: {...} })
+          name: 'default',
+          ttl: 60000,
+          limit: 200,
+        },
+        {
           name: 'short',
           ttl: 1000,
           limit: 10,

@@ -3,30 +3,28 @@
  * Prevents duplication across components
  */
 export const PROPERTY_TYPE_MAP: { [key: string]: string } = {
-  'Apartment': 'apartment',
-  'House': 'house',
-  'ApartmentInHouse': 'apartmentInHouse',
-  'Office': 'office',
-  'CommercialSpace': 'commercial',
-  'Commercial': 'commercial',
-  'Land': 'land',
-  'VacationHome': 'vacationHome',
-  'Duplex': 'duplex',
-  'Garage': 'garage',
+  'apartment': 'apartment',
+  'house': 'house',
+  'apartment-in-house': 'apartmentInHouse',
+  'office': 'office',
+  'commercial-space': 'commercial',
+  'land': 'land',
+  'vacation-home': 'vacationHome',
+  'duplex': 'duplex',
 };
 
 export const HEATING_TYPE_MAP: { [key: string]: string } = {
-  'Central': 'centralHeating',
-  'Gas central': 'gasHeating',
-  'Electric central': 'electricHeating',
-  'Central heating with solid fuel': 'solidFuel',
-  'Floor': 'floorHeating',
-  'Independently on gas': 'independentGas',
-  'Independently on solid fuel': 'independentSolidFuel',
-  'Independently on electricity': 'independentElectricity',
-  'Fireplace': 'fireplace',
-  'Air conditioner': 'airConditioner',
-  'The rest types': 'otherHeating',
+  'central': 'centralHeating',
+  'gas-central': 'gasHeating',
+  'electric-central': 'electricHeating',
+  'solid-fuel-central': 'solidFuel',
+  'floor': 'floorHeating',
+  'independent-on-gas': 'independentGas',
+  'independent-on-solid-fuel': 'independentSolidFuel',
+  'independent-on-electricity': 'independentElectricity',
+  'fireplace': 'fireplace',
+  'air-conditioner': 'airConditioner',
+  'other': 'otherHeating',
 };
 
 export const ROOM_STRUCTURE_MAP: { [key: string]: string } = {
