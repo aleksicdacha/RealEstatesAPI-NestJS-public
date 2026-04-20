@@ -33,7 +33,7 @@ lerna-debug.log*
 .LSOverride
 
 # Tests
-/coverage
+**/coverage
 /.nyc_output
 
 # IDEs and editors
