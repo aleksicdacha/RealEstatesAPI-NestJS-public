@@ -1,18 +1,55 @@
-name: Deploy RealEstates to Hetzner
+name: Test & Deploy RealEstates to Hetzner
 
 on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Run tests
+        working-directory: apps/api
+        run: npm run test:cov
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: apps/api/coverage/
+          retention-days: 30
+
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # Dependabot has no access to secrets — skip deploy for automated dependency updates
-    if: github.actor != 'dependabot[bot]'
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor != 'dependabot[bot]'
 
     steps:
       - name: Checkout code
@@ -59,3 +96,7 @@ jobs:
           curl -sf "http://${{ secrets.HETZNER_HOST }}:8090/v1/properties/public?page=1&limit=1" \
             && echo "✅ API healthy" \
             || echo "⚠️ API health check failed"
+
+            View run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: ${{ secrets.SMTP_FROM || 'ci@realestate.rs' }}

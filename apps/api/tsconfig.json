@@ -27,7 +27,7 @@
       "@entities/*": ["src/entities/*"],
       "@auth/*": ["src/auth/*"]
     },
-    "types": ["node"],
+    "types": ["node", "jest"],
     "lib": ["ES2022"]
   },
   "include": [
