@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@repo/types": "*",
-    "axios": "^1.11.0"
+    "axios": "^1.13.5"
   },
   "devDependencies": {
     "typescript": "^5.6.0"
