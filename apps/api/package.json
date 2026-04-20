@@ -21,6 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
+    "fast-safe-stringify": "2.1.1",
     "@google/generative-ai": "^0.24.1",
     "@nestjs/common": "^10.4.20",
     "@nestjs/config": "^3.3.0",
