@@ -96,7 +96,3 @@ jobs:
           curl -sf "http://${{ secrets.HETZNER_HOST }}:8090/v1/properties/public?page=1&limit=1" \
             && echo "✅ API healthy" \
             || echo "⚠️ API health check failed"
-
-            View run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          to: ${{ secrets.NOTIFICATION_EMAIL }}
-          from: ${{ secrets.SMTP_FROM || 'ci@realestate.rs' }}
