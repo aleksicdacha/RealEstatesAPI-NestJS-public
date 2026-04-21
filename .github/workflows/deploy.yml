@@ -128,7 +128,7 @@ jobs:
 
       - name: Build API
         working-directory: apps/api
-        run: npx nest build
+        run: ../../node_modules/.bin/nest build
 
       - name: Start API
         run: |
