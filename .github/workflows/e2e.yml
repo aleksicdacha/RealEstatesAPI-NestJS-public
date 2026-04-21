@@ -102,8 +102,8 @@ jobs:
         working-directory: apps/api
         run: |
           node \
-            -r $GITHUB_WORKSPACE/node_modules/tsconfig-paths/register \
-            -r $GITHUB_WORKSPACE/node_modules/ts-node/register \
+            -r $GITHUB_WORKSPACE/apps/api/node_modules/tsconfig-paths/register \
+            -r $GITHUB_WORKSPACE/apps/api/node_modules/ts-node/register \
             $GITHUB_WORKSPACE/node_modules/typeorm/cli.js \
             migration:run -d src/data-source.ts
         env:

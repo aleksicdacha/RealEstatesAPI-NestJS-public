@@ -126,12 +126,17 @@ jobs:
         run: |
           echo "NEXT_PUBLIC_API_URL=http://localhost:3000/v1" > apps/user-web/.env.local
 
+      - name: Debug module locations
+        run: |
+          find $GITHUB_WORKSPACE -name "tsconfig-paths" -maxdepth 5 -type d 2>/dev/null || echo "not found"
+          find $GITHUB_WORKSPACE -name "ts-node" -maxdepth 5 -type d 2>/dev/null || echo "not found"
+
       - name: Run database migrations
         working-directory: apps/api
         run: |
           node \
-            -r $GITHUB_WORKSPACE/node_modules/tsconfig-paths/register \
-            -r $GITHUB_WORKSPACE/node_modules/ts-node/register \
+            -r $GITHUB_WORKSPACE/apps/api/node_modules/tsconfig-paths/register \
+            -r $GITHUB_WORKSPACE/apps/api/node_modules/ts-node/register \
             $GITHUB_WORKSPACE/node_modules/typeorm/cli.js \
             migration:run -d src/data-source.ts
         env:
