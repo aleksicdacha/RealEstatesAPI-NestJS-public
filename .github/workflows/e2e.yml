@@ -100,7 +100,7 @@ jobs:
       # ── Build & start apps ──────────────────────────────────────────────────
       - name: Build API
         working-directory: apps/api
-        run: PATH=$GITHUB_WORKSPACE/node_modules/.bin:$PATH npm run build
+        run: npm run build
 
       - name: Start API
         working-directory: apps/api
