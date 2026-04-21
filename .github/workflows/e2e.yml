@@ -98,18 +98,9 @@ jobs:
           EOF
 
       # ── Run migrations & seed ───────────────────────────────────────────────
-      - name: Install migration dependencies
-        working-directory: apps/api
-        run: npm install --no-save tsconfig-paths ts-node
-
       - name: Run database migrations
         working-directory: apps/api
-        run: |
-          node \
-            -r $GITHUB_WORKSPACE/apps/api/node_modules/tsconfig-paths/register \
-            -r $GITHUB_WORKSPACE/apps/api/node_modules/ts-node/register \
-            $GITHUB_WORKSPACE/node_modules/typeorm/cli.js \
-            migration:run -d src/data-source.ts
+        run: npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
         env:
           DB_HOST: localhost
           DB_PORT: 5432
