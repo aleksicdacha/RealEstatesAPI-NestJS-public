@@ -128,8 +128,12 @@ jobs:
 
       - name: Debug module locations
         run: |
-          find $GITHUB_WORKSPACE -name "tsconfig-paths" -maxdepth 5 -type d 2>/dev/null || echo "not found"
-          find $GITHUB_WORKSPACE -name "ts-node" -maxdepth 5 -type d 2>/dev/null || echo "not found"
+          find $GITHUB_WORKSPACE -name "tsconfig-paths" -maxdepth 6 -type d 2>/dev/null | head -10 || echo "tsconfig-paths: not found"
+          find $GITHUB_WORKSPACE -name "ts-node" -maxdepth 6 -type d 2>/dev/null | head -10 || echo "ts-node: not found"
+
+      - name: Install migration dependencies
+        working-directory: apps/api
+        run: npm install --no-save tsconfig-paths ts-node
 
       - name: Run database migrations
         working-directory: apps/api
