@@ -100,9 +100,8 @@ jobs:
       # ── Run migrations & seed ───────────────────────────────────────────────
       - name: Run database migrations
         working-directory: apps/api
-        run: npm run migration:run
+        run: NODE_PATH=$GITHUB_WORKSPACE/node_modules npm run migration:run
         env:
-          NODE_PATH: ../../node_modules
           DB_HOST: localhost
           DB_PORT: 5432
           DB_USERNAME: postgres
