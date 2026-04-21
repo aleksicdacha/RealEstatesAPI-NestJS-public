@@ -127,8 +127,7 @@ jobs:
           echo "NEXT_PUBLIC_API_URL=http://localhost:3000/v1" > apps/user-web/.env.local
 
       - name: Build API
-        working-directory: apps/api
-        run: ../../node_modules/.bin/nest build
+        run: npm run build --workspace=apps/api
 
       - name: Start API
         run: |
