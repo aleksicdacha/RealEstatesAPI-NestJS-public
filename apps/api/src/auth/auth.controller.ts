@@ -1,4 +1,13 @@
-import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus, Req, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  Req,
+  Logger,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Public } from './decorators/public.decorator';
@@ -6,7 +15,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -14,7 +23,7 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
-  // 5 attempts per 15 minutes — brute-force protection
+  // 5 attempts per 15 minutes — brute-force protection (disabled when THROTTLE_SKIP=true)
   @Throttle({ default: { limit: 5, ttl: 900000 } })
   @Public()
   @UseGuards(LocalAuthGuard)

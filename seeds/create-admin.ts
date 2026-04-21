@@ -20,8 +20,8 @@ async function createAdminUser() {
     const userRepository = AppDataSource.getRepository('User');
 
     // Check if admin user already exists
-    const existingAdmin = await userRepository.findOne({ 
-      where: { username: 'admin@google.com' } 
+    const existingAdmin = await userRepository.findOne({
+      where: { username: 'admin' },
     });
 
     if (existingAdmin) {
@@ -36,8 +36,8 @@ async function createAdminUser() {
 
     // Create admin user
     const adminUser = userRepository.create({
-      username: 'admin@google.com',
-      email: 'admin@google.com',
+      username: 'admin',
+      email: 'admin@olymp-nekretnine.rs',
       password: hashedPassword,
       firstName: 'Admin',
       lastName: 'User',
@@ -47,10 +47,9 @@ async function createAdminUser() {
 
     await userRepository.save(adminUser);
     console.log('✅ Admin user created successfully:');
-    console.log('   Username: admin@google.com');
+    console.log('   Username: admin');
     console.log('   Password: admin123');
     console.log('   Role: ADMIN');
-
   } catch (error) {
     console.error('❌ Error creating admin user:', error);
   } finally {

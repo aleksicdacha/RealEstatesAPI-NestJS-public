@@ -1,54 +1,20 @@
-name: Test & Deploy RealEstates to Hetzner
+name: E2E Tests
 
 on:
   push:
     branches:
       - master
+      - develop
   pull_request:
     branches:
       - master
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install API dependencies
-        working-directory: apps/api
-        run: npm ci
-
-      - name: Run tests
-        working-directory: apps/api
-        run: npm run test:cov
-
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: apps/api/coverage/
-          retention-days: 30
-
   e2e:
-    name: E2E Tests
+    name: Playwright E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: test
 
     services:
       postgres:
@@ -98,6 +64,7 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
+      # ── Create env files ────────────────────────────────────────────────────
       - name: Create API env file
         run: |
           cat > apps/api/.env << 'EOF'
@@ -109,7 +76,7 @@ jobs:
           DB_NAME=estates
           JWT_SECRET=ci-test-secret-key-minimum-32-characters-long
           JWT_EXPIRES_IN=30m
-          JWT_REFRESH_SECRET=ci-test-refresh-secret-key-minimum-32-chars
+          JWT_REFRESH_SECRET=ci-test-refresh-secret-key-minimum-32-characters
           JWT_REFRESH_EXPIRES_IN=7d
           REDIS_HOST=localhost
           REDIS_PORT=6379
@@ -120,12 +87,17 @@ jobs:
 
       - name: Create admin-web env file
         run: |
-          echo "NEXT_PUBLIC_API_URL=http://localhost:3000" > apps/admin-web/.env.local
+          cat > apps/admin-web/.env.local << 'EOF'
+          NEXT_PUBLIC_API_URL=http://localhost:3000
+          EOF
 
       - name: Create user-web env file
         run: |
-          echo "NEXT_PUBLIC_API_URL=http://localhost:3000/v1" > apps/user-web/.env.local
+          cat > apps/user-web/.env.local << 'EOF'
+          NEXT_PUBLIC_API_URL=http://localhost:3000/v1
+          EOF
 
+      # ── Run migrations & seed ───────────────────────────────────────────────
       - name: Run database migrations
         working-directory: apps/api
         run: npm run migration:run
@@ -145,14 +117,14 @@ jobs:
           DB_PASSWORD: postgres
           DB_NAME: estates
 
+      # ── Build & start apps ──────────────────────────────────────────────────
       - name: Build API
         working-directory: apps/api
         run: npm run build
 
       - name: Start API
-        run: |
-          cd apps/api && node dist/main.js &
-          echo "API PID: $!"
+        working-directory: apps/api
+        run: node dist/main.js &
         env:
           NODE_ENV: test
           DB_HOST: localhost
@@ -162,7 +134,7 @@ jobs:
           DB_NAME: estates
           JWT_SECRET: ci-test-secret-key-minimum-32-characters-long
           JWT_EXPIRES_IN: 30m
-          JWT_REFRESH_SECRET: ci-test-refresh-secret-key-minimum-32-chars
+          JWT_REFRESH_SECRET: ci-test-refresh-secret-key-minimum-32-characters
           JWT_REFRESH_EXPIRES_IN: 7d
           REDIS_HOST: localhost
           REDIS_PORT: 6379
@@ -170,13 +142,16 @@ jobs:
           CORS_ORIGIN: http://localhost:3001,http://localhost:3002
           THROTTLE_SKIP: 'true'
 
-      - name: Wait for API
+      - name: Wait for API to be ready
         run: |
+          echo "Waiting for API..."
           for i in $(seq 1 30); do
-            if curl -sf "http://localhost:3000/v1/properties/public?page=1&limit=1" > /dev/null 2>&1; then
-              echo "✅ API ready"; break
+            if curl -sf http://localhost:3000/v1/properties/public?page=1&limit=1 > /dev/null 2>&1; then
+              echo "✅ API is ready"
+              break
             fi
-            echo "Waiting for API ($i/30)..."; sleep 2
+            echo "Attempt $i/30..."
+            sleep 2
           done
 
       - name: Build admin-web
@@ -186,8 +161,10 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:3000
 
       - name: Start admin-web
-        run: cd apps/admin-web && PORT=3001 npm run start &
+        working-directory: apps/admin-web
+        run: npm run start &
         env:
+          PORT: 3001
           NEXT_PUBLIC_API_URL: http://localhost:3000
 
       - name: Build user-web
@@ -197,21 +174,32 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:3000/v1
 
       - name: Start user-web
-        run: cd apps/user-web && PORT=3002 npm run start &
+        working-directory: apps/user-web
+        run: npm run start &
         env:
+          PORT: 3002
           NEXT_PUBLIC_API_URL: http://localhost:3000/v1
 
-      - name: Wait for frontends
+      - name: Wait for frontends to be ready
         run: |
+          echo "Waiting for admin-web on :3001..."
           for i in $(seq 1 30); do
-            curl -sf http://localhost:3001 > /dev/null 2>&1 && echo "✅ admin-web ready" && break
-            echo "Waiting for admin-web ($i/30)..."; sleep 2
+            if curl -sf http://localhost:3001 > /dev/null 2>&1; then
+              echo "✅ admin-web ready"
+              break
+            fi
+            sleep 2
           done
+          echo "Waiting for user-web on :3002..."
           for i in $(seq 1 30); do
-            curl -sf http://localhost:3002 > /dev/null 2>&1 && echo "✅ user-web ready" && break
-            echo "Waiting for user-web ($i/30)..."; sleep 2
+            if curl -sf http://localhost:3002 > /dev/null 2>&1; then
+              echo "✅ user-web ready"
+              break
+            fi
+            sleep 2
           done
 
+      # ── Run Playwright ──────────────────────────────────────────────────────
       - name: Run E2E tests
         run: npm run test:e2e
         env:
@@ -221,6 +209,7 @@ jobs:
           USER_URL: http://127.0.0.1:3002
           TEST_ADMIN_EMAIL: admin
           TEST_ADMIN_PASSWORD: admin123
+          THROTTLE_SKIP: 'true'
 
       - name: Upload Playwright report
         if: always()
@@ -237,56 +226,3 @@ jobs:
           name: playwright-traces
           path: e2e/test-results/
           retention-days: 7
-
-  deploy:
-    name: Build & Deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [test, e2e]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor != 'dependabot[bot]'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.HETZNER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.HETZNER_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Sync code to server
-        run: |
-          rsync -az --delete \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='dist' \
-            --exclude='.env' \
-            --exclude='.env.production' \
-            --exclude='uploads' \
-            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
-            ./ ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }}:/root/RealEstatesAPI-NestJS/
-
-      - name: Build and restart Docker containers
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HETZNER_HOST }}
-          username: ${{ secrets.HETZNER_USER }}
-          key: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
-          port: 22
-          command_timeout: 20m
-          script: |
-            set -e
-            cd /root/RealEstatesAPI-NestJS
-            docker compose -f docker-compose.prod.yml build api admin-web user-web
-            docker compose -f docker-compose.prod.yml up -d
-            sleep 10
-            docker compose -f docker-compose.prod.yml ps
-
-      - name: Verify API health
-        run: |
-          sleep 15
-          curl -sf "http://${{ secrets.HETZNER_HOST }}:8090/v1/properties/public?page=1&limit=1" \
-            && echo "✅ API healthy" \
-            || echo "⚠️ API health check failed"

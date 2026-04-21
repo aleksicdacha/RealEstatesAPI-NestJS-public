@@ -14,6 +14,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-estates}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7-alpine
@@ -21,6 +26,33 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
+
+  seeder:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    container_name: estates_seeder
+    env_file:
+      - .env.development
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-CHANGE_ME}
+      - DB_NAME=${DB_NAME:-estates}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/api/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    command: >
+      sh -c "npm install --silent &&
+             npx ts-node --project tsconfig.seed.json -r tsconfig-paths/register seeds/seed.ts"
 
   api:
     build:
@@ -45,14 +77,17 @@ services:
       - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-7d}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - THROTTLE_SKIP=${THROTTLE_SKIP:-false}
     volumes:
       - .:/app
       - /app/node_modules
       - /app/apps/api/node_modules
       - ./uploads:/app/apps/api/uploads
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     restart: unless-stopped
     command: sh -c "npm install && npx nest start --watch"
 

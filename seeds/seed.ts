@@ -38,6 +38,8 @@ const AppDataSource = new DataSource({
   logging: false,
 });
 
+const isForce = process.argv.includes('--force');
+
 async function seed() {
   console.log('\n🌱 Comprehensive database seed starting...\n');
 
@@ -50,6 +52,21 @@ async function seed() {
   const clientRepo = AppDataSource.getRepository(Client);
   const representativeRepo = AppDataSource.getRepository(Representative);
   const newsletterRepo = AppDataSource.getRepository(NewsletterSubscriber);
+
+  // Skip if already seeded (unless --force is passed)
+  if (!isForce) {
+    const existingCount = await propertyRepo.count();
+    if (existingCount > 0) {
+      console.log(
+        `⏭️  Database already has ${existingCount} properties — skipping seed.`,
+      );
+      console.log(
+        '   Run with --force to reseed and clear all existing data.\n',
+      );
+      await AppDataSource.destroy();
+      return;
+    }
+  }
 
   // Clear all data (correct FK order)
   console.log('🗑️  Clearing existing data...');
