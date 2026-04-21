@@ -97,26 +97,6 @@ jobs:
           NEXT_PUBLIC_API_URL=http://localhost:3000/v1
           EOF
 
-      # ── Run migrations & seed ───────────────────────────────────────────────
-      - name: Run database migrations
-        working-directory: apps/api
-        run: npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: estates
-
-      - name: Seed database
-        run: npm run seed
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: estates
-
       # ── Build & start apps ──────────────────────────────────────────────────
       - name: Build API
         working-directory: apps/api
@@ -153,6 +133,15 @@ jobs:
             echo "Attempt $i/30..."
             sleep 2
           done
+
+      - name: Seed database
+        run: npm run seed
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: estates
 
       - name: Build admin-web
         working-directory: apps/admin-web
