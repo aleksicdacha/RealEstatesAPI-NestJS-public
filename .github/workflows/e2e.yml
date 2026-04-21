@@ -99,8 +99,7 @@ jobs:
 
       # ── Build & start apps ──────────────────────────────────────────────────
       - name: Build API
-        working-directory: apps/api
-        run: $GITHUB_WORKSPACE/node_modules/.bin/nest build
+        run: npm run build --workspace=apps/api
 
       - name: Start API
         working-directory: apps/api
