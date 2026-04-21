@@ -2,8 +2,14 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ConfigurableThrottlerGuard } from './common/guards/configurable-throttler.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { I18nModule, AcceptLanguageResolver, QueryResolver, HeaderResolver } from 'nestjs-i18n';
+import {
+  I18nModule,
+  AcceptLanguageResolver,
+  QueryResolver,
+  HeaderResolver,
+} from 'nestjs-i18n';
 import * as path from 'path';
 
 // Feature modules
@@ -120,7 +126,7 @@ import { OptionsMiddleware } from '@src/common/middleware/options-middleware';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: ConfigurableThrottlerGuard,
     },
   ],
 })
