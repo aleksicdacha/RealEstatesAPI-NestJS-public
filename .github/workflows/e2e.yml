@@ -98,11 +98,12 @@ jobs:
           EOF
 
       # ── Build & start apps ──────────────────────────────────────────────────
+      - name: Install NestJS CLI
+        run: npm install -g @nestjs/cli@10
+
       - name: Build API
         working-directory: apps/api
-        run: |
-          export PATH=$GITHUB_WORKSPACE/node_modules/.bin:$PATH
-          nest build
+        run: nest build
 
       - name: Start API
         working-directory: apps/api

@@ -126,11 +126,12 @@ jobs:
         run: |
           echo "NEXT_PUBLIC_API_URL=http://localhost:3000/v1" > apps/user-web/.env.local
 
+      - name: Install NestJS CLI
+        run: npm install -g @nestjs/cli@10
+
       - name: Build API
         working-directory: apps/api
-        run: |
-          export PATH=$GITHUB_WORKSPACE/node_modules/.bin:$PATH
-          nest build
+        run: nest build
 
       - name: Start API
         run: |
