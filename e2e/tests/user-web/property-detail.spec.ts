@@ -54,17 +54,21 @@ test.describe('Property detail page', () => {
   });
 
   test('invalid guid shows 404 page', async ({ page }) => {
-    await page.goto(
+    const response = await page.goto(
       `/${LOCALE}/properties/00000000-0000-0000-0000-000000000000`,
     );
-    // Next.js will render 404 or redirect
+    // Next.js renders 404 in-place — check status code or page content
+    const status = response?.status() ?? 0;
     const title = await page.title();
     const body = await page.textContent('body');
     expect(
-      page.url().includes('not-found') ||
+      status === 404 ||
+        page.url().includes('not-found') ||
         title.toLowerCase().includes('404') ||
         body?.toLowerCase().includes('not found') ||
-        body?.toLowerCase().includes('nije pronađen'),
+        body?.toLowerCase().includes('nije pronađen') ||
+        body?.toLowerCase().includes('could not be found') ||
+        body?.toLowerCase().includes('page not found'),
     ).toBeTruthy();
   });
 });

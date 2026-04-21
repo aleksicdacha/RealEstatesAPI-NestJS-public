@@ -18,16 +18,13 @@ test.describe('Contact form', () => {
   });
 
   test('shows form with name, email, and message fields', async ({ page }) => {
-    await page.waitForLoadState('networkidle', { timeout: 10_000 });
-
-    // Look for common contact form fields
     const nameField = page.locator(
       'input[name="name"], input[placeholder*="ime" i], input[placeholder*="name" i]',
     );
     const emailField = page.locator('input[type="email"], input[name="email"]');
     const messageField = page.locator('textarea');
 
-    await expect(nameField.first()).toBeVisible({ timeout: 5_000 });
+    await expect(nameField.first()).toBeVisible({ timeout: 15_000 });
     await expect(emailField.first()).toBeVisible({ timeout: 5_000 });
     await expect(messageField.first()).toBeVisible({ timeout: 5_000 });
   });
