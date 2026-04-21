@@ -100,7 +100,7 @@ jobs:
       # ── Build & start apps ──────────────────────────────────────────────────
       - name: Build API
         working-directory: apps/api
-        run: npm run build
+        run: npx nest build
 
       - name: Start API
         working-directory: apps/api
