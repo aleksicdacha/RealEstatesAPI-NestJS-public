@@ -442,3 +442,40 @@ seeds/:
 - **Updated `package.json`**: Single `seed` script pointing to canonical `seeds/seed.ts` (removed `seed:comprehensive`).
 - **Rewrote `LOCAL_DEVELOPMENT_GUIDE.md`**: Comprehensive start/develop/deploy guide with Docker + manual modes, deployment to Hetzner section, PM2 + CI/CD docs, no exposed credentials.
 - **Rewrote `QUICK_REFERENCE.md`**: Concise daily cheat sheet — setup, commands, enums, seed data summary, deploy shortcuts.
+
+### 2026-04-21 — Playwright E2E Test Suite (69 tests) + CI/CD Pipeline
+
+#### E2E Test Suite
+- **Created `e2e/` directory** with 69 Playwright tests across 11 files:
+  - `e2e/tests/api/` — 6 API-level test files (auth, properties, clients, users, public-properties, chatbot)
+  - `e2e/tests/admin-web/` — 2 UI test files (auth, properties)
+  - `e2e/tests/user-web/` — 5 UI test files (homepage, property-list, property-detail, contact-form, newsletter)
+  - `e2e/utils/api-helpers.ts` — shared login/helper utilities
+  - `e2e/fixtures/index.ts` — Playwright fixtures (authenticated pages)
+- **`playwright.config.ts`** at workspace root — 3 projects: `api`, `admin-web`, `user-web`
+- **`ConfigurableThrottlerGuard`** (`apps/api/src/common/guards/configurable-throttler.guard.ts`): bypasses rate limiting when `THROTTLE_SKIP=true` in env — required for e2e tests that hit the API repeatedly
+- **`.env.test`** — test environment variables (`TEST_ADMIN_EMAIL=admin`, `TEST_ADMIN_PASSWORD=admin123`)
+- **Test results**: 63/69 pass (6 intentionally skipped), 55s total runtime
+
+#### Credential Consistency Fix
+- Admin seeder (`seeds/create-admin.ts`) and main seed (`seeds/seed.ts`) now create `username: 'admin'`, `email: 'admin@olymp-nekretnine.rs'`
+- All e2e test files use `admin` / `admin123` consistently
+- Admin-web login hint UI shows matching credentials
+
+#### Docker Compose Seeder Service
+- Added `healthcheck` to postgres service in `docker-compose.yml`
+- Added `seeder` service: `restart: "no"`, depends on postgres `service_healthy`, runs `npm run seed`
+- Added skip-if-seeded guard to `seeds/seed.ts` (skips if `propertyRepo.count() > 0` unless `--force`)
+- Added `seed:force` npm script for forced re-seeding
+
+#### GitHub Actions CI/CD — E2E Gate Pipeline
+- **`.github/workflows/e2e.yml`** (new): standalone e2e workflow, triggers on push to `master`/`develop` and PRs
+- **`.github/workflows/deploy.yml`** (updated): added inline `e2e` job; deploy now requires `needs: [test, e2e]`
+- **Pipeline order**: `test → e2e → deploy`
+
+#### CI Debugging Notes (for future reference)
+- `@nestjs/cli` must be in root `devDependencies` AND installed globally in CI (`npm install -g @nestjs/cli@10`) — workspace PATH scoping prevents `nest` binary from being found via `npm run`
+- **Do NOT run `npm ci` inside individual workspace folders** — it strips hoisted packages and breaks TypeScript module resolution. Only `npm ci` at workspace root.
+- `CORS_ORIGIN` must include both `http://localhost:*` AND `http://127.0.0.1:*` in CI — Playwright uses `127.0.0.1` as browser Origin
+- `data-source.ts` has `synchronize: true` — migrations are not needed in CI, schema is auto-created when API starts
+- **Files changed**: `package.json`, `docker-compose.yml`, `seeds/seed.ts`, `seeds/create-admin.ts`, `.env.test`, `playwright.config.ts`, `e2e/**`, `.github/workflows/e2e.yml`, `.github/workflows/deploy.yml`
