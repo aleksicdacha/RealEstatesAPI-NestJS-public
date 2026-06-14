@@ -165,7 +165,6 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}   # Only needed for org repos; optional for personal
         continue-on-error: true     # Don't block CI, just report
 
   # ── 5: Collect results & send email ────────────────────────────────────────
@@ -177,8 +176,6 @@ jobs:
     steps:
       - name: Check for failures
         id: check
-        env:
-          ALERT_EMAIL_USER: ${{ secrets.ALERT_EMAIL_USER }}
         run: |
           FAILED=""
           [[ "${{ needs.npm-audit.result }}" == "failure" ]]  && FAILED="${FAILED}npm-audit "
@@ -187,20 +184,23 @@ jobs:
           [[ "${{ needs.secret-scan.result }}" == "failure" ]] && FAILED="${FAILED}secret-scan "
           echo "failed_jobs=${FAILED}" >> "$GITHUB_OUTPUT"
           echo "has_failures=$([[ -n "$FAILED" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-          echo "email_ready=$([[ -n "$ALERT_EMAIL_USER" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Send email alert on failure
-        if: steps.check.outputs.has_failures == 'true' && steps.check.outputs.email_ready == 'true'
+        if: steps.check.outputs.has_failures == 'true'
+        env:
+          EMAIL_USER: ${{ secrets.ALERT_EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           secure: false
-          username: ${{ secrets.ALERT_EMAIL_USER }}
-          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          username: ${{ env.EMAIL_USER }}
+          password: ${{ env.EMAIL_PASS }}
           subject: '[ALERT] Security scan failures — RealEstatesAPI-NestJS — ${{ github.run_id }}'
-          to: ${{ secrets.ALERT_EMAIL_USER }}
-          from: ${{ secrets.ALERT_EMAIL_USER }}
+          to: ${{ env.EMAIL_USER }}
+          from: ${{ env.EMAIL_USER }}
           body: |
             Security scan detected issues in RealEstatesAPI-NestJS.
 
@@ -216,18 +216,21 @@ jobs:
       - name: Send weekly OK report (Sundays)
         if: |
           steps.check.outputs.has_failures == 'false' &&
-          steps.check.outputs.email_ready == 'true' &&
           github.event_name == 'schedule'
+        env:
+          EMAIL_USER: ${{ secrets.ALERT_EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           secure: false
-          username: ${{ secrets.ALERT_EMAIL_USER }}
-          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          username: ${{ env.EMAIL_USER }}
+          password: ${{ env.EMAIL_PASS }}
           subject: '[OK] Daily security scan passed — RealEstatesAPI-NestJS — ${{ github.run_id }}'
-          to: ${{ secrets.ALERT_EMAIL_USER }}
-          from: ${{ secrets.ALERT_EMAIL_USER }}
+          to: ${{ env.EMAIL_USER }}
+          from: ${{ env.EMAIL_USER }}
           body: |
             Daily security scan passed with no issues.
 
@@ -237,7 +240,6 @@ jobs:
             Run URL:    https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 # ── Dependency review on every PR ──────────────────────────────────────────
----
 # This is a separate workflow — saved as dependency-review.yml
 # (uncomment and save separately if needed)
 # on:
