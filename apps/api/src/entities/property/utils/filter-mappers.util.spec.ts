@@ -6,7 +6,12 @@ import {
   NeighborhoodMapper,
   RoomStructureMapper,
 } from './filter-mappers.util';
-import { CITY_MAP, resolveCity, getCityKeys, getCityNeighborhoods } from './city-neighborhood.map';
+import {
+  CITY_MAP,
+  resolveCity,
+  getCityKeys,
+  getCityNeighborhoods,
+} from './city-neighborhood.map';
 
 describe('FloorFilterMapper', () => {
   describe('mapFloorToCondition', () => {
