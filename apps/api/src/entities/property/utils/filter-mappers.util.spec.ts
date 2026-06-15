@@ -2,11 +2,11 @@ import {
   FloorFilterMapper,
   NEIGHBORHOOD_MAP,
   ROOM_STRUCTURE_MAP,
-  BEOGRAD_NEIGHBORHOODS,
   FLOOR_SPECIAL_VALUES,
   NeighborhoodMapper,
   RoomStructureMapper,
 } from './filter-mappers.util';
+import { CITY_MAP, resolveCity, getCityKeys, getCityNeighborhoods } from './city-neighborhood.map';
 
 describe('FloorFilterMapper', () => {
   describe('mapFloorToCondition', () => {
@@ -152,10 +152,29 @@ describe('ROOM_STRUCTURE_MAP', () => {
   });
 });
 
-describe('BEOGRAD_NEIGHBORHOODS', () => {
-  it('contains expected neighborhoods', () => {
-    expect(BEOGRAD_NEIGHBORHOODS).toContain('Beograd mala');
-    expect(BEOGRAD_NEIGHBORHOODS).toContain('Beverli Hils');
+describe('CITY_MAP', () => {
+  it('has Niš and Beograd as known cities', () => {
+    const keys = getCityKeys();
+    expect(keys).toContain('Niš');
+    expect(keys).toContain('Beograd');
+  });
+
+  it('Niš has no neighborhood restrictions (default city)', () => {
+    expect(getCityNeighborhoods('Niš')).toEqual([]);
+  });
+
+  it('Beograd has empty neighborhoods (no Belgrade properties yet)', () => {
+    expect(getCityNeighborhoods('Beograd')).toEqual([]);
+  });
+
+  it('resolveCity maps known neighborhoods', () => {
+    expect(resolveCity('Beograd mala')).toBe('Niš');
+    expect(resolveCity('Centar')).toBe('Niš');
+  });
+
+  it('resolveCity returns default for null/empty', () => {
+    expect(resolveCity(null)).toBe('Niš');
+    expect(resolveCity('')).toBe('Niš');
   });
 });
 
