@@ -9,7 +9,8 @@ import {
   Query,
   UseGuards,
   UseInterceptors,
-  UploadedFiles, Put,
+  UploadedFiles,
+  Put,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -23,18 +24,18 @@ import { Public } from '@src/auth/decorators/public.decorator';
 @Controller('properties')
 @UseGuards(JwtAuthGuard)
 export class PropertyController {
-  constructor(
-    private readonly propertyService: PropertyService,
-  ) {}
+  constructor(private readonly propertyService: PropertyService) {}
 
   @Post()
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'files', maxCount: 10 }, // "files" is the field name for uploading multiple images
-  ]))
-
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'files', maxCount: 10 }, // "files" is the field name for uploading multiple images
+    ]),
+  )
   async create(
     @Body() createPropertyDto: CreatePropertyDto,
-    @UploadedFiles() files: Express.Multer.File[]) {
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
     return await this.propertyService.create(createPropertyDto);
   }
 
@@ -58,6 +59,17 @@ export class PropertyController {
   @Get('public')
   async findAllPublic(@Query() query: FilterPropertyDto) {
     return this.propertyService.findAllPublic(query);
+  }
+
+  /**
+   * Public endpoint for similar properties (user-web frontend)
+   * Returns properties similar to the given one by type, price, and location
+   * MUST be before @Get('public/:guid') to avoid route conflict
+   */
+  @Public()
+  @Get('public/:guid/similar')
+  findSimilarPublic(@Param('guid') guid: string) {
+    return this.propertyService.findSimilarPublic(guid);
   }
 
   /**

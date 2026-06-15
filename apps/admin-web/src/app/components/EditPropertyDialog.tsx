@@ -275,10 +275,18 @@ export default function EditPropertyDialog({
           <img
             src={getImageSrc(item?.url)}
             alt="Uploaded Image"
+            crossOrigin="anonymous"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.error('Galleria image failed to load:', target.src);
+            }}
             style={{
               width: '100%',
-              height: '300px', // Increased height for larger display
+              height: '300px',
               objectFit: 'cover',
+              display: 'block',
+              minWidth: '100%',
+              minHeight: '300px',
             }}
           />
         )}
@@ -286,10 +294,16 @@ export default function EditPropertyDialog({
           <img
             src={getImageSrc(item?.url)}
             alt="Uploaded Thumbnail"
+            crossOrigin="anonymous"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.error('Galleria thumbnail failed to load:', target.src);
+            }}
             style={{
-              width: '70px', // Slightly larger thumbnails
-              height: '50px', // Proportionally larger
+              width: '70px',
+              height: '50px',
               objectFit: 'cover',
+              display: 'block',
             }}
           />
         )}
@@ -352,6 +366,41 @@ export default function EditPropertyDialog({
       <Toast ref={toast} />
 
       <PropertyForm initialData={formData} onDataChange={setFormData} />
+
+      {/* Timestamps */}
+      <div
+        style={{
+          marginTop: '8px',
+          marginBottom: '8px',
+          fontSize: '12px',
+          color: '#888',
+        }}
+      >
+        {formData.createdAt && (
+          <span style={{ marginRight: '16px' }}>
+            📅 {t('created')}:{' '}
+            {new Date(formData.createdAt).toLocaleDateString('sr-RS', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </span>
+        )}
+        {formData.updatedAt && (
+          <span>
+            🔄 {t('updated')}:{' '}
+            {new Date(formData.updatedAt).toLocaleDateString('sr-RS', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </span>
+        )}
+      </div>
 
       {/* Client Information Section */}
       {propertyData.client && (

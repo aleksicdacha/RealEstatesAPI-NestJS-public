@@ -2,6 +2,7 @@
 
 import { LoadScript } from '@react-google-maps/api';
 import { ReactNode } from 'react';
+import { Loader } from '@/app/components/Loader';
 
 interface GoogleMapsProviderProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ export function GoogleMapsProvider({ children }: GoogleMapsProviderProps) {
     <LoadScript
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
       libraries={['places']}
-      loadingElement={<div>Loading Maps...</div>}
+      loadingElement={<Loader size="sm" />}
     >
       {children}
     </LoadScript>

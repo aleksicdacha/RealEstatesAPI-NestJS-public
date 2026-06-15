@@ -988,6 +988,7 @@ export function ImageManager({
                 return draggedImage ? (
                   <img
                     src={getImageSrc(draggedImage.url)}
+                    crossOrigin="anonymous"
                     alt="Dragging"
                     style={{
                       width: '200px',
@@ -1170,6 +1171,7 @@ export function ImageManager({
                     >
                       <img
                         src={getImageSrc(selectedImage.url)}
+                        crossOrigin="anonymous"
                         alt="Crop preview"
                         style={{
                           maxWidth: '600px',
@@ -1301,6 +1303,7 @@ export function ImageManager({
                           <img
                             ref={smartCropImageRef}
                             src={getImageSrc(selectedImage.url)}
+                            crossOrigin="anonymous"
                             alt="Smart crop preview"
                             style={{
                               maxWidth: '450px',
@@ -2017,6 +2020,7 @@ function SortableImage({
         <img
           src={getImageSrc(image.url)}
           alt="Property"
+          crossOrigin="anonymous"
           style={{
             width: '100%',
             height: '150px',

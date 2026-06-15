@@ -167,5 +167,12 @@
     "@": "${workspaceRoot}/src",
     "@repo/types": "${workspaceRoot}/packages/types/src",
     "@repo/utils": "${workspaceRoot}/packages/utils/src"
-  }
+  },
+  "python-envs.pythonProjects": [
+    {
+      "path": ".",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }

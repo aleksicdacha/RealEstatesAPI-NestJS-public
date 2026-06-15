@@ -1,25 +1,28 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { DataTable, DataTableSortEvent, SortOrder } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Button } from "primereact/button";
-import { Dialog } from "primereact/dialog";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { Toast } from "primereact/toast";
-import { Tag } from "primereact/tag";
-import { MultiSelect } from "primereact/multiselect";
-import { InputSwitch } from "primereact/inputswitch";
-import { useTranslations } from "next-intl";
+import { useState, useEffect, useRef } from 'react';
+import { DataTable, DataTableSortEvent, SortOrder } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
+import { Tag } from 'primereact/tag';
+import { MultiSelect } from 'primereact/multiselect';
+import { InputSwitch } from 'primereact/inputswitch';
+import { useTranslations } from 'next-intl';
 
 // Import PrimeReact CSS files
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-import { fetchData } from "../../utils/fetchUtils";
-import { formatCurrency } from "../../utils/currency";
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { fetchData } from '../../utils/fetchUtils';
+import { formatCurrency } from '../../utils/currency';
 import PropertyWizard from '../../components/PropertyWizard';
 import EditPropertyDialog from '../../components/EditPropertyDialog';
-import { PropertyFilters, PropertyFilterValues } from '../../components/PropertyFilters';
+import {
+  PropertyFilters,
+  PropertyFilterValues,
+} from '../../components/PropertyFilters';
 import { PropertyMapView } from '../../components/PropertyMapView';
 import { Property } from '../../../services/property.service';
 import { translatePropertyType } from '../../utils/propertyTypeTranslation';
@@ -34,11 +37,13 @@ export default function PropertiesPage() {
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>(-1);
   const [filters, setFilters] = useState<PropertyFilterValues>({});
   const [showMap, setShowMap] = useState(true);
-  const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null);
+  const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(
+    null,
+  );
 
   const [isWizardVisible, setWizardVisible] = useState(false);
 
@@ -62,7 +67,15 @@ export default function PropertiesPage() {
 
   useEffect(() => {
     loadProperties();
-  }, [page, pageSize, sortBy, sortOrder, statusFilter, propertyTypeFilter, filters]);
+  }, [
+    page,
+    pageSize,
+    sortBy,
+    sortOrder,
+    statusFilter,
+    propertyTypeFilter,
+    filters,
+  ]);
 
   const loadProperties = async () => {
     setLoading(true);
@@ -72,7 +85,7 @@ export default function PropertiesPage() {
         page: page + 1,
         limit: pageSize,
         sortBy,
-        order: sortOrder === -1 ? "DESC" : "ASC",
+        order: sortOrder === -1 ? 'DESC' : 'ASC',
       };
 
       // Add status filter
@@ -86,6 +99,10 @@ export default function PropertiesPage() {
       }
 
       // Add advanced filters
+      if (filters.code) {
+        queryParams.searchField = 'code';
+        queryParams.searchValue = filters.code;
+      }
       if (filters.city) queryParams.city = filters.city;
       if (filters.neighborhoods && filters.neighborhoods.length > 0) {
         queryParams.neighborhoods = filters.neighborhoods.join(',');
@@ -99,10 +116,14 @@ export default function PropertiesPage() {
       if (filters.roomStructure && filters.roomStructure.length > 0) {
         queryParams.roomStructure = filters.roomStructure.join(',');
       }
-      if (filters.priceFrom !== undefined && filters.priceFrom !== null) queryParams.minPrice = filters.priceFrom;
-      if (filters.priceTo !== undefined && filters.priceTo !== null) queryParams.maxPrice = filters.priceTo;
-      if (filters.areaFrom !== undefined && filters.areaFrom !== null) queryParams.minArea = filters.areaFrom;
-      if (filters.areaTo !== undefined && filters.areaTo !== null) queryParams.maxArea = filters.areaTo;
+      if (filters.priceFrom !== undefined && filters.priceFrom !== null)
+        queryParams.minPrice = filters.priceFrom;
+      if (filters.priceTo !== undefined && filters.priceTo !== null)
+        queryParams.maxPrice = filters.priceTo;
+      if (filters.areaFrom !== undefined && filters.areaFrom !== null)
+        queryParams.minArea = filters.areaFrom;
+      if (filters.areaTo !== undefined && filters.areaTo !== null)
+        queryParams.maxArea = filters.areaTo;
       if (filters.bathrooms && filters.bathrooms.length > 0) {
         queryParams.bathrooms = filters.bathrooms.join(',');
       }
@@ -118,13 +139,18 @@ export default function PropertiesPage() {
 
       console.log('🔍 Loading properties with filters:', queryParams);
 
-      const result = await fetchData("properties", queryParams);
-      console.log('📊 Received properties:', result.items.length, 'Total:', result.meta.totalItems);
-      
+      const result = await fetchData('properties', queryParams);
+      console.log(
+        '📊 Received properties:',
+        result.items.length,
+        'Total:',
+        result.meta.totalItems,
+      );
+
       setProperties(result.items);
       setTotalRecords(result.meta.totalItems);
     } catch (error) {
-      console.error("Error fetching properties:", error);
+      console.error('Error fetching properties:', error);
     } finally {
       setLoading(false);
     }
@@ -134,16 +160,16 @@ export default function PropertiesPage() {
     try {
       await apiClient.delete(`/properties/${id}`);
       toast.current?.show({
-        severity: "success",
+        severity: 'success',
         summary: t('success'),
         detail: t('deleteSuccess'),
         life: 3000,
       });
       loadProperties();
     } catch (error) {
-      console.error("Deletion error:", error);
+      console.error('Deletion error:', error);
       toast.current?.show({
-        severity: "error",
+        severity: 'error',
         summary: t('error'),
         detail: t('deleteError'),
         life: 3000,
@@ -151,10 +177,10 @@ export default function PropertiesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const onSort = (event: DataTableSortEvent) => {
-    setSortBy(event.sortField || "createdAt");
+    setSortBy(event.sortField || 'createdAt');
     setSortOrder(event.sortOrder || -1);
   };
 
@@ -171,13 +197,13 @@ export default function PropertiesPage() {
   const deleteProperty = (property: Property) => {
     confirmDialog({
       message: `Are you sure you want to delete ${property.code}?`,
-      header: "Confirm Delete",
-      icon: "pi pi-exclamation-triangle",
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
       accept: () => {
         handleDeleteProperty(property.id);
         toast.current?.show({
-          severity: "success",
-          summary: "Success",
+          severity: 'success',
+          summary: 'Success',
           detail: `${property.code} deleted`,
         });
         loadProperties();
@@ -208,9 +234,9 @@ export default function PropertiesPage() {
     <MultiSelect
       value={statusFilter}
       options={[
-        { label: t('available'), value: "active" },
-        { label: t('reserved'), value: "inactive" },
-        { label: tCommon('delete'), value: "deleted" },
+        { label: t('available'), value: 'active' },
+        { label: t('reserved'), value: 'inactive' },
+        { label: tCommon('delete'), value: 'deleted' },
       ]}
       onChange={(e) => setStatusFilter(e.value)}
       placeholder={t('filterByStatus')}
@@ -274,27 +300,37 @@ export default function PropertiesPage() {
     return date.toLocaleDateString('sr-RS', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
+      day: '2-digit',
     });
   };
 
   const statusBodyTemplate = (rowData: Property) => {
     const getSeverity = (status: string) => {
       switch (status) {
-        case 'active': return 'success';
-        case 'inactive': return 'warning';
-        case 'deleted': return 'danger';
-        default: return 'info';
+        case 'active':
+          return 'success';
+        case 'inactive':
+          return 'warning';
+        case 'deleted':
+          return 'danger';
+        default:
+          return 'info';
       }
     };
 
-    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} className="rounded-full" />;
+    return (
+      <Tag
+        value={rowData.status}
+        severity={getSeverity(rowData.status)}
+        className="rounded-full"
+      />
+    );
   };
 
   return (
     <div className="datatable-crud-demo">
       <Toast ref={toast} />
-      
+
       {/* Action bar with New Property button */}
       <div className="flex justify-between items-center mb-4">
         <Button
@@ -306,10 +342,16 @@ export default function PropertiesPage() {
       </div>
 
       {/* Property Filters */}
-      <PropertyFilters onFilterChange={handleFilterChange} onReset={handleResetFilters} />
+      <PropertyFilters
+        onFilterChange={handleFilterChange}
+        onReset={handleResetFilters}
+      />
 
       {/* Map Toggle Switch */}
-      <div className="flex justify-end items-center mb-4" style={{ marginTop: '20px' }}>
+      <div
+        className="flex justify-end items-center mb-4"
+        style={{ marginTop: '20px' }}
+      >
         <label className="mr-3 font-medium text-gray-700">
           <i className="pi pi-map mr-2"></i>
           {t('showMap')}
@@ -321,45 +363,58 @@ export default function PropertiesPage() {
       <div style={{ display: 'flex', gap: '20px' }}>
         {/* Left side - Data Table */}
         <div style={{ flex: 2, minWidth: 0 }}>
-
           {/* Full-page loading overlay */}
           {loading && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 9999
-            }}>
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 9999,
+              }}
+            >
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
             </div>
           )}
 
           <DataTable
             ref={dt}
-            value={loading ? Array.from({ length: pageSize }, (_, index) => ({ 
-              id: `skeleton-${index}`,
-              code: '',
-              area: 0,
-              price: 0,
-              salePrice: 0,
-              propertyType: 'apartment',
-              status: 'active',
-              address: '',
-              createdAt: new Date().toISOString()
-            } as Property)) : properties}
+            value={
+              loading
+                ? Array.from(
+                    { length: pageSize },
+                    (_, index) =>
+                      ({
+                        id: `skeleton-${index}`,
+                        code: '',
+                        area: 0,
+                        price: 0,
+                        salePrice: 0,
+                        propertyType: 'apartment',
+                        status: 'active',
+                        address: '',
+                        createdAt: new Date().toISOString(),
+                      }) as Property,
+                  )
+                : properties
+            }
             selection={selectedProperties}
-            onSelectionChange={(e) => !loading ? setSelectedProperties(e.value as Property[]) : undefined}
+            onSelectionChange={(e) =>
+              !loading
+                ? setSelectedProperties(e.value as Property[])
+                : undefined
+            }
             selectionMode="multiple"
             dataKey="id"
             paginator
             rows={pageSize}
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[10, 25, 50, 100, totalRecords]}
             totalRecords={totalRecords}
             lazy
             first={page * pageSize}
@@ -370,22 +425,86 @@ export default function PropertiesPage() {
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             onSort={onSort}
             onPage={onPageChange}
-            onRowMouseEnter={(e) => !loading && showMap && setHoveredPropertyId(e.data.id)}
-            onRowMouseLeave={() => !loading && showMap && setHoveredPropertyId(null)}
+            onRowMouseEnter={(e) =>
+              !loading && showMap && setHoveredPropertyId(e.data.id)
+            }
+            onRowMouseLeave={() =>
+              !loading && showMap && setHoveredPropertyId(null)
+            }
           >
-            <Column field="code" header={t('code')} sortable style={{ minWidth: "8rem" }} body={loading ? () => <div className="skeleton-line h-1rem w-8rem"></div> : null}></Column>
-            <Column field="neighborhood" header={t('neighborhood')} style={{ minWidth: "10rem" }} body={loading ? () => <div className="skeleton-line h-1rem w-6rem"></div> : null}></Column>
-            <Column field="area" header={t('area')} sortable body={loading ? () => <div className="skeleton-line h-1rem w-4rem"></div> : null}></Column>
-            <Column field="price" header={t('ownerPrice')} body={loading ? () => <div className="skeleton-line h-1rem w-6rem"></div> : priceBodyTemplate} sortable></Column>
-            <Column field="salePrice" header={t('salePrice')} body={loading ? () => <div className="skeleton-line h-1rem w-6rem"></div> : salePriceBodyTemplate} sortable></Column>
-            <Column field="createdAt" header={t('createdAt')} body={loading ? () => <div className="skeleton-line h-1rem w-5rem"></div> : createdAtBodyTemplate} sortable style={{ minWidth: "10rem" }}></Column>
+            <Column
+              field="code"
+              header={t('code')}
+              sortable
+              style={{ minWidth: '8rem' }}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-8rem"></div>
+                  : null
+              }
+            ></Column>
+            <Column
+              field="neighborhood"
+              header={t('neighborhood')}
+              style={{ minWidth: '10rem' }}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-6rem"></div>
+                  : null
+              }
+            ></Column>
+            <Column
+              field="area"
+              header={t('area')}
+              sortable
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-4rem"></div>
+                  : null
+              }
+            ></Column>
+            <Column
+              field="price"
+              header={t('ownerPrice')}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-6rem"></div>
+                  : priceBodyTemplate
+              }
+              sortable
+            ></Column>
+            <Column
+              field="salePrice"
+              header={t('salePrice')}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-6rem"></div>
+                  : salePriceBodyTemplate
+              }
+              sortable
+            ></Column>
+            <Column
+              field="createdAt"
+              header={t('createdAt')}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-5rem"></div>
+                  : createdAtBodyTemplate
+              }
+              sortable
+              style={{ minWidth: '10rem' }}
+            ></Column>
             <Column
               field="propertyType"
               header={t('type')}
               sortable
               filter
               filterElement={propertyTypeFilterTemplate()}
-              body={loading ? () => <div className="skeleton-line h-1rem w-5rem"></div> : propertyTypeBodyTemplate}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-5rem"></div>
+                  : propertyTypeBodyTemplate
+              }
             ></Column>
             <Column
               field="status"
@@ -393,9 +512,19 @@ export default function PropertiesPage() {
               sortable
               filter
               filterElement={statusFilterTemplate()}
-              body={loading ? () => <div className="skeleton-line h-1rem w-4rem"></div> : statusBodyTemplate}
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-4rem"></div>
+                  : statusBodyTemplate
+              }
             ></Column>
-            <Column body={loading ? () => <div className="skeleton-line h-1rem w-3rem"></div> : actionBodyTemplate}></Column>
+            <Column
+              body={
+                loading
+                  ? () => <div className="skeleton-line h-1rem w-3rem"></div>
+                  : actionBodyTemplate
+              }
+            ></Column>
           </DataTable>
         </div>
 
@@ -403,8 +532,8 @@ export default function PropertiesPage() {
         {showMap && (
           <div style={{ flex: '1', minWidth: '400px' }}>
             <div style={{ position: 'sticky', top: '20px' }}>
-              <PropertyMapView 
-                properties={properties} 
+              <PropertyMapView
+                properties={properties}
                 onPropertyClick={handleMapPropertyClick}
                 height="calc(100vh - 200px)"
                 hoveredPropertyId={hoveredPropertyId}
@@ -416,25 +545,24 @@ export default function PropertiesPage() {
 
       <Dialog
         visible={isWizardVisible}
-        style={{ width: "70vw", position:"static", height: "max-content" }}
+        style={{ width: '70vw', position: 'static', height: 'max-content' }}
         header={t('createProperty')}
         modal
         className="p-fluid"
         onHide={() => setWizardVisible(false)}
       >
-      {isWizardVisible && <PropertyWizard onCompleted={refreshTable} />}
+        {isWizardVisible && <PropertyWizard onCompleted={refreshTable} />}
       </Dialog>
 
-      {isDialogVisible && propertyForm &&
+      {isDialogVisible && propertyForm && (
         <EditPropertyDialog
           onCloseDialog={handleCloseDialog}
           propertyData={propertyForm}
           onSuccess={loadProperties}
-      />}
+        />
+      )}
 
       <ConfirmDialog />
     </div>
-  )
+  );
 }
-
-

@@ -92,3 +92,5 @@ e2e/reports/
 e2e/test-results/
 playwright-report/
 .env.test.local
+db-backup/
+apps/api/uploads/

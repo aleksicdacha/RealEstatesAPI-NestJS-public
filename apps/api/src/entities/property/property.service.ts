@@ -1,9 +1,18 @@
-import { ConflictException, Injectable, NotFoundException, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDTO } from './dto/update-property.dto';
 import { Property } from './property.entity';
 import { FilterPropertyDto } from './dto/filter-property.dto';
-import { PropertyStatsQueryDto, PropertyStatsDto } from './dto/property-stats.dto';
+import {
+  PropertyStatsQueryDto,
+  PropertyStatsDto,
+} from './dto/property-stats.dto';
 import { PublicPropertyDto } from './dto/public-property.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { DataSource } from 'typeorm';
@@ -11,6 +20,7 @@ import { PropertyRepository } from '@src/entities/property/property.repository';
 import { PropertyImageRepository } from '@src/entities/property-image/property-image.repository';
 import { SpecialOfferManager } from './utils/special-offer.manager';
 import { TextNormalizer } from './utils/text-normalizer.util';
+import { getCityKeys } from './utils/city-neighborhood.map';
 
 @Injectable()
 export class PropertyService {
@@ -27,21 +37,26 @@ export class PropertyService {
     const { code, images, specialOffer, ...propertyData } = createPropertyDto;
 
     // Check if the code already exists
-    const existingProperty = await this.propertyRepository.findOne({ where: { code } });
+    const existingProperty = await this.propertyRepository.findOne({
+      where: { code },
+    });
     if (existingProperty) {
-      throw new ConflictException(`Property with code "${code}" already exists.`);
+      throw new ConflictException(
+        `Property with code "${code}" already exists.`,
+      );
     }
 
     // Reorganize special offers if a new value is being set (using extracted manager)
-    const normalizedSpecialOffer = this.specialOfferManager.normalizeSpecialOffer(specialOffer);
+    const normalizedSpecialOffer =
+      this.specialOfferManager.normalizeSpecialOffer(specialOffer);
     if (normalizedSpecialOffer !== null) {
       await this.specialOfferManager.reorganize(normalizedSpecialOffer);
     }
 
     // Create the property
     try {
-      const property = this.propertyRepository.create({ 
-        code, 
+      const property = this.propertyRepository.create({
+        code,
         ...propertyData,
         specialOffer: normalizedSpecialOffer,
       });
@@ -71,26 +86,38 @@ export class PropertyService {
     }
   }
 
-  async update(id: string, updatePropertyDto: UpdatePropertyDTO): Promise<Property> {
-    const { code, images, additionalEquipment, specialOffer, ...propertyData } = updatePropertyDto;
+  async update(
+    id: string,
+    updatePropertyDto: UpdatePropertyDTO,
+  ): Promise<Property> {
+    const { code, images, additionalEquipment, specialOffer, ...propertyData } =
+      updatePropertyDto;
 
     // Fetch the property to update
-    const property = await this.propertyRepository.findOne({ where: { id }, relations: ['images'] });
+    const property = await this.propertyRepository.findOne({
+      where: { id },
+      relations: ['images'],
+    });
     if (!property) {
       throw new NotFoundException(`Property with id "${id}" not found.`);
     }
 
     // Check if the code is being updated and if it already exists
     if (code && code !== property.code) {
-      const existingProperty = await this.propertyRepository.findOne({ where: { code } });
+      const existingProperty = await this.propertyRepository.findOne({
+        where: { code },
+      });
       if (existingProperty) {
-        throw new ConflictException(`Property with code "${code}" already exists.`);
+        throw new ConflictException(
+          `Property with code "${code}" already exists.`,
+        );
       }
     }
 
     // Reorganize special offers if the value is being changed (using extracted manager)
     if (specialOffer !== undefined && specialOffer !== property.specialOffer) {
-      const normalizedSpecialOffer = this.specialOfferManager.normalizeSpecialOffer(specialOffer);
+      const normalizedSpecialOffer =
+        this.specialOfferManager.normalizeSpecialOffer(specialOffer);
       if (normalizedSpecialOffer !== null) {
         await this.specialOfferManager.reorganize(normalizedSpecialOffer, id);
       }
@@ -101,7 +128,8 @@ export class PropertyService {
       ...propertyData,
       code,
       additionalEquipment: additionalEquipment ?? null,
-      specialOffer: this.specialOfferManager.normalizeSpecialOffer(specialOffer),
+      specialOffer:
+        this.specialOfferManager.normalizeSpecialOffer(specialOffer),
     };
 
     // Update the property fields
@@ -143,7 +171,10 @@ export class PropertyService {
     }
 
     // Return the updated property
-    return this.propertyRepository.findOne({ where: { id }, relations: ['client', 'client.representative', 'images'] });
+    return this.propertyRepository.findOne({
+      where: { id },
+      relations: ['client', 'client.representative', 'images'],
+    });
   }
 
   async findAll(options: FilterPropertyDto): Promise<Pagination<Property>> {
@@ -153,10 +184,11 @@ export class PropertyService {
       page: options.page || 1,
       limit: options.limit || 10,
       sortBy: options.sortBy || 'createdAt',
-      order: (options.order || 'DESC') as 'ASC' | 'DESC'
+      order: (options.order || 'DESC') as 'ASC' | 'DESC',
     };
 
-    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
+    const [items, totalItems] =
+      await this.propertyRepository.findFilteredProperties(paginationOptions);
 
     return new Pagination<Property>(items, {
       totalItems,
@@ -172,7 +204,9 @@ export class PropertyService {
    * Returns sanitized property data without sensitive information
    * Automatically filters only ACTIVE properties
    */
-  async findAllPublic(options: FilterPropertyDto): Promise<Pagination<PublicPropertyDto>> {
+  async findAllPublic(
+    options: FilterPropertyDto,
+  ): Promise<Pagination<PublicPropertyDto>> {
     // Force status to 'active' for public API - ignore any status filter from client
     const paginationOptions = {
       ...options,
@@ -180,13 +214,16 @@ export class PropertyService {
       page: options.page || 1,
       limit: options.limit || 10,
       sortBy: options.sortBy || 'createdAt',
-      order: (options.order || 'DESC') as 'ASC' | 'DESC'
+      order: (options.order || 'DESC') as 'ASC' | 'DESC',
     };
 
-    const [items, totalItems] = await this.propertyRepository.findFilteredProperties(paginationOptions);
+    const [items, totalItems] =
+      await this.propertyRepository.findFilteredProperties(paginationOptions);
 
     // Transform to public DTOs (exclude sensitive data)
-    const publicItems = items.map(property => this.transformToPublicDto(property));
+    const publicItems = items.map((property) =>
+      this.transformToPublicDto(property),
+    );
 
     return new Pagination<PublicPropertyDto>(publicItems, {
       totalItems,
@@ -222,12 +259,13 @@ export class PropertyService {
       orientation: property.orientation, // Public-facing
       youtubeUrl: property.youtubeUrl, // Public-facing for video embed
       specialOffer: property.specialOffer, // For homepage ordering
-      images: property.images?.map(img => ({
-        id: img.id,
-        url: img.url,
-        isPrimary: img.isFavorite,
-        displayOrder: img.order,
-      })) || [],
+      images:
+        property.images?.map((img) => ({
+          id: img.id,
+          url: img.url,
+          isPrimary: img.isFavorite,
+          displayOrder: img.order,
+        })) || [],
     };
   }
 
@@ -248,23 +286,25 @@ export class PropertyService {
 
     return {
       ...property,
-      client: property.client ? {
-        id: property.client.id,
-        name: property.client.name,
-        address: property.client.address,
-        phone: property.client.phone,
-        email: property.client.email,
-        transactionType: property.client.transactionType,
-        paymentType: property.client.paymentType,
-        comment: property.client.comment,
-        status: property.client.status,
-        moneyAmount: property.client.moneyAmount,
-        ownerJmbg: property.client.ownerJmbg,
-        ownerBirthplace: property.client.ownerBirthplace,
-        ownerIdCardNumber: property.client.ownerIdCardNumber,
-        ownerIdCardIssuePlace: property.client.ownerIdCardIssuePlace,
-        representative: property.client.representative,
-      } : null,
+      client: property.client
+        ? {
+            id: property.client.id,
+            name: property.client.name,
+            address: property.client.address,
+            phone: property.client.phone,
+            email: property.client.email,
+            transactionType: property.client.transactionType,
+            paymentType: property.client.paymentType,
+            comment: property.client.comment,
+            status: property.client.status,
+            moneyAmount: property.client.moneyAmount,
+            ownerJmbg: property.client.ownerJmbg,
+            ownerBirthplace: property.client.ownerBirthplace,
+            ownerIdCardNumber: property.client.ownerIdCardNumber,
+            ownerIdCardIssuePlace: property.client.ownerIdCardIssuePlace,
+            representative: property.client.representative,
+          }
+        : null,
     };
   }
 
@@ -285,6 +325,55 @@ export class PropertyService {
     return this.transformToPublicDto(property);
   }
 
+  /**
+   * Find properties similar to the given one (public-facing)
+   * Similarity based on: propertyType (same), price (±40%), neighborhood (same)
+   * Returns up to 4 results sorted by relevance
+   */
+  async findSimilarPublic(guid: string): Promise<PublicPropertyDto[]> {
+    const source = await this.propertyRepository.findOne({
+      where: { id: guid },
+      relations: ['client'],
+    });
+
+    if (!source) {
+      throw new NotFoundException(`Property with ID ${guid} not found`);
+    }
+
+    const transactionType = source.client?.transactionType;
+
+    // Try exact match: same type, same transaction type, price ±40%
+    let similar = await this.propertyRepository.findSimilarProperties(
+      source,
+      transactionType,
+      0.4,
+    );
+
+    // If not enough, try relaxing: same type, any transaction type, price ±60%
+    if (similar.length < 4) {
+      const relaxed = await this.propertyRepository.findSimilarProperties(
+        source,
+        undefined,
+        0.6,
+      );
+      const existingIds = new Set(similar.map((p) => p.id));
+      similar = [...similar, ...relaxed.filter((p) => !existingIds.has(p.id))];
+    }
+
+    // If still not enough, top up with same transaction type (ignoring type match)
+    if (similar.length < 4) {
+      const fallback = await this.propertyRepository.findSimilarProperties(
+        source,
+        transactionType,
+        1.0,
+        true,
+      );
+      const existingIds = new Set(similar.map((p) => p.id));
+      similar = [...similar, ...fallback.filter((p) => !existingIds.has(p.id))];
+    }
+
+    return similar.slice(0, 4).map((p) => this.transformToPublicDto(p));
+  }
 
   async remove(id: string): Promise<void> {
     try {
@@ -304,10 +393,16 @@ export class PropertyService {
         this.logger.debug(`Removing property: ${id}`);
 
         if (property.images && property.images.length > 0) {
-          this.logger.debug(`Found ${property.images.length} associated images for property: ${id}`);
+          this.logger.debug(
+            `Found ${property.images.length} associated images for property: ${id}`,
+          );
 
           // Handle property images with optimized parallel processing
-          await this.propertyImageRepository.handlePropertyImagesParallel(manager, id, property.images);
+          await this.propertyImageRepository.handlePropertyImagesParallel(
+            manager,
+            id,
+            property.images,
+          );
         }
 
         // Delete the property itself
@@ -356,7 +451,9 @@ export class PropertyService {
   // `);
   // }
 
-  async getAveragePriceByType(query: PropertyStatsQueryDto): Promise<PropertyStatsDto[]> {
+  async getAveragePriceByType(
+    query: PropertyStatsQueryDto,
+  ): Promise<PropertyStatsDto[]> {
     const queryBuilder = this.propertyRepository.createQueryBuilder('property');
 
     // Apply date filters if provided
@@ -383,7 +480,7 @@ export class PropertyService {
       .groupBy('property.propertyType')
       .getRawMany();
 
-    return results.map(result => ({
+    return results.map((result) => ({
       propertyType: result.propertyType,
       averagePrice: parseFloat(result.averagePrice),
       count: parseInt(result.count),
@@ -391,30 +488,10 @@ export class PropertyService {
   }
 
   async getFilterOptions() {
-    // Extract unique cities from address field (second part: "Street, City, Country")
-    const citiesRaw = await this.propertyRepository
-      .createQueryBuilder('property')
-      .select('property.address', 'address')
-      .where('property.address IS NOT NULL')
-      .getRawMany();
-
-    // Parse cities from address format: "Street, City, Country" or "Street, City PostalCode, Country"
-    const cities = citiesRaw
-      .map(row => {
-        const parts = row.address.split(',');
-        if (parts.length >= 2) {
-          // Get the second part (City or "City PostalCode")
-          const cityPart = parts[1].trim();
-          // Remove postal code if exists (e.g., "Beograd 11000" -> "Beograd")
-          return cityPart.replace(/\s+\d+.*$/, '').trim();
-        }
-        return null;
-      })
-      .filter(c => c && c.length > 0);
-
-    // Normalize and get unique cities
-    const normalizedCities = TextNormalizer.normalizeBatch(cities);
-    const uniqueCities = [...new Set(normalizedCities)].sort();
+    // Return cities from the authoritative city→neighborhood map
+    // instead of trying to parse the address field (which contains
+    // neighborhood data, not "Street, City, Country" format)
+    const cities = getCityKeys();
 
     // Extract unique neighborhoods
     const neighborhoods = await this.propertyRepository
@@ -426,11 +503,11 @@ export class PropertyService {
 
     // Normalize neighborhoods
     const normalizedNeighborhoods = neighborhoods
-      .map(n => n.neighborhood)
-      .filter(n => n && n.trim().length > 0);
+      .map((n) => n.neighborhood)
+      .filter((n) => n && n.trim().length > 0);
 
     return {
-      cities: uniqueCities,
+      cities,
       neighborhoods: TextNormalizer.normalizeBatch(normalizedNeighborhoods),
     };
   }

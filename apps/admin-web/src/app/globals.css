@@ -593,23 +593,125 @@ button[class*="text-gray-700"] {
 }
 
 /* ============================================
-   Admin Navbar - Clean Design Override
+   Admin Navbar - Modern Clean Design
    ============================================ */
-/* Ensure navbar buttons have no border and proper styling */
+
+/* Navbar container */
+.p-menubar {
+  padding: 0.5rem 1.5rem !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Menu item links — clean base */
+.p-menubar .p-menuitem-link {
+  padding: 0.5rem 1rem !important;
+  margin: 0 2px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  color: #6b7280 !important;
+  background: transparent !important;
+  border: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Hover state — subtle gray background, no border */
+.p-menubar .p-menuitem-link:hover {
+  color: #111827 !important;
+  background: #f3f4f6 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Active/current route — brand color accent */
+.p-menubar .p-menuitem-link.p-highlight,
+.p-menubar .p-menuitem-link[aria-current],
+.p-menubar .p-menuitem.active .p-menuitem-link {
+  color: #ea580c !important;
+  background: #fff7ed !important;
+  font-weight: 600 !important;
+}
+
+/* Icons in menu items */
+.p-menubar .p-menuitem-icon {
+  color: inherit !important;
+  font-size: 15px !important;
+  margin-right: 6px !important;
+  transition: color 0.2s ease !important;
+}
+
+/* Remove PrimeReact focus ring, use softer style */
+.p-menubar .p-menuitem-link:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15) !important;
+}
+
+/* Badge styling */
+.p-menubar .p-badge {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+}
+
+/* Root menu list — flex centering */
+.p-menubar-root-list {
+  gap: 2px !important;
+}
+
+/* Ensure navbar buttons have no border */
 header nav button {
   border: none !important;
   box-shadow: none !important;
 }
 
-/* Override any PrimeReact button styles in navbar */
-header nav button:hover {
+header nav button:hover,
+header nav button:focus {
   border: none !important;
   box-shadow: none !important;
+  outline: none !important;
 }
 
-header nav button:focus {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
+/* ============================================
+   Galleria Image Fix - PrimeReact 10
+   ============================================ */
+.fixed-height-gallery {
+  width: 100% !important;
+}
+
+.fixed-height-gallery .p-galleria-item-container {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+.fixed-height-gallery .p-galleria-item {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.fixed-height-gallery .p-galleria-item img {
+  width: 100% !important;
+  height: 300px !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.fixed-height-gallery .p-galleria-thumbnail-container {
+  width: 100% !important;
+}
+
+.fixed-height-gallery .p-galleria-thumbnail-item {
+  width: 70px !important;
+  height: 50px !important;
+  overflow: hidden;
+}
+
+.fixed-height-gallery .p-galleria-thumbnail-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 

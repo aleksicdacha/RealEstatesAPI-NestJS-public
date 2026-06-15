@@ -26,86 +26,86 @@ const customMapStyles = [
   // Light, modern, neutral theme
   {
     elementType: 'geometry',
-    stylers: [{ color: '#f5f5f5' }]
+    stylers: [{ color: '#f5f5f5' }],
   },
   {
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#616161' }]
+    stylers: [{ color: '#616161' }],
   },
   {
     elementType: 'labels.text.stroke',
-    stylers: [{ color: '#f5f5f5' }]
+    stylers: [{ color: '#f5f5f5' }],
   },
   {
     featureType: 'administrative.land_parcel',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#bdbdbd' }]
+    stylers: [{ color: '#bdbdbd' }],
   },
   {
     featureType: 'poi',
     elementType: 'geometry',
-    stylers: [{ color: '#eeeeee' }]
+    stylers: [{ color: '#eeeeee' }],
   },
   {
     featureType: 'poi',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#757575' }]
+    stylers: [{ color: '#757575' }],
   },
   {
     featureType: 'poi.park',
     elementType: 'geometry',
-    stylers: [{ color: '#e5e5e5' }]
+    stylers: [{ color: '#e5e5e5' }],
   },
   {
     featureType: 'poi.park',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#9e9e9e' }]
+    stylers: [{ color: '#9e9e9e' }],
   },
   {
     featureType: 'road',
     elementType: 'geometry',
-    stylers: [{ color: '#ffffff' }]
+    stylers: [{ color: '#ffffff' }],
   },
   {
     featureType: 'road.arterial',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#757575' }]
+    stylers: [{ color: '#757575' }],
   },
   {
     featureType: 'road.highway',
     elementType: 'geometry',
-    stylers: [{ color: '#dadada' }]
+    stylers: [{ color: '#dadada' }],
   },
   {
     featureType: 'road.highway',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#616161' }]
+    stylers: [{ color: '#616161' }],
   },
   {
     featureType: 'road.local',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#9e9e9e' }]
+    stylers: [{ color: '#9e9e9e' }],
   },
   {
     featureType: 'transit.line',
     elementType: 'geometry',
-    stylers: [{ color: '#e5e5e5' }]
+    stylers: [{ color: '#e5e5e5' }],
   },
   {
     featureType: 'transit.station',
     elementType: 'geometry',
-    stylers: [{ color: '#eeeeee' }]
+    stylers: [{ color: '#eeeeee' }],
   },
   {
     featureType: 'water',
     elementType: 'geometry',
-    stylers: [{ color: '#c9c9c9' }]
+    stylers: [{ color: '#c9c9c9' }],
   },
   {
     featureType: 'water',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#9e9e9e' }]
-  }
+    stylers: [{ color: '#9e9e9e' }],
+  },
 ];
 
 const mapOptions: google.maps.MapOptions = {
@@ -123,42 +123,42 @@ const mapOptions: google.maps.MapOptions = {
 // Custom marker icons by property type with specific icons
 function getMarkerIcon(propertyType: string): string {
   const iconBase = 'data:image/svg+xml;base64,';
-  
-  const icons: { [key: string]: { color: string, icon: string } } = {
-    'apartment': {
+
+  const icons: { [key: string]: { color: string; icon: string } } = {
+    apartment: {
       color: '#EA580C',
-      icon: '<path d="M10 11h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z" fill="white"/>'
+      icon: '<path d="M10 11h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z" fill="white"/>',
     },
-    'house': {
+    house: {
       color: '#16A34A',
-      icon: '<path d="M10 16v6h4v-4h4v4h4v-6l-6-4.5z" fill="white"/><path d="M16 8l-8 6h2v8h5v-5h2v5h5v-8h2z" fill="white" opacity="0.5"/>'
+      icon: '<path d="M10 16v6h4v-4h4v4h4v-6l-6-4.5z" fill="white"/><path d="M16 8l-8 6h2v8h5v-5h2v5h5v-8h2z" fill="white" opacity="0.5"/>',
     },
-    'office': {
+    office: {
       color: '#2563EB',
-      icon: '<rect x="10" y="10" width="12" height="12" fill="white"/><path d="M11 12h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2z" fill="currentColor"/>'
+      icon: '<rect x="10" y="10" width="12" height="12" fill="white"/><path d="M11 12h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zm-6 3h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2z" fill="currentColor"/>',
     },
-    'land': {
+    land: {
       color: '#A855F7',
-      icon: '<path d="M10 18h12v2H10zm1-2l2-3 3 2 2-3 2 3z" fill="white"/><circle cx="13" cy="14" r="1" fill="white"/><circle cx="19" cy="14" r="1" fill="white"/>'
+      icon: '<path d="M10 18h12v2H10zm1-2l2-3 3 2 2-3 2 3z" fill="white"/><circle cx="13" cy="14" r="1" fill="white"/><circle cx="19" cy="14" r="1" fill="white"/>',
     },
     'commercial-space': {
       color: '#DC2626',
-      icon: '<rect x="11" y="11" width="10" height="10" rx="1" fill="white"/><path d="M13 13h2v2h-2zm0 3h2v2h-2zm3-3h2v2h-2zm0 3h2v2h-2z" fill="currentColor"/>'
+      icon: '<rect x="11" y="11" width="10" height="10" rx="1" fill="white"/><path d="M13 13h2v2h-2zm0 3h2v2h-2zm3-3h2v2h-2zm0 3h2v2h-2z" fill="currentColor"/>',
     },
     'vacation-home': {
       color: '#0891B2',
-      icon: '<path d="M16 9l-7 5v7h4v-4h6v4h4v-7z" fill="white"/><circle cx="19" cy="13" r="1.5" fill="yellow"/>'
+      icon: '<path d="M16 9l-7 5v7h4v-4h6v4h4v-7z" fill="white"/><circle cx="19" cy="13" r="1.5" fill="yellow"/>',
     },
     'apartment-in-house': {
       color: '#F59E0B',
-      icon: '<path d="M10 16v6h3v-4h6v4h3v-6l-6-4.5z" fill="white"/><rect x="14" y="13" width="4" height="5" fill="white" opacity="0.7"/>'
+      icon: '<path d="M10 16v6h3v-4h6v4h3v-6l-6-4.5z" fill="white"/><rect x="14" y="13" width="4" height="5" fill="white" opacity="0.7"/>',
     },
-    'duplex': {
+    duplex: {
       color: '#EC4899',
-      icon: '<path d="M10 15v7h4v-5h4v5h4v-7l-6-4z" fill="white"/><line x1="16" y1="11" x2="16" y2="22" stroke="white" stroke-width="1"/>'
+      icon: '<path d="M10 15v7h4v-5h4v5h4v-7l-6-4z" fill="white"/><line x1="16" y1="11" x2="16" y2="22" stroke="white" stroke-width="1"/>',
     },
   };
-  
+
   const config = icons[propertyType] || icons['apartment'];
   const svg = `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg">
     <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="${config.color}"/>
@@ -338,7 +338,7 @@ export function PropertyMap({
       } else {
         // For multiple properties, use fitBounds
         const bounds = new google.maps.LatLngBounds();
-        markers.forEach(marker => {
+        markers.forEach((marker) => {
           const position = marker.getPosition();
           if (position) bounds.extend(position);
         });
@@ -351,7 +351,7 @@ export function PropertyMap({
               top: 50,
               right: 50,
               bottom: 50,
-              left: 50
+              left: 50,
             });
           }
         }, 100);
@@ -360,7 +360,7 @@ export function PropertyMap({
 
     // Cleanup function
     return () => {
-      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current.clear();
       if (clustererRef.current) {
         clustererRef.current.clearMarkers();

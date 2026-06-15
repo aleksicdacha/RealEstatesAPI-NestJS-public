@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
@@ -51,15 +51,23 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
 
   const loadPropertyImages = async () => {
     if (!property) return;
-    
+
     setLoading(true);
     try {
       // Load property images
       if (property.id) {
-        console.log('[PropertyPreview] Loading images for property ID:', property.id);
-        const imagesResponse = await fetch(`${API_BASE_URL}/v1/properties/${property.id}/images`);
-        console.log('[PropertyPreview] Response status:', imagesResponse.status);
-        
+        console.log(
+          '[PropertyPreview] Loading images for property ID:',
+          property.id,
+        );
+        const imagesResponse = await fetch(
+          `${API_BASE_URL}/v1/properties/${property.id}/images`,
+        );
+        console.log(
+          '[PropertyPreview] Response status:',
+          imagesResponse.status,
+        );
+
         if (imagesResponse.ok) {
           const imagesData: PropertyImageData[] = await imagesResponse.json();
           console.log('[PropertyPreview] Images data received:', imagesData);
@@ -71,29 +79,35 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
           });
           const imageUrls = sortedImages.map((img) => {
             const imageUrl = img.url;
-            
+
             // If URL is already full (starts with http), use as is
-            if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+            if (
+              imageUrl.startsWith('http://') ||
+              imageUrl.startsWith('https://')
+            ) {
               return imageUrl;
             }
-            
+
             // If URL already starts with /uploads/, use as is
             if (imageUrl.startsWith('/uploads/')) {
               return `${API_BASE_URL}${imageUrl}`;
             }
-            
-            // If URL is just the filename, add /uploads/ prefix
+
+            // If URL is just the filename, add /uploads/properties/ prefix
             if (!imageUrl.startsWith('/')) {
-              return `${API_BASE_URL}/uploads/${imageUrl}`;
+              return `${API_BASE_URL}/uploads/properties/${imageUrl}`;
             }
-            
+
             // Otherwise, add /uploads to the path
             return `${API_BASE_URL}/uploads${imageUrl}`;
           });
           console.log('[PropertyPreview] Constructed image URLs:', imageUrls);
           setImages(imageUrls);
         } else {
-          console.error('[PropertyPreview] Failed to load images, status:', imagesResponse.status);
+          console.error(
+            '[PropertyPreview] Failed to load images, status:',
+            imagesResponse.status,
+          );
         }
       } else {
         console.warn('[PropertyPreview] Property has no ID');
@@ -126,27 +140,27 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
   const getHeatingTranslationKey = (heatingValue: string): string | null => {
     const heatingMap: Record<string, string> = {
       // API enum values (source of truth)
-      'central': 'heatingCentral',
+      central: 'heatingCentral',
       'gas-central': 'heatingGasCentral',
       'solid-fuel-central': 'heatingSolidFuel',
       'electric-central': 'heatingElectricCentral',
-      'floor': 'heatingFloor',
+      floor: 'heatingFloor',
       'independent-on-gas': 'heatingGasIndependent',
       'independent-on-solid-fuel': 'heatingSolidFuelIndependent',
       'independent-on-electricity': 'heatingElectricIndependent',
-      'fireplace': 'heatingFireplace',
+      fireplace: 'heatingFireplace',
       'air-conditioner': 'heatingAirConditioner',
-      'other': 'heatingOther',
+      other: 'heatingOther',
       // Serbian legacy values (stored in DB from old data)
-      'Centralno': 'heatingCentral',
+      Centralno: 'heatingCentral',
       'Gasno centralno': 'heatingGasCentral',
       'Centralno grejanje na čvrsto gorivo': 'heatingSolidFuel',
       'Električno centralno': 'heatingElectricCentral',
-      'Podno': 'heatingFloor',
+      Podno: 'heatingFloor',
       'Nezavisno na gas': 'heatingGasIndependent',
       'Nezavisno na čvrsto gorivo': 'heatingSolidFuelIndependent',
       'Nezavisno na struju': 'heatingElectricIndependent',
-      'Kamin': 'heatingFireplace',
+      Kamin: 'heatingFireplace',
       'Klima uređaj': 'heatingAirConditioner',
       'Ostali tipovi': 'heatingOther',
     };
@@ -155,41 +169,43 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
 
   const getOrientationTranslationKey = (orientationValue: string): string => {
     const orientationMap: Record<string, string> = {
-      'north': 'orientationNorth',
-      'south': 'orientationSouth',
-      'east': 'orientationEast',
-      'west': 'orientationWest',
-      'northeast': 'orientationNorthEast',
-      'northwest': 'orientationNorthWest',
-      'southeast': 'orientationSouthEast',
-      'southwest': 'orientationSouthWest',
+      north: 'orientationNorth',
+      south: 'orientationSouth',
+      east: 'orientationEast',
+      west: 'orientationWest',
+      northeast: 'orientationNorthEast',
+      northwest: 'orientationNorthWest',
+      southeast: 'orientationSouthEast',
+      southwest: 'orientationSouthWest',
     };
     return orientationMap[orientationValue] || orientationValue;
   };
 
   const getPropertyTypeTranslationKey = (typeValue: string): string => {
     const typeMap: Record<string, string> = {
-      'house': 'typeHouse',
-      'apartment': 'typeApartment',
+      house: 'typeHouse',
+      apartment: 'typeApartment',
       'apartment-in-house': 'typeApartmentInHouse',
       'commercial-space': 'typeCommercialSpace',
-      'office': 'typeOffice',
-      'land': 'typeLand',
+      office: 'typeOffice',
+      land: 'typeLand',
       'vacation-home': 'typeVacationHome',
-      'duplex': 'typeDuplex',
+      duplex: 'typeDuplex',
     };
     return typeMap[typeValue] || typeValue;
   };
 
-  const getEquipmentTranslationKey = (equipmentValue: string): string | null => {
+  const getEquipmentTranslationKey = (
+    equipmentValue: string,
+  ): string | null => {
     const equipmentMap: Record<string, string> = {
       // English values (current)
       'Swimming Pool': 'equipSwimmingPool',
       'Gym/Fitness Center': 'equipGym',
-      'Balcony': 'equipBalcony',
-      'Garden': 'equipGarden',
-      'Fireplace': 'equipFireplace',
-      'Garage': 'equipGarage',
+      Balcony: 'equipBalcony',
+      Garden: 'equipGarden',
+      Fireplace: 'equipFireplace',
+      Garage: 'equipGarage',
       'Parking Space': 'equipParkingSpace',
       'Security System': 'equipSecuritySystem',
       'Pet-Friendly Facilities': 'equipPetFriendly',
@@ -197,8 +213,8 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       'Storage Room': 'equipStorageRoom',
       'Wheelchair Accessibility': 'equipWheelchairAccess',
       'Walk-in Closet': 'equipWalkInCloset',
-      'Spa': 'equipSpa',
-      'Playground': 'equipPlayground',
+      Spa: 'equipSpa',
+      Playground: 'equipPlayground',
       'Outdoor Kitchen': 'equipOutdoorKitchen',
       'Smart Home Integration': 'equipSmartHome',
       'Home Security Cameras': 'equipSecurityCameras',
@@ -216,27 +232,27 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       'Private Dock': 'equipPrivateDock',
       'Panic Room': 'equipPanicRoom',
       'Outdoor Fireplace': 'equipOutdoorFireplace',
-      'Jacuzzi': 'equipJacuzzi',
+      Jacuzzi: 'equipJacuzzi',
       'Home Office': 'equipHomeOffice',
       "Kids' Playroom": 'equipKidsPlayroom',
       'Gaming Room': 'equipGamingRoom',
       'Wellness/Yoga Room': 'equipWellnessRoom',
       // Serbian legacy values (stored in DB from old data)
-      'Bazen': 'equipSwimmingPool',
+      Bazen: 'equipSwimmingPool',
       'Teretana/Fitnes centar': 'equipGym',
-      'Balkon': 'equipBalcony',
-      'Bašta': 'equipGarden',
-      'Kamin': 'equipFireplace',
-      'Garaža': 'equipGarage',
+      Balkon: 'equipBalcony',
+      Bašta: 'equipGarden',
+      Kamin: 'equipFireplace',
+      Garaža: 'equipGarage',
       'Parking mesto': 'equipParkingSpace',
       'Sigurnosni sistem': 'equipSecuritySystem',
       'Pogodno za kućne ljubimce': 'equipPetFriendly',
-      'Vešeraj': 'equipLaundryRoom',
-      'Ostava': 'equipStorageRoom',
+      Vešeraj: 'equipLaundryRoom',
+      Ostava: 'equipStorageRoom',
       'Pristup za invalidska kolica': 'equipWheelchairAccess',
-      'Garderober': 'equipWalkInCloset',
+      Garderober: 'equipWalkInCloset',
       // 'Spa' is same in Serbian, already covered by English key above
-      'Igralište': 'equipPlayground',
+      Igralište: 'equipPlayground',
       'Letnja kuhinja': 'equipOutdoorKitchen',
       'Pametna kuća integracija': 'equipSmartHome',
       'Sigurnosne kamere': 'equipSecurityCameras',
@@ -254,7 +270,7 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
       'Privatni dok': 'equipPrivateDock',
       'Panik soba': 'equipPanicRoom',
       'Kamin na otvorenom': 'equipOutdoorFireplace',
-      'Džakuzi': 'equipJacuzzi',
+      Džakuzi: 'equipJacuzzi',
       'Kućna kancelarija': 'equipHomeOffice',
       'Dečja soba za igru': 'equipKidsPlayroom',
       'Gejming soba': 'equipGamingRoom',
@@ -265,11 +281,23 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
   };
 
   const itemTemplate = (item: string) => {
-    return <img src={item} alt="Property" style={{ width: '100%', display: 'block' }} />;
+    return (
+      <img
+        src={item}
+        alt="Property"
+        style={{ width: '100%', display: 'block' }}
+      />
+    );
   };
 
   const thumbnailTemplate = (item: string) => {
-    return <img src={item} alt="Property thumbnail" style={{ width: '80px', height: '60px', objectFit: 'cover' }} />;
+    return (
+      <img
+        src={item}
+        alt="Property thumbnail"
+        style={{ width: '80px', height: '60px', objectFit: 'cover' }}
+      />
+    );
   };
 
   const footer = (
@@ -307,152 +335,232 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
               <div className="col-12">
                 <div className="flex align-items-center mb-3">
                   <strong className="mr-2">{t('status')}:</strong>
-                  <Tag 
-                    value={property.status === 'active' ? t('available') : t(property.status)} 
+                  <Tag
+                    value={
+                      property.status === 'active'
+                        ? t('available')
+                        : t(property.status)
+                    }
                     severity={getStatusSeverity(property.status)}
                     className="rounded-full"
                   />
                 </div>
               </div>
-              
+
               <div className="col-12 md:col-6">
-                <p><strong>{t('code')}:</strong> {property.code}</p>
+                <p>
+                  <strong>{t('code')}:</strong> {property.code}
+                </p>
               </div>
               <div className="col-12 md:col-6">
-                <p><strong>{t('type')}:</strong> {t(getPropertyTypeTranslationKey(property.propertyType))}</p>
+                <p>
+                  <strong>{t('type')}:</strong>{' '}
+                  {t(getPropertyTypeTranslationKey(property.propertyType))}
+                </p>
               </div>
-              
+
               <div className="col-12">
-                <p><strong>{t('address')}:</strong> {property.address}</p>
+                <p>
+                  <strong>{t('address')}:</strong> {property.address}
+                </p>
               </div>
-              
+
               {property.neighborhood && (
                 <div className="col-12">
                   <p>
                     <strong>{t('neighborhood')}:</strong>{' '}
-                    <span style={{ 
-                      backgroundColor: '#e0f2fe', 
-                      padding: '2px 8px', 
-                      borderRadius: '4px',
-                      fontWeight: '600'
-                    }}>
+                    <span
+                      style={{
+                        backgroundColor: '#e0f2fe',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontWeight: '600',
+                      }}
+                    >
                       {property.neighborhood}
                     </span>
                   </p>
                 </div>
               )}
-              
+
               <div className="col-12 md:col-6">
-                <p><strong>{t('ownerPrice')}:</strong> {formatCurrency(property.price)}</p>
+                <p>
+                  <strong>{t('ownerPrice')}:</strong>{' '}
+                  {formatCurrency(property.price)}
+                </p>
               </div>
               <div className="col-12 md:col-6">
-                <p><strong>{t('salePrice')}:</strong> {formatCurrency(property.salePrice)}</p>
+                <p>
+                  <strong>{t('salePrice')}:</strong>{' '}
+                  {formatCurrency(property.salePrice)}
+                </p>
               </div>
-              
+
               <div className="col-12 md:col-6">
-                <p><strong>{t('area')}:</strong> {property.area} m²</p>
+                <p>
+                  <strong>{t('area')}:</strong> {property.area} m²
+                </p>
               </div>
               <div className="col-12 md:col-6">
-                <p><strong>{t('floor')}:</strong> {property.floor || 'N/A'}</p>
+                <p>
+                  <strong>{t('floor')}:</strong> {property.floor || 'N/A'}
+                </p>
               </div>
-              
+
               {property.heating && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('heating')}:</strong> {(() => { const key = getHeatingTranslationKey(property.heating); return key ? t(key) : property.heating; })()}</p>
+                  <p>
+                    <strong>{t('heating')}:</strong>{' '}
+                    {(() => {
+                      const key = getHeatingTranslationKey(property.heating);
+                      return key ? t(key) : property.heating;
+                    })()}
+                  </p>
                 </div>
               )}
-              
+
               {property.bathrooms && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('bathrooms')}:</strong> {property.bathrooms}</p>
+                  <p>
+                    <strong>{t('bathrooms')}:</strong> {property.bathrooms}
+                  </p>
                 </div>
               )}
-              
+
               {property.constructionYear && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('constructionYear')}:</strong> {property.constructionYear}</p>
+                  <p>
+                    <strong>{t('constructionYear')}:</strong>{' '}
+                    {property.constructionYear}
+                  </p>
                 </div>
               )}
-              
+
               <div className="col-12 md:col-6">
-                <p><strong>{t('elevatorAvailable')}:</strong> {property.elevator ? tCommon('yes') : tCommon('no')}</p>
+                <p>
+                  <strong>{t('elevatorAvailable')}:</strong>{' '}
+                  {property.elevator ? tCommon('yes') : tCommon('no')}
+                </p>
               </div>
-              
+
               {property.contractNumber && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('contractNumber')}:</strong> {property.contractNumber}</p>
+                  <p>
+                    <strong>{t('contractNumber')}:</strong>{' '}
+                    {property.contractNumber}
+                  </p>
                 </div>
               )}
-              
+
               {property.cadastralParcel && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('cadastralParcel')}:</strong> {property.cadastralParcel}</p>
+                  <p>
+                    <strong>{t('cadastralParcel')}:</strong>{' '}
+                    {property.cadastralParcel}
+                  </p>
                 </div>
               )}
-              
+
               {property.cadastralMunicipality && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('cadastralMunicipality')}:</strong> {property.cadastralMunicipality}</p>
+                  <p>
+                    <strong>{t('cadastralMunicipality')}:</strong>{' '}
+                    {property.cadastralMunicipality}
+                  </p>
                 </div>
               )}
-              
+
               {property.orientation && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('orientation')}:</strong> {t(getOrientationTranslationKey(property.orientation))}</p>
+                  <p>
+                    <strong>{t('orientation')}:</strong>{' '}
+                    {t(getOrientationTranslationKey(property.orientation))}
+                  </p>
                 </div>
               )}
-              
+
               {property.youtubeUrl && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('youtubeUrl')}:</strong> <a href={property.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-primary">YouTube</a></p>
+                  <p>
+                    <strong>{t('youtubeUrl')}:</strong>{' '}
+                    <a
+                      href={property.youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary"
+                    >
+                      YouTube
+                    </a>
+                  </p>
                 </div>
               )}
-              
+
               {property.specialOffer && (
                 <div className="col-12 md:col-6">
-                  <p><strong>{t('specialOffer')}:</strong> {property.specialOffer}</p>
+                  <p>
+                    <strong>{t('specialOffer')}:</strong>{' '}
+                    {property.specialOffer}
+                  </p>
                 </div>
               )}
-              
+
               {property.description && (
                 <div className="col-12">
                   <Divider />
-                  <p><strong>{t('description')}:</strong></p>
+                  <p>
+                    <strong>{t('description')}:</strong>
+                  </p>
                   <p>{property.description}</p>
                 </div>
               )}
-              
+
               {property.comment && (
                 <div className="col-12">
                   <Divider />
-                  <p><strong>{t('comment')}:</strong></p>
+                  <p>
+                    <strong>{t('comment')}:</strong>
+                  </p>
                   <p className="text-color-secondary">{property.comment}</p>
                 </div>
               )}
-              
-              {property.additionalEquipment && property.additionalEquipment.length > 0 && (
-                <div className="col-12">
-                  <Divider />
-                  <p><strong>{t('additionalEquipment')}:</strong></p>
-                  <div className="flex flex-wrap gap-2">
-                    {property.additionalEquipment.map((equipment: string, index: number) => (
-                      <Tag 
-                        key={index} 
-                        value={(() => { const key = getEquipmentTranslationKey(equipment); return key ? t(key) : equipment; })()}
-                        className="mr-2 mb-2 rounded-full"
-                      />
-                    ))}
+
+              {property.additionalEquipment &&
+                property.additionalEquipment.length > 0 && (
+                  <div className="col-12">
+                    <Divider />
+                    <p>
+                      <strong>{t('additionalEquipment')}:</strong>
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {property.additionalEquipment.map(
+                        (equipment: string, index: number) => (
+                          <Tag
+                            key={index}
+                            value={(() => {
+                              const key = getEquipmentTranslationKey(equipment);
+                              return key ? t(key) : equipment;
+                            })()}
+                            className="mr-2 mb-2 rounded-full"
+                          />
+                        ),
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           </Card>
 
           {/* Property Images Section - Below Property Details */}
           {loading ? (
             <Card title={t('images')} className="mb-3">
-              <div className="flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-                <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
+              <div
+                className="flex justify-content-center align-items-center"
+                style={{ minHeight: '200px' }}
+              >
+                <i
+                  className="pi pi-spin pi-spinner"
+                  style={{ fontSize: '2rem' }}
+                ></i>
               </div>
             </Card>
           ) : images.length > 0 ? (
@@ -472,8 +580,13 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
             </Card>
           ) : (
             <div className="p-3 bg-yellow-50 border-round border-1 border-yellow-200 text-center mb-3">
-              <i className="pi pi-info-circle text-yellow-700 mr-2" style={{ fontSize: '1.5rem' }}></i>
-              <span className="text-yellow-900 font-medium">{t('images')} - {tCommon('noData')}</span>
+              <i
+                className="pi pi-info-circle text-yellow-700 mr-2"
+                style={{ fontSize: '1.5rem' }}
+              ></i>
+              <span className="text-yellow-900 font-medium">
+                {t('images')} - {tCommon('noData')}
+              </span>
             </div>
           )}
         </div>
@@ -484,62 +597,92 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
             <Card title={tClients('clientDetails')} className="mb-3">
               <div className="grid">
                 <div className="col-12">
-                  <p><strong>{tClients('name')}:</strong> {client.name}</p>
+                  <p>
+                    <strong>{tClients('name')}:</strong> {client.name}
+                  </p>
                 </div>
                 <div className="col-12">
-                  <p><strong>{tClients('email')}:</strong> {client.email}</p>
+                  <p>
+                    <strong>{tClients('email')}:</strong> {client.email}
+                  </p>
                 </div>
                 {client.phone && (
                   <div className="col-12">
-                    <p><strong>{tClients('phone')}:</strong> {client.phone}</p>
+                    <p>
+                      <strong>{tClients('phone')}:</strong> {client.phone}
+                    </p>
                   </div>
                 )}
                 {client.address && (
                   <div className="col-12">
-                    <p><strong>{tClients('address')}:</strong> {client.address}</p>
+                    <p>
+                      <strong>{tClients('address')}:</strong> {client.address}
+                    </p>
                   </div>
                 )}
                 <div className="col-12">
-                  <p><strong>{tClients('transactionType')}:</strong> {tClients(client.transactionType)}</p>
+                  <p>
+                    <strong>{tClients('transactionType')}:</strong>{' '}
+                    {tClients(client.transactionType)}
+                  </p>
                 </div>
                 {client.paymentType && (
                   <div className="col-12">
-                    <p><strong>{tClients('paymentType')}:</strong> {tClients(client.paymentType)}</p>
+                    <p>
+                      <strong>{tClients('paymentType')}:</strong>{' '}
+                      {tClients(client.paymentType)}
+                    </p>
                   </div>
                 )}
                 {client.moneyAmount !== undefined && (
                   <div className="col-12">
-                    <p><strong>{tClients('amount')}:</strong> {formatCurrency(client.moneyAmount)}</p>
+                    <p>
+                      <strong>{tClients('amount')}:</strong>{' '}
+                      {formatCurrency(client.moneyAmount)}
+                    </p>
                   </div>
                 )}
                 <div className="col-12">
                   <div className="flex align-items-center">
                     <strong className="mr-2">{tClients('status')}:</strong>
-                    <Tag 
-                      value={tClients(client.status)} 
-                      severity={client.status === 'active' ? 'success' : 'danger'}
+                    <Tag
+                      value={tClients(client.status)}
+                      severity={
+                        client.status === 'active' ? 'success' : 'danger'
+                      }
                       className="rounded-full"
                     />
                   </div>
                 </div>
                 {client.ownerJmbg && (
                   <div className="col-12">
-                    <p><strong>{t('jmbg')}:</strong> {client.ownerJmbg}</p>
+                    <p>
+                      <strong>{t('jmbg')}:</strong> {client.ownerJmbg}
+                    </p>
                   </div>
                 )}
                 {client.ownerBirthplace && (
                   <div className="col-12">
-                    <p><strong>{t('birthplace')}:</strong> {client.ownerBirthplace}</p>
+                    <p>
+                      <strong>{t('birthplace')}:</strong>{' '}
+                      {client.ownerBirthplace}
+                    </p>
                   </div>
                 )}
                 {client.ownerIdCardNumber && (
                   <div className="col-12">
-                    <p><strong>{t('idCardNumber')}:</strong> {client.ownerIdCardNumber}</p>
+                    <p>
+                      <strong>{t('idCardNumber')}:</strong>{' '}
+                      {client.ownerIdCardNumber}
+                    </p>
                   </div>
                 )}
                 {client.ownerIdCardIssuePlace && (
                   <div className="col-12">
-                    <p><strong>{t('idCardIssuePlace')}:</strong> {client.ownerIdCardIssuePlace}</p>
+                    <p>
+                      <strong>{t('idCardIssuePlace')}:</strong>{' '}
+                      {client.ownerIdCardIssuePlace}
+                    </p>
                   </div>
                 )}
               </div>
@@ -556,37 +699,58 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
               <div className="grid">
                 {client.representative.name && (
                   <div className="col-12">
-                    <p><strong>{t('representativeName')}:</strong> {client.representative.name}</p>
+                    <p>
+                      <strong>{t('representativeName')}:</strong>{' '}
+                      {client.representative.name}
+                    </p>
                   </div>
                 )}
                 {client.representative.address && (
                   <div className="col-12">
-                    <p><strong>{t('representativeAddress')}:</strong> {client.representative.address}</p>
+                    <p>
+                      <strong>{t('representativeAddress')}:</strong>{' '}
+                      {client.representative.address}
+                    </p>
                   </div>
                 )}
                 {client.representative.phone && (
                   <div className="col-12">
-                    <p><strong>{t('representativePhone')}:</strong> {client.representative.phone}</p>
+                    <p>
+                      <strong>{t('representativePhone')}:</strong>{' '}
+                      {client.representative.phone}
+                    </p>
                   </div>
                 )}
                 {client.representative.jmbg && (
                   <div className="col-12">
-                    <p><strong>{t('representativeJmbg')}:</strong> {client.representative.jmbg}</p>
+                    <p>
+                      <strong>{t('representativeJmbg')}:</strong>{' '}
+                      {client.representative.jmbg}
+                    </p>
                   </div>
                 )}
                 {client.representative.birthplace && (
                   <div className="col-12">
-                    <p><strong>{t('representativeBirthplace')}:</strong> {client.representative.birthplace}</p>
+                    <p>
+                      <strong>{t('representativeBirthplace')}:</strong>{' '}
+                      {client.representative.birthplace}
+                    </p>
                   </div>
                 )}
                 {client.representative.idCardNumber && (
                   <div className="col-12">
-                    <p><strong>{t('representativeIdCardNumber')}:</strong> {client.representative.idCardNumber}</p>
+                    <p>
+                      <strong>{t('representativeIdCardNumber')}:</strong>{' '}
+                      {client.representative.idCardNumber}
+                    </p>
                   </div>
                 )}
                 {client.representative.idCardIssuePlace && (
                   <div className="col-12">
-                    <p><strong>{t('representativeIdCardIssuePlace')}:</strong> {client.representative.idCardIssuePlace}</p>
+                    <p>
+                      <strong>{t('representativeIdCardIssuePlace')}:</strong>{' '}
+                      {client.representative.idCardIssuePlace}
+                    </p>
                   </div>
                 )}
               </div>
@@ -596,7 +760,15 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
           {/* Location Map */}
           {property.lat && property.lon && (
             <Card title={t('propertyLocation')} className="mb-3">
-              <div style={{ height: '300px', width: '100%', position: 'relative', borderRadius: '8px', overflow: 'hidden' }}>
+              <div
+                style={{
+                  height: '300px',
+                  width: '100%',
+                  position: 'relative',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                }}
+              >
                 {mapLoaded ? (
                   <GoogleMap
                     mapContainerStyle={{ width: '100%', height: '100%' }}
@@ -612,10 +784,13 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                     }}
                     onLoad={(map) => {
                       mapRef.current = map;
-                      
+
                       // Create custom marker icon
                       const getMarkerIcon = (propertyType: string) => {
-                        const createSVGMarker = (color: string, icon: string) => {
+                        const createSVGMarker = (
+                          color: string,
+                          icon: string,
+                        ) => {
                           const svg = `
                             <svg width="40" height="48" viewBox="0 0 40 48" xmlns="http://www.w3.org/2000/svg">
                               <defs>
@@ -629,7 +804,10 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                               ${icon}
                             </svg>
                           `;
-                          return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+                          return (
+                            'data:image/svg+xml;charset=UTF-8,' +
+                            encodeURIComponent(svg)
+                          );
                         };
 
                         const apartmentIcon = `
@@ -713,12 +891,12 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                             return createSVGMarker('#e91e63', apartmentIcon);
                         }
                       };
-                      
+
                       // Create marker
                       if (markerRef.current) {
                         markerRef.current.setMap(null);
                       }
-                      
+
                       markerRef.current = new google.maps.Marker({
                         position: { lat: property.lat!, lng: property.lon! },
                         map: mapRef.current,
@@ -729,10 +907,17 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
                         },
                       });
                     }}
-                  >
-                  </GoogleMap>
+                  ></GoogleMap>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#f5f5f5' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      background: '#f5f5f5',
+                    }}
+                  >
                     <span>Loading map...</span>
                   </div>
                 )}
@@ -750,23 +935,23 @@ export const PropertyPreviewDialog: React.FC<PropertyPreviewDialogProps> = ({
         .property-preview-dialog .p-dialog-content {
           background: #f8f9fa;
         }
-        
+
         .property-preview-dialog .p-card {
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .property-preview-dialog .p-card-title {
           font-size: 1.25rem;
           font-weight: 600;
           color: #495057;
           margin-bottom: 1rem;
         }
-        
+
         .property-preview-dialog .p-card-content p {
           margin-bottom: 0.75rem;
           line-height: 1.6;
         }
-        
+
         .property-preview-dialog .p-galleria {
           border-radius: 8px;
           overflow: hidden;

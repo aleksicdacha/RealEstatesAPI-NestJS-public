@@ -3,28 +3,41 @@
  * Prevents duplication across components
  */
 export const PROPERTY_TYPE_MAP: { [key: string]: string } = {
-  'apartment': 'apartment',
-  'house': 'house',
+  apartment: 'apartment',
+  stan: 'apartment',
+  house: 'house',
+  kuća: 'house',
+  kuca: 'house',
   'apartment-in-house': 'apartmentInHouse',
-  'office': 'office',
+  'stan u kući': 'apartmentInHouse',
+  'stan u kuci': 'apartmentInHouse',
+  office: 'office',
+  kancelarija: 'office',
   'commercial-space': 'commercial',
-  'land': 'land',
+  lokal: 'commercial',
+  'poslovni prostor': 'commercial',
+  land: 'land',
+  plac: 'land',
+  zemljište: 'land',
+  zemljiste: 'land',
   'vacation-home': 'vacationHome',
-  'duplex': 'duplex',
+  vikendica: 'vacationHome',
+  duplex: 'duplex',
+  dupleks: 'duplex',
 };
 
 export const HEATING_TYPE_MAP: { [key: string]: string } = {
-  'central': 'centralHeating',
+  central: 'centralHeating',
   'gas-central': 'gasHeating',
   'electric-central': 'electricHeating',
   'solid-fuel-central': 'solidFuel',
-  'floor': 'floorHeating',
+  floor: 'floorHeating',
   'independent-on-gas': 'independentGas',
   'independent-on-solid-fuel': 'independentSolidFuel',
   'independent-on-electricity': 'independentElectricity',
-  'fireplace': 'fireplace',
+  fireplace: 'fireplace',
   'air-conditioner': 'airConditioner',
-  'other': 'otherHeating',
+  other: 'otherHeating',
 };
 
 export const ROOM_STRUCTURE_MAP: { [key: string]: string } = {
@@ -54,14 +67,17 @@ export class PropertyTranslator {
    * Returns original value if no mapping found
    */
   static getPropertyTypeKey(type: string): string {
-    return PROPERTY_TYPE_MAP[type] || type.toLowerCase();
+    // Normalize: lowercase, trim
+    const normalized = (type || '').toLowerCase().trim();
+    return PROPERTY_TYPE_MAP[normalized] || normalized;
   }
 
   /**
    * Translates heating type to translation key
    */
   static getHeatingTypeKey(heating: string): string {
-    return HEATING_TYPE_MAP[heating] || heating.toLowerCase();
+    const normalized = (heating || '').toLowerCase().trim();
+    return HEATING_TYPE_MAP[normalized] || normalized;
   }
 
   /**
@@ -70,10 +86,7 @@ export class PropertyTranslator {
    */
   static getRoomStructureKey(roomStructure: string): string {
     // Normalize: trim, lowercase, normalize whitespace
-    const normalized = roomStructure
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, ' '); // Normalize multiple spaces to single space
+    const normalized = roomStructure.toLowerCase().trim().replace(/\s+/g, ' '); // Normalize multiple spaces to single space
 
     // Return mapped key if found, otherwise return normalized string
     // PropertyCard's safeTranslate will handle fallback to original value
@@ -85,7 +98,9 @@ export class PropertyTranslator {
    */
   static warnMissingTranslation(type: string, value: string): void {
     if (process.env.NODE_ENV === 'development') {
-      console.warn(`[PropertyTranslator] Missing translation for ${type}: ${value}`);
+      console.warn(
+        `[PropertyTranslator] Missing translation for ${type}: ${value}`,
+      );
     }
   }
 }

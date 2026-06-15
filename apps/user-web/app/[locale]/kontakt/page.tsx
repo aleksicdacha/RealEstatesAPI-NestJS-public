@@ -158,12 +158,32 @@ export default function KontaktPage() {
                     </svg>
                     <div>
                       <p className="font-medium text-gray-900">{t('phone')}</p>
-                      <a
-                        href="tel:+38118277181"
-                        className="text-orange-600 hover:text-orange-700 font-medium"
-                      >
-                        +381 18 277 181
-                      </a>
+                      <div className="space-y-1">
+                        <a
+                          href="tel:+38118277181"
+                          className="text-orange-600 hover:text-orange-700 font-medium block"
+                        >
+                          +381 (0) 18 277 181
+                        </a>
+                        <a
+                          href="tel:+381621128265"
+                          className="text-orange-600 hover:text-orange-700 font-medium block"
+                        >
+                          +381 (0) 62 112 8265 <span className="text-gray-500 font-normal">— Vlada</span>
+                        </a>
+                        <a
+                          href="tel:+381692924774"
+                          className="text-orange-600 hover:text-orange-700 font-medium block"
+                        >
+                          +381 (0) 69 292 4774 <span className="text-gray-500 font-normal">— Suzana</span>
+                        </a>
+                        <a
+                          href="tel:+381600217449"
+                          className="text-orange-600 hover:text-orange-700 font-medium block"
+                        >
+                          +381 (0) 60 021 7449 <span className="text-gray-500 font-normal">— Anica</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
 

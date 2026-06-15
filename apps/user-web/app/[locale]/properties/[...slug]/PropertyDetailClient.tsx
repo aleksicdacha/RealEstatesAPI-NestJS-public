@@ -1,10 +1,11 @@
 'use client';
-import { Property, getImageUrl } from '@/lib/api';
+import { Property, getImageUrl, fetchSimilarProperties } from '@/lib/api';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { PropertySidebar } from '@/app/components/PropertySidebar';
+import { PropertyCard } from '@/app/components/PropertyCard';
 import { useFavourites } from '@/app/contexts/FavouritesContext';
 
 const PropertyMap = dynamic(
@@ -38,6 +39,17 @@ export default function PropertyDetailClient({
     if (!a.isFavorite && b.isFavorite) return 1;
     return a.order - b.order;
   });
+  const hasCoords = property.lat && property.lon;
+
+  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
+  const [similarLoading, setSimilarLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSimilarProperties(property.id)
+      .then(setSimilarProperties)
+      .catch(() => setSimilarProperties([]))
+      .finally(() => setSimilarLoading(false));
+  }, [property.id]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -360,6 +372,24 @@ export default function PropertyDetailClient({
                 <div className="h-[400px] rounded-lg overflow-hidden">
                   <PropertyMap properties={[property]} hideInfoWindow={true} />
                 </div>
+                {!hasCoords && (
+                  <div className="mt-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700 flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{tDetail('noLocationSet')}</span>
+                  </div>
+                )}
                 <p className="text-sm text-gray-500 mt-4">
                   <svg
                     className="w-4 h-4 inline mr-1"
@@ -409,9 +439,30 @@ export default function PropertyDetailClient({
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
                   {tDetail('similarProperties')}
                 </h2>
-                <p className="text-gray-500">
-                  {tDetail('similarPropertiesSoon')}
-                </p>
+                {similarLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="animate-pulse bg-gray-100 rounded-lg h-64"
+                      />
+                    ))}
+                  </div>
+                ) : similarProperties.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {similarProperties.map((similar) => (
+                      <PropertyCard
+                        key={similar.id}
+                        property={similar}
+                        priority={false}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">
+                    {tDetail('similarPropertiesSoon')}
+                  </p>
+                )}
               </div>
               {/* Loan Calculator Section */}
               <div

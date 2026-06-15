@@ -3,33 +3,40 @@
  * Centralized to prevent duplication and improve maintainability
  */
 
+export {
+  CITY_MAP,
+  resolveCity,
+  getCityKeys,
+  getCityNeighborhoods,
+} from './city-neighborhood.map';
+
 export const NEIGHBORHOOD_MAP: { [key: string]: string } = {
-  'medijana': 'Medijana',
-  'palilula': 'Palilula',
-  'pantelej': 'Pantelej',
+  medijana: 'Medijana',
+  palilula: 'Palilula',
+  pantelej: 'Pantelej',
   'crveni-krst': 'Crveni Krst',
   'niska-banja': 'Niška Banja',
-  'bubanj': 'Bubanj',
-  'duvaniste': 'Duvanjište',
-  'cair': 'Čair',
-  'bulevar': 'Bulevar',
-  'vrezina': 'Vrežina',
-  'durlan': 'Durlan',
+  bubanj: 'Bubanj',
+  duvaniste: 'Duvanjište',
+  cair: 'Čair',
+  bulevar: 'Bulevar',
+  vrezina: 'Vrežina',
+  durlan: 'Durlan',
   'beverly-hills': 'Beverly Hills',
   'jagodin-mala': 'Jagodin mala',
-  'marger': 'Marger',
+  marger: 'Marger',
   'brzi-brod': 'Brzi Brod',
-  'centar': 'Centar',
+  centar: 'Centar',
   'klinicki-centar': 'Klinički centar',
-  'calije': 'Čalije',
-  'pantelijmon': 'Pantelijmon',
-  'vidriste': 'Vidrište',
-  'pevac': 'Pevac',
+  calije: 'Čalije',
+  pantelijmon: 'Pantelijmon',
+  vidriste: 'Vidrište',
+  pevac: 'Pevac',
   'cele-kula': 'Čele kula',
 };
 
 export const ROOM_STRUCTURE_MAP: { [key: string]: string[] } = {
-  'garsonjera': ['garsonjera', '0.5', '0,5'],
+  garsonjera: ['garsonjera', '0.5', '0,5'],
   '1': ['jednosoban', '1'],
   '1.5': ['jednoiposoban', '1.5', '1,5'],
   '2': ['dvosoban', '2'],
@@ -40,12 +47,10 @@ export const ROOM_STRUCTURE_MAP: { [key: string]: string[] } = {
   '5': ['petosoban', '5'],
 };
 
-export const BEOGRAD_NEIGHBORHOODS = ['Beograd mala', 'Beverli Hils', 'MZ Dedinje'];
-
 export const FLOOR_SPECIAL_VALUES = {
-  BASEMENT: -1,        // SU, suteren
-  GROUND_FLOOR: 0,     // PR, prizemlje / VPR, visoko prizemlje
-  ATTIC_MIN: 10,       // PTK, potkrovlje (assumes high floor)
+  BASEMENT: -1, // SU, suteren
+  GROUND_FLOOR: 0, // PR, prizemlje / VPR, visoko prizemlje
+  ATTIC_MIN: 10, // PTK, potkrovlje (assumes high floor)
 } as const;
 
 /**
@@ -96,7 +101,7 @@ export class FloorFilterMapper {
 
   static mapFloors(floors: string[]): string[] {
     return floors
-      .map(floor => this.mapFloorToCondition(floor))
+      .map((floor) => this.mapFloorToCondition(floor))
       .filter((condition): condition is string => condition !== null);
   }
 }
@@ -110,7 +115,7 @@ export class NeighborhoodMapper {
   }
 
   static mapBatch(neighborhoods: string[]): string[] {
-    return neighborhoods.map(n => this.map(n));
+    return neighborhoods.map((n) => this.map(n));
   }
 }
 
@@ -124,7 +129,7 @@ export class RoomStructureMapper {
 
   static mapBatch(roomStructures: string[]): string[] {
     const mapped: string[] = [];
-    roomStructures.forEach(rs => {
+    roomStructures.forEach((rs) => {
       mapped.push(...this.map(rs));
     });
     return [...new Set(mapped)]; // Remove duplicates

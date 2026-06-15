@@ -26,19 +26,19 @@ async function bootstrap() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],  // Allow inline styles for Swagger UI
+          styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for Swagger UI
           imgSrc: ["'self'", 'data:', 'https:'],
           scriptSrc: ["'self'"],
           connectSrc: ["'self'"],
           fontSrc: ["'self'", 'https:', 'data:'],
           objectSrc: ["'none'"],
-          frameAncestors: ["'none'"],            // Clickjacking protection
+          frameAncestors: ["'none'"], // Clickjacking protection
           upgradeInsecureRequests: [],
         },
       },
-      crossOriginEmbedderPolicy: false,          // Needed for Swagger UI
+      crossOriginEmbedderPolicy: false, // Needed for Swagger UI
       hsts: {
-        maxAge: 31536000,                        // 1 year
+        maxAge: 31536000, // 1 year
         includeSubDomains: true,
         preload: true,
       },
@@ -62,14 +62,17 @@ async function bootstrap() {
   //   CORS_ORIGIN=http://localhost:3001,http://localhost:3002
   const corsEnv = configService.get<string>('CORS_ORIGIN') || '';
   const allowedOrigins = [
-    ...corsEnv.split(',').map((o) => o.trim()).filter(Boolean),
+    ...corsEnv
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
     // Fallback hardcoded list (edit if IP/domain changes)
     'http://46.224.231.217:3001',
     'http://46.224.231.217:3002',
     'http://localhost:3001',
     'http://localhost:3002',
     'http://localhost:3000',
-  ].filter((v, i, a) => a.indexOf(v) === i);   // deduplicate
+  ].filter((v, i, a) => a.indexOf(v) === i); // deduplicate
 
   app.enableCors({
     origin: (origin, callback) => {
@@ -89,9 +92,14 @@ async function bootstrap() {
     },
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Requested-With',
+    ],
     exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
-    maxAge: 86400,   // Pre-flight cache 24h
+    maxAge: 86400, // Pre-flight cache 24h
   });
 
   // API Versioning
@@ -100,9 +108,13 @@ async function bootstrap() {
     defaultVersion: '1',
   });
 
-  // Static files for image uploads
+  // Static files for image uploads — with CORS for cross-origin canvas access
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads',
+    setHeaders: (res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   // Global validation pipe
@@ -146,7 +158,11 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, document);
-    logger.log('📚 Swagger documentation available at: http://localhost:' + port + '/api/docs');
+    logger.log(
+      '📚 Swagger documentation available at: http://localhost:' +
+        port +
+        '/api/docs',
+    );
   }
 
   await app.listen(port);
