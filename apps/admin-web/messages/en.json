@@ -184,6 +184,7 @@
     "done": "Done",
     "available": "Available",
     "reserved": "Reserved",
+    "changeStatus": "Change Status",
     "sold": "Sold",
     "rented": "Rented",
     "inactive": "Inactive",

@@ -10,6 +10,7 @@ import { Toast } from 'primereact/toast';
 import { Tag } from 'primereact/tag';
 import { MultiSelect } from 'primereact/multiselect';
 import { InputSwitch } from 'primereact/inputswitch';
+import { SelectButton } from 'primereact/selectbutton';
 import { useTranslations } from 'next-intl';
 
 // Import PrimeReact CSS files
@@ -57,6 +58,17 @@ export default function PropertiesPage() {
   const [selectedProperties, setSelectedProperties] = useState<Property[]>([]);
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [propertyForm, setPropertyForm] = useState<Property | null>(null);
+
+  // Status change dialog
+  const [statusDialogVisible, setStatusDialogVisible] = useState(false);
+  const [statusProperty, setStatusProperty] = useState<Property | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>('active');
+
+  const statusOptions = [
+    { label: t('available'), value: 'active' },
+    { label: t('reserved'), value: 'inactive' },
+    { label: tCommon('delete'), value: 'deleted' },
+  ];
 
   const dt = useRef<DataTable<Property[]>>(null);
   const toast = useRef<Toast>(null);
@@ -211,17 +223,56 @@ export default function PropertiesPage() {
     });
   };
 
+  const openStatusDialog = (property: Property) => {
+    setStatusProperty(property);
+    setSelectedStatus(property.status || 'active');
+    setStatusDialogVisible(true);
+  };
+
+  const handleStatusChange = async () => {
+    if (!statusProperty) return;
+    try {
+      await apiClient.put(`/properties/${statusProperty.id}`, {
+        status: selectedStatus,
+      });
+      toast.current?.show({
+        severity: 'success',
+        summary: tCommon('success'),
+        detail: `${statusProperty.code} → ${selectedStatus}`,
+      });
+      setStatusDialogVisible(false);
+      loadProperties();
+    } catch (error) {
+      toast.current?.show({
+        severity: 'error',
+        summary: tCommon('error'),
+        detail: 'Failed to update status',
+      });
+    }
+  };
+
   const actionBodyTemplate = (rowData: Property) => (
-    <div className="actions">
+    <div className="actions flex gap-1">
       <Button
         icon="pi pi-pencil"
-        className="p-button-rounded p-button-success mr-2"
+        className="p-button-rounded p-button-success"
         onClick={() => editProperty(rowData)}
+        tooltip={t('edit')}
+        tooltipOptions={{ position: 'top' }}
+      />
+      <Button
+        icon="pi pi-sync"
+        className="p-button-rounded p-button-warning"
+        onClick={() => openStatusDialog(rowData)}
+        tooltip={t('changeStatus')}
+        tooltipOptions={{ position: 'top' }}
       />
       <Button
         icon="pi pi-trash"
         className="p-button-rounded p-button-danger"
         onClick={() => deleteProperty(rowData)}
+        tooltip={t('delete')}
+        tooltipOptions={{ position: 'top' }}
       />
     </div>
   );
@@ -563,6 +614,43 @@ export default function PropertiesPage() {
       )}
 
       <ConfirmDialog />
+
+      <Dialog
+        visible={statusDialogVisible}
+        style={{ width: '400px' }}
+        header={`Change Status: ${statusProperty?.code || ''}`}
+        modal
+        onHide={() => setStatusDialogVisible(false)}
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button
+              label={tCommon('cancel')}
+              icon="pi pi-times"
+              className="p-button-text"
+              onClick={() => setStatusDialogVisible(false)}
+            />
+            <Button
+              label={tCommon('save')}
+              icon="pi pi-check"
+              className="p-button-warning"
+              onClick={handleStatusChange}
+            />
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-gray-600">
+            Select new status for <strong>{statusProperty?.code}</strong>:
+          </p>
+          <SelectButton
+            value={selectedStatus}
+            options={statusOptions}
+            onChange={(e) => setSelectedStatus(e.value)}
+            optionLabel="label"
+            className="w-full"
+          />
+        </div>
+      </Dialog>
     </div>
   );
 }

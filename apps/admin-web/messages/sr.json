@@ -184,6 +184,7 @@
     "done": "Gotovo",
     "available": "Dostupno",
     "reserved": "Rezervisano",
+    "changeStatus": "Promeni status",
     "sold": "Prodato",
     "rented": "Iznajmljeno",
     "inactive": "Neaktivan",
