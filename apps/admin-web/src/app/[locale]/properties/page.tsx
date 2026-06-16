@@ -617,16 +617,17 @@ export default function PropertiesPage() {
 
       <Dialog
         visible={statusDialogVisible}
-        style={{ width: '400px' }}
+        style={{ width: '550px' }}
         header={`Change Status: ${statusProperty?.code || ''}`}
         modal
+        className="status-dialog"
         onHide={() => setStatusDialogVisible(false)}
         footer={
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3 pt-2">
             <Button
               label={tCommon('cancel')}
               icon="pi pi-times"
-              className="p-button-text"
+              className="p-button-outlined p-button-secondary"
               onClick={() => setStatusDialogVisible(false)}
             />
             <Button
@@ -638,17 +639,19 @@ export default function PropertiesPage() {
           </div>
         }
       >
-        <div className="flex flex-col gap-4">
-          <p className="text-gray-600">
+        <div className="flex flex-col gap-5 py-2">
+          <p className="text-gray-600 text-base">
             Select new status for <strong>{statusProperty?.code}</strong>:
           </p>
-          <SelectButton
-            value={selectedStatus}
-            options={statusOptions}
-            onChange={(e) => setSelectedStatus(e.value)}
-            optionLabel="label"
-            className="w-full"
-          />
+          <div className="flex justify-center">
+            <SelectButton
+              value={selectedStatus}
+              options={statusOptions}
+              onChange={(e) => setSelectedStatus(e.value)}
+              optionLabel="label"
+              className="status-select"
+            />
+          </div>
         </div>
       </Dialog>
     </div>
