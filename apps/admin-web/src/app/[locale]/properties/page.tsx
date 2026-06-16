@@ -257,7 +257,7 @@ export default function PropertiesPage() {
         icon="pi pi-pencil"
         className="p-button-rounded p-button-success"
         onClick={() => editProperty(rowData)}
-        tooltip={t('edit')}
+        tooltip={tCommon('edit')}
         tooltipOptions={{ position: 'top' }}
       />
       <Button
@@ -271,7 +271,7 @@ export default function PropertiesPage() {
         icon="pi pi-trash"
         className="p-button-rounded p-button-danger"
         onClick={() => deleteProperty(rowData)}
-        tooltip={t('delete')}
+        tooltip={tCommon('delete')}
         tooltipOptions={{ position: 'top' }}
       />
     </div>
