@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin();
@@ -33,8 +33,10 @@ const nextConfig: NextConfig = {
     ],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+    NEXT_PUBLIC_API_URL:
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
+      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   },
 };
 
