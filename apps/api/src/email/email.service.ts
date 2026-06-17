@@ -23,11 +23,18 @@ export class EmailService {
     });
   }
 
-  async sendPasswordResetEmail(to: string, resetToken: string, lang: string = 'en'): Promise<void> {
+  async sendPasswordResetEmail(
+    to: string,
+    resetToken: string,
+    lang: string = 'en',
+  ): Promise<void> {
     const resetUrl = `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:3001')}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
-      from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
+      from: this.configService.get<string>(
+        'MAIL_FROM',
+        'noreply@realestates.com',
+      ),
       to,
       subject: this.i18n.t('email.passwordReset.subject', { lang }),
       html: this.getPasswordResetTemplate(resetUrl, lang),
@@ -36,7 +43,10 @@ export class EmailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  private getPasswordResetTemplate(resetUrl: string, lang: string = 'en'): string {
+  private getPasswordResetTemplate(
+    resetUrl: string,
+    lang: string = 'en',
+  ): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -154,7 +164,10 @@ export class EmailService {
 
   async sendWelcomeEmail(to: string, username: string): Promise<void> {
     const mailOptions = {
-      from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
+      from: this.configService.get<string>(
+        'MAIL_FROM',
+        'noreply@realestates.com',
+      ),
       to,
       subject: 'Welcome to Real Estate Admin',
       html: this.getWelcomeTemplate(username),
@@ -239,10 +252,13 @@ export class EmailService {
     phone: string,
     subject: string,
     message: string,
-    recaptchaToken: string
+    recaptchaToken: string,
   ): Promise<void> {
     const mailOptions = {
-      from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
+      from: this.configService.get<string>(
+        'MAIL_FROM',
+        'noreply@realestates.com',
+      ),
       to: 'aleksic.dacha@gmail.com', // Test email for contact form
       subject: `Kontakt forma: ${subject}`,
       html: this.getContactFormTemplate(name, email, phone, subject, message),
@@ -251,7 +267,13 @@ export class EmailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  private getContactFormTemplate(name: string, email: string, phone: string, subject: string, message: string): string {
+  private getContactFormTemplate(
+    name: string,
+    email: string,
+    phone: string,
+    subject: string,
+    message: string,
+  ): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -356,11 +378,19 @@ export class EmailService {
     `;
   }
 
-  async sendNewsletterEmail(to: string, subject: string, content: string, unsubscribeToken: string): Promise<void> {
+  async sendNewsletterEmail(
+    to: string,
+    subject: string,
+    content: string,
+    unsubscribeToken: string,
+  ): Promise<void> {
     const unsubscribeUrl = `${this.configService.get<string>('USER_WEB_URL', 'http://localhost:3002')}/sr/newsletter/unsubscribe?token=${unsubscribeToken}`;
 
     const mailOptions = {
-      from: this.configService.get<string>('MAIL_FROM', 'noreply@realestates.com'),
+      from: this.configService.get<string>(
+        'MAIL_FROM',
+        'noreply@realestates.com',
+      ),
       to,
       subject,
       html: this.getNewsletterTemplate(content, unsubscribeUrl),
@@ -369,47 +399,75 @@ export class EmailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  private getNewsletterTemplate(content: string, unsubscribeUrl: string): string {
+  private getNewsletterTemplate(
+    content: string,
+    unsubscribeUrl: string,
+  ): string {
     // Sanitize HTML content while allowing safe tags and attributes
     const sanitizedContent = sanitizeHtml(content, {
       allowedTags: [
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'p', 'br', 'hr', 'div', 'span',
-        'strong', 'b', 'em', 'i', 'u', 's', 'strike',
-        'ul', 'ol', 'li',
-        'a', 'img',
-        'table', 'thead', 'tbody', 'tr', 'th', 'td',
-        'blockquote', 'pre', 'code'
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'p',
+        'br',
+        'hr',
+        'div',
+        'span',
+        'strong',
+        'b',
+        'em',
+        'i',
+        'u',
+        's',
+        'strike',
+        'ul',
+        'ol',
+        'li',
+        'a',
+        'img',
+        'table',
+        'thead',
+        'tbody',
+        'tr',
+        'th',
+        'td',
+        'blockquote',
+        'pre',
+        'code',
       ],
       allowedAttributes: {
-        'a': ['href', 'title', 'target'],
-        'img': ['src', 'alt', 'title', 'width', 'height'],
-        '*': ['style', 'class']
+        a: ['href', 'title', 'target'],
+        img: ['src', 'alt', 'title', 'width', 'height'],
+        '*': ['style', 'class'],
       },
       allowedStyles: {
         '*': {
-          'color': [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
+          color: [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
           'background-color': [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
           'font-size': [/^\d+(?:px|em|%)$/],
           'font-weight': [/^bold$/, /^normal$/, /^\d+$/],
           'text-align': [/^left$/, /^right$/, /^center$/, /^justify$/],
-          'margin': [/^\d+(?:px|em|%)$/],
-          'padding': [/^\d+(?:px|em|%)$/]
-        }
+          margin: [/^\d+(?:px|em|%)$/],
+          padding: [/^\d+(?:px|em|%)$/],
+        },
       },
       allowedSchemes: ['http', 'https', 'mailto'],
       transformTags: {
-        'a': (tagName, attribs) => {
+        a: (tagName, attribs) => {
           return {
             tagName: 'a',
             attribs: {
               ...attribs,
               target: '_blank',
-              rel: 'noopener noreferrer'
-            }
+              rel: 'noopener noreferrer',
+            },
           };
-        }
-      }
+        },
+      },
     });
 
     return `
@@ -510,6 +568,160 @@ export class EmailService {
             <div class="unsubscribe">
               <a href="${unsubscribeUrl}">Odjavite se sa newsletter-a</a>
             </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  async sendScheduleViewingEmail(
+    name: string,
+    email: string,
+    phone: string,
+    propertyCode: string,
+    message: string,
+    recaptchaToken: string,
+  ): Promise<void> {
+    const mailOptions = {
+      from: this.configService.get<string>(
+        'MAIL_FROM',
+        'noreply@realestates.com',
+      ),
+      to: 'aleksic.dacha@gmail.com',
+      subject: `Zahtev za razgledanje: ${propertyCode}`,
+      html: this.getScheduleViewingTemplate(
+        name,
+        email,
+        phone,
+        propertyCode,
+        message,
+      ),
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
+
+  private getScheduleViewingTemplate(
+    name: string,
+    email: string,
+    phone: string,
+    propertyCode: string,
+    message: string,
+  ): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+          }
+          .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          .header {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+            margin: -30px -30px 30px -30px;
+          }
+          .header h2 { margin: 0; font-size: 20px; }
+          .header p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
+          .field { margin-bottom: 20px; }
+          .field-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+            display: block;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .field-value {
+            background-color: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 4px;
+            border-left: 4px solid #f97316;
+          }
+          .property-code {
+            background-color: #fff7ed;
+            border-left: 4px solid #ea580c;
+            font-size: 18px;
+            font-weight: bold;
+            color: #c2410c;
+            text-align: center;
+            letter-spacing: 1px;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h2>🏠 Zahtev za razgledanje</h2>
+            <p>Neko je zainteresovan za nekretninu</p>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Nekretnina (Kod)</span>
+            <div class="field-value property-code">${propertyCode}</div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Ime i prezime</span>
+            <div class="field-value">${name}</div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Email</span>
+            <div class="field-value">${email}</div>
+          </div>
+
+          ${
+            phone
+              ? `
+          <div class="field">
+            <span class="field-label">Telefon</span>
+            <div class="field-value">${phone}</div>
+          </div>
+          `
+              : ''
+          }
+
+          ${
+            message
+              ? `
+          <div class="field">
+            <span class="field-label">Poruka</span>
+            <div class="field-value">${message}</div>
+          </div>
+          `
+              : ''
+          }
+
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Real Estate. Sva prava zadržana.</p>
           </div>
         </div>
       </body>
