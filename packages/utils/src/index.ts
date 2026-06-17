@@ -1,4 +1,4 @@
-import type { PropertyType, TransactionType, HeatingType } from '@repo/types';
+import { PropertyType, TransactionType, HeatingType } from '@repo/types';
 
 // Format price with currency
 export function formatPrice(price: number, currency: string = '€'): string {
@@ -7,7 +7,9 @@ export function formatPrice(price: number, currency: string = '€'): string {
     currency: 'EUR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price).replace('EUR', currency);
+  })
+    .format(price)
+    .replace('EUR', currency);
 }
 
 // Format area
@@ -16,7 +18,10 @@ export function formatArea(area: number): string {
 }
 
 // Format date
-export function formatDate(date: string | Date, locale: string = 'sr-RS'): string {
+export function formatDate(
+  date: string | Date,
+  locale: string = 'sr-RS',
+): string {
   return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
@@ -25,12 +30,15 @@ export function formatDate(date: string | Date, locale: string = 'sr-RS'): strin
 }
 
 // Format relative time (e.g., "2 days ago")
-export function formatRelativeTime(date: string | Date, locale: string = 'sr-RS'): string {
+export function formatRelativeTime(
+  date: string | Date,
+  locale: string = 'sr-RS',
+): string {
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
   const now = new Date();
   const past = new Date(date);
   const diffInSeconds = Math.floor((past.getTime() - now.getTime()) / 1000);
-  
+
   const intervals = [
     { label: 'year', seconds: 31536000 },
     { label: 'month', seconds: 2592000 },
@@ -46,7 +54,7 @@ export function formatRelativeTime(date: string | Date, locale: string = 'sr-RS'
       return rtf.format(count, interval.label as any);
     }
   }
-  
+
   return rtf.format(diffInSeconds, 'second');
 }
 
@@ -57,47 +65,78 @@ export function truncate(text: string, maxLength: number = 100): string {
 }
 
 // Property type labels
-export function getPropertyTypeLabel(type: PropertyType, locale: string = 'sr'): string {
+export function getPropertyTypeLabel(
+  type: PropertyType,
+  locale: string = 'sr',
+): string {
   const labels: Record<PropertyType, { sr: string; en: string }> = {
-    APARTMENT: { sr: 'Stan', en: 'Apartment' },
-    HOUSE: { sr: 'Kuća', en: 'House' },
-    LAND: { sr: 'Plac', en: 'Land' },
-    OFFICE: { sr: 'Kancelarija', en: 'Office' },
-    COMMERCIAL: { sr: 'Poslovni prostor', en: 'Commercial' },
-    GARAGE: { sr: 'Garaža', en: 'Garage' },
-    STUDIO: { sr: 'Garsonjera', en: 'Studio' },
-    PENTHOUSE: { sr: 'Penthouse', en: 'Penthouse' },
-    VILLA: { sr: 'Vila', en: 'Villa' },
-    COTTAGE: { sr: 'Vikendica', en: 'Cottage' },
+    [PropertyType.Apartment]: { sr: 'Stan', en: 'Apartment' },
+    [PropertyType.House]: { sr: 'Kuća', en: 'House' },
+    [PropertyType.Land]: { sr: 'Plac', en: 'Land' },
+    [PropertyType.Office]: { sr: 'Kancelarija', en: 'Office' },
+    [PropertyType.CommercialSpace]: {
+      sr: 'Poslovni prostor',
+      en: 'Commercial',
+    },
+    [PropertyType.ApartmentInHouse]: {
+      sr: 'Stan u kući',
+      en: 'Apartment in House',
+    },
+    [PropertyType.VacationHome]: { sr: 'Vikendica', en: 'Vacation Home' },
+    [PropertyType.Duplex]: { sr: 'Duplex', en: 'Duplex' },
   };
   return labels[type]?.[locale as 'sr' | 'en'] || type;
 }
 
 // Transaction type labels
-export function getTransactionTypeLabel(type: TransactionType, locale: string = 'sr'): string {
+export function getTransactionTypeLabel(
+  type: TransactionType,
+  locale: string = 'sr',
+): string {
   const labels: Record<TransactionType, { sr: string; en: string }> = {
-    SALE: { sr: 'Prodaja', en: 'Sale' },
-    RENT: { sr: 'Izdavanje', en: 'Rent' },
+    [TransactionType.Seller]: { sr: 'Prodaja', en: 'Sale' },
+    [TransactionType.RentsOut]: { sr: 'Izdavanje', en: 'Rent' },
+    [TransactionType.Buyer]: { sr: 'Kupovina', en: 'Buy' },
+    [TransactionType.Rents]: { sr: 'Iznajmljivanje', en: 'Rents' },
   };
   return labels[type]?.[locale as 'sr' | 'en'] || type;
 }
 
 // Heating type labels
-export function getHeatingTypeLabel(type: HeatingType, locale: string = 'sr'): string {
+export function getHeatingTypeLabel(
+  type: HeatingType,
+  locale: string = 'sr',
+): string {
   const labels: Record<HeatingType, { sr: string; en: string }> = {
-    CENTRAL: { sr: 'Centralno', en: 'Central' },
-    GAS: { sr: 'Gas', en: 'Gas' },
-    ELECTRIC: { sr: 'Električno', en: 'Electric' },
-    DISTRICT: { sr: 'Gradsko', en: 'District' },
-    WOOD: { sr: 'Drvo', en: 'Wood' },
-    HEAT_PUMP: { sr: 'Toplotna pumpa', en: 'Heat Pump' },
-    OTHER: { sr: 'Ostalo', en: 'Other' },
+    [HeatingType.Central]: { sr: 'Centralno', en: 'Central' },
+    [HeatingType.GasCentral]: { sr: 'Gas', en: 'Gas' },
+    [HeatingType.ElectricCentral]: { sr: 'Električno', en: 'Electric' },
+    [HeatingType.Floor]: { sr: 'Podno', en: 'Floor' },
+    [HeatingType.IndependentOnGas]: { sr: 'Na gas', en: 'Gas Independent' },
+    [HeatingType.IndependentOnSolidFuel]: {
+      sr: 'Na čvrsto gorivo',
+      en: 'Solid Fuel',
+    },
+    [HeatingType.IndependentOnElectricity]: {
+      sr: 'Na struju',
+      en: 'Electric Independent',
+    },
+    [HeatingType.Fireplace]: { sr: 'Kamin', en: 'Fireplace' },
+    [HeatingType.AirConditioner]: { sr: 'Klima', en: 'Air Conditioner' },
+    [HeatingType.SolidFuelCentral]: {
+      sr: 'Čvrsto gorivo',
+      en: 'Solid Fuel Central',
+    },
+    [HeatingType.Other]: { sr: 'Ostalo', en: 'Other' },
   };
   return labels[type]?.[locale as 'sr' | 'en'] || type;
 }
 
 // Generate property URL slug
-export function generatePropertySlug(property: { code: string; title: string }): string {
+export function generatePropertySlug(property: {
+  code: string;
+  title: string;
+}): string {
   const titleSlug = property.title
     .toLowerCase()
     .replace(/[čć]/g, 'c')
@@ -109,7 +148,10 @@ export function generatePropertySlug(property: { code: string; title: string }):
 }
 
 // Parse property slug
-export function parsePropertySlug(slug: string): { code: string; title: string } {
+export function parsePropertySlug(slug: string): {
+  code: string;
+  title: string;
+} {
   const parts = slug.split('-');
   const code = parts[0];
   const title = parts.slice(1).join('-');
@@ -144,18 +186,18 @@ export function formatPhoneNumber(phone: string): string {
 export function calculateMortgage(
   principal: number,
   annualRate: number,
-  years: number
+  years: number,
 ): { monthlyPayment: number; totalPayment: number; totalInterest: number } {
   const monthlyRate = annualRate / 100 / 12;
   const numberOfPayments = years * 12;
-  
-  const monthlyPayment = principal * 
-    (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+
+  const monthlyPayment =
+    (principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
     (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  
+
   const totalPayment = monthlyPayment * numberOfPayments;
   const totalInterest = totalPayment - principal;
-  
+
   return {
     monthlyPayment: Math.round(monthlyPayment),
     totalPayment: Math.round(totalPayment),
@@ -166,16 +208,16 @@ export function calculateMortgage(
 // Debounce function
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
-  
+
   return function executedFunction(...args: Parameters<T>) {
     const later = () => {
       timeout = null;
       func(...args);
     };
-    
+
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
@@ -193,15 +235,21 @@ export function pricePerSquareMeter(price: number, area: number): number {
 }
 
 // Get image URL with fallback
-export function getImageUrl(url: string | undefined, fallback: string = '/images/placeholder.jpg'): string {
+export function getImageUrl(
+  url: string | undefined,
+  fallback: string = '/images/placeholder.jpg',
+): string {
   return url || fallback;
 }
 
 // Generate meta description
-export function generateMetaDescription(property: any, locale: string = 'sr'): string {
+export function generateMetaDescription(
+  property: any,
+  locale: string = 'sr',
+): string {
   const type = getPropertyTypeLabel(property.type, locale);
   const transaction = getTransactionTypeLabel(property.transactionType, locale);
-  
+
   if (locale === 'sr') {
     return `${type} za ${transaction.toLowerCase()} - ${property.area}m², ${property.rooms} soba, ${property.neighborhood}, ${property.city}. Cena: ${formatPrice(property.price)}`;
   } else {

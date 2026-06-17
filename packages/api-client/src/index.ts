@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type {
   Property,
-  PropertySearchParams,
+  PropertyFilterParams,
   PaginatedResponse,
   AuthResponse,
   LoginCredentials,
@@ -13,7 +13,10 @@ import type {
 export class RealEstateApiClient {
   private client: AxiosInstance;
 
-  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api') {
+  constructor(
+    baseURL: string = process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:3000/api',
+  ) {
     this.client = axios.create({
       baseURL,
       headers: {
@@ -41,13 +44,16 @@ export class RealEstateApiClient {
           window.location.href = '/login';
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   // Auth endpoints
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const { data } = await this.client.post<AuthResponse>('/auth/login', credentials);
+    const { data } = await this.client.post<AuthResponse>(
+      '/auth/login',
+      credentials,
+    );
     if (typeof window !== 'undefined') {
       localStorage.setItem('access_token', data.access_token);
     }
@@ -66,8 +72,13 @@ export class RealEstateApiClient {
   }
 
   // Property endpoints
-  async getProperties(params?: PropertySearchParams): Promise<PaginatedResponse<Property>> {
-    const { data } = await this.client.get<PaginatedResponse<Property>>('/properties', { params });
+  async getProperties(
+    params?: PropertyFilterParams,
+  ): Promise<PaginatedResponse<Property>> {
+    const { data } = await this.client.get<PaginatedResponse<Property>>(
+      '/properties',
+      { params },
+    );
     return data;
   }
 
@@ -77,23 +88,31 @@ export class RealEstateApiClient {
   }
 
   async getPropertyByCode(code: string): Promise<Property> {
-    const { data } = await this.client.get<Property>(`/properties/code/${code}`);
+    const { data } = await this.client.get<Property>(
+      `/properties/code/${code}`,
+    );
     return data;
   }
 
   async getFeaturedProperties(limit: number = 6): Promise<Property[]> {
-    const response = await this.getProperties({ 
-      limit, 
-      sortBy: 'createdAt', 
-      sortOrder: 'DESC' 
+    const response = await this.getProperties({
+      limit,
+      sortBy: 'createdAt',
+      order: 'DESC',
     });
-    return response.data;
+    return response.items;
   }
 
-  async getSimilarProperties(propertyId: number, limit: number = 4): Promise<Property[]> {
-    const { data } = await this.client.get<Property[]>(`/properties/${propertyId}/similar`, {
-      params: { limit }
-    });
+  async getSimilarProperties(
+    propertyId: number,
+    limit: number = 4,
+  ): Promise<Property[]> {
+    const { data } = await this.client.get<Property[]>(
+      `/properties/${propertyId}/similar`,
+      {
+        params: { limit },
+      },
+    );
     return data;
   }
 
@@ -102,8 +121,14 @@ export class RealEstateApiClient {
     return data;
   }
 
-  async updateProperty(id: number, property: Partial<Property>): Promise<Property> {
-    const { data } = await this.client.patch<Property>(`/properties/${id}`, property);
+  async updateProperty(
+    id: number,
+    property: Partial<Property>,
+  ): Promise<Property> {
+    const { data } = await this.client.patch<Property>(
+      `/properties/${id}`,
+      property,
+    );
     return data;
   }
 
@@ -113,7 +138,10 @@ export class RealEstateApiClient {
 
   // Client endpoints
   async getClients(params?: any): Promise<PaginatedResponse<Client>> {
-    const { data } = await this.client.get<PaginatedResponse<Client>>('/clients', { params });
+    const { data } = await this.client.get<PaginatedResponse<Client>>(
+      '/clients',
+      { params },
+    );
     return data;
   }
 
@@ -142,10 +170,13 @@ export class RealEstateApiClient {
   }
 
   // File upload
-  async uploadPropertyImage(propertyId: number, file: File): Promise<{ url: string }> {
+  async uploadPropertyImage(
+    propertyId: number,
+    file: File,
+  ): Promise<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const { data } = await this.client.post<{ url: string }>(
       `/properties/${propertyId}/images`,
       formData,
@@ -153,12 +184,15 @@ export class RealEstateApiClient {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      }
+      },
     );
     return data;
   }
 
-  async deletePropertyImage(propertyId: number, imageId: number): Promise<void> {
+  async deletePropertyImage(
+    propertyId: number,
+    imageId: number,
+  ): Promise<void> {
     await this.client.delete(`/properties/${propertyId}/images/${imageId}`);
   }
 
