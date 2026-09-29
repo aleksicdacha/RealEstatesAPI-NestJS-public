@@ -48,7 +48,6 @@ lerna-debug.log*
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
-!.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
@@ -94,3 +93,34 @@ playwright-report/
 .env.test.local
 db-backup/
 apps/api/uploads/
+
+# ---------------------------------------------------------------------------
+# Local-only / sensitive — must NEVER be committed
+# (this repo is public; see documentation/SECURITY-PUBLIC-API.md)
+# ---------------------------------------------------------------------------
+
+# VS Code tasks contain server paths, SSH targets and DB credentials
+.vscode/tasks.json
+
+# Personal files that do not belong to the project
+JOB_SEARCH_REMOTE_EUROPE.csv
+ux-prototype/
+*.code-workspace
+
+# Production seed holds live credentials — keep it server-side only
+seeds/production-seed.sql
+
+# Test / build artefacts that are regenerated
+next-env.d.ts
+test-results/
+/coverage/
+apps/*/coverage/
+
+# Migration scratch copies
+*.ts.backup
+*.ts.disabled
+
+# Database dumps
+*.sql.gz
+*.dump
+*.dump.gz

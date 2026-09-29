@@ -38,12 +38,9 @@ Or if you're using a different key:
 cat ~/.ssh/id_ed25519
 ```
 
-**Copy the entire output**, including the header and footer:
+**Copy the entire output**, including the first and last line:
 ```
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED-BY-SECURITY-CLEANUP***
+<your private key>
 ```
 
 ⚠️ **IMPORTANT**: This is your **PRIVATE** key, keep it secret!

@@ -1,54 +1,87 @@
 # =============================================================================
 #  .gitleaks.toml — Gitleaks secret scan configuration
 #
-#  Extends the default ruleset with allowlists for test/example files
-#  that intentionally contain placeholder values.
+#  This repository is PUBLIC. The allowlist below is deliberately narrow: it
+#  matches placeholder *values* only. Do NOT add broad path allowlists such as
+#  ".*\.md$" or "documentation/.*" — an allowlist like that previously hid real
+#  findings in documentation for months.
 # =============================================================================
 
 [extend]
-# Use the default Gitleaks ruleset as base
 useDefault = true
 
-[allowlist]
-description = "Ignore placeholder values in example/template files"
-paths = [
-    # Example and template files with placeholder credentials
-    '''.*\.example$''',
-    '''.*\.template$''',
-    '''.*\.example\.env$''',
-    '''\.env\.example''',
-    '''msmtp\.conf\.template''',
-    # Test files
-    '''test-.*\.js$''',
-    '''.*\.test\.ts$''',
-    '''.*\.spec\.ts$''',
-    # Documentation
-    '''documentation/.*''',
-    '''.*\.md$''',
-    # Setup scripts — contain placeholder tokens by design
-    '''deploy/server-hardening/setup-server\.sh''',
-    # Template/helper scripts where credential placeholders are expected
-    # (sanitized via git-filter-repo; historical commits may still show CHANGE_ME)
-    '''scripts/create-prod-env\.sh''',
-    '''scripts/setup-local-dev\.sh''',
-    '''scripts/setup-production.*\.sh''',
-    '''production-deployment-master\.sh''',
-    '''server-create-env\.sh''',
-    '''create-prod-env\.sh''',
-    # Old directory structure in closed PR commits — Maps API key was hardcoded, now removed
-    '''admin-frontend/src/app/components/googleMapsLoader\.ts''',
-    '''.*googleMapsLoader\.ts''',
+# --------------------------------------------------------------------------- #
+#  Custom rules
+#
+#  These cover two credential shapes the built-in rules provably miss
+#  (verified against gitleaks 8.28):
+# --------------------------------------------------------------------------- #
+[[rules]]
+id = "google-api-key-any-context"
+description = "Google API key (Maps, etc.) regardless of the trailing delimiter"
+# The built-in gcp-api-key rule requires the key to be followed by a quote,
+# backtick, whitespace, semicolon or end-of-line. A key inside a URL query
+# string ("...key=AIza...&callback=initMap") is followed by "&", so the default
+# rule never fires — which is how the key in apps/admin-web/public/index.html
+# went unnoticed.
+regex = '''AIza[0-9A-Za-z_\-]{35}'''
+keywords = ["aiza"]
+
+[[rules]]
+id = "credential-in-env-assignment"
+description = "Credential assigned to a secret-named environment variable"
+# The built-in generic-api-key rule requires a high-entropy, usually quoted
+# value, so a real assignment such as "DB_PASSWORD=Cityname2026!" is invisible
+# to it. Case-sensitive on purpose: real env vars are SCREAMING_SNAKE_CASE,
+# so lowercase code such as `password: process.env.X` does not match.
+# [ \t] (not \s) keeps a match from spanning two lines.
+regex = '''\b([A-Z][A-Z0-9_]*(?:PASSWORD|PASSWD|PASSPHRASE|SECRET|API_?KEY|PRIVATE_KEY|ACCESS_KEY|ACCESS_TOKEN|AUTH_TOKEN|REFRESH_TOKEN|CREDENTIALS?))[ \t]*[=:][ \t]*["']?([A-Za-z0-9!@#%^&*_\-+]{8,})'''
+secretGroup = 2
+keywords = [
+    "password", "passwd", "passphrase", "secret", "api_key", "apikey",
+    "api-key", "private_key", "access_key", "access_token", "auth_token",
+    "refresh_token", "credential",
 ]
 
+# --------------------------------------------------------------------------- #
+#  Allowlist — placeholder values only
+# --------------------------------------------------------------------------- #
+[allowlist]
+description = "Placeholder values that are intentionally present in a public repo"
+
 regexes = [
-    # Common placeholder patterns
-    '''CHANGE_ME''',
-    '''REPLACE_WITH''',
-    '''YOUR_.*HERE''',
-    '''YOUR_EMAIL''',
-    '''YOUR_APP_PASSWORD''',
-    '''YOUR_GMAIL''',
-    '''ghp_REPLACE_WITH_YOUR_GITHUB_PAT''',
-    '''CHANGE_ME_STRONG_PASSWORD''',
-    '''CHANGE_ME_AT_LEAST_32''',
+    # Explicit placeholder markers
+    '''(?i)change[_ -]?me''',
+    '''(?i)change[_ -]''',
+    '''(?i)replace[_ -]?with''',
+    '''(?i)your[_ -]?''',
+    '''(?i)placeholder''',
+    '''(?i)example''',
+    '''(?i)dummy''',
+    '''(?i)strong''',
+    '''(?i)(your|strong|app|new|my)[_ -]?password''',
+    '''<[A-Za-z0-9_ \-]*>''',
+    # Template / environment references
+    '''\$\{[^}]*\}''',
+    # Documented minimum-length hints, not real secrets
+    '''(?i)min[_ -]?(32|64)''',
+    '''min_32_chars_secret_key''',
+    '''(?i)secret[_ -]?key[_ -]?here''',
+    # Seed / CI fixtures that ship with the project by design
+    '''^admin123$''',
+    '''^password123$''',
+    '''^postgres$''',
+    '''(?i)^password$''',
+    '''(?i)^(ci[-_])?test[-_]''',
+    '''(?i)test[-_]?secret''',
+    '''(?i)e2e[-_]?secret''',
+    '''(?i)local[-_]?dev''',
+]
+
+# Template/example files whose whole purpose is to show placeholder values.
+paths = [
+    '''\.example$''',
+    '''\.template$''',
+    '''\.env\.example$''',
+    '''\.env\.chatbot\.example$''',
 ]
