@@ -166,6 +166,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Gitleaks scans file content only. A secret that was pasted into a
+      # commit *message* (this happened once: a Maps key quoted in a
+      # "remove hardcoded credentials" commit) is invisible to it, and commit
+      # messages are permanent and public. Guard them explicitly.
+      - name: Scan commit messages for secrets
+        run: |
+          PATTERN='AIza[0-9A-Za-z_-]{35}'
+          PATTERN="$PATTERN|gh[pousr]_[A-Za-z0-9]{20,}"
+          PATTERN="$PATTERN|AKIA[0-9A-Z]{16}"
+          PATTERN="$PATTERN|-----BEGIN [A-Z ]*PRIVATE KEY-----"
+          PATTERN="$PATTERN|(DB|POSTGRES|SMTP|MAIL|REDIS)_PASSWORD=[^ \$]{6,}"
+          PATTERN="$PATTERN|PGPASSWORD=[^ \$]{4,}"
+          PATTERN="$PATTERN|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+          if git log --format='%H%n%B' | grep -nE "$PATTERN"; then
+            echo "::error::A secret appears in a commit message. Rewrite the message before pushing."
+            exit 1
+          fi
+          echo "No secrets found in commit messages."
+
   # ── 5: Collect results & send email ────────────────────────────────────────
   notify:
     name: Email alert
