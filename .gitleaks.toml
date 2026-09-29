@@ -48,6 +48,9 @@ keywords = [
 # --------------------------------------------------------------------------- #
 [allowlist]
 description = "Placeholder values that are intentionally present in a public repo"
+# Match the patterns against the extracted secret value, not against the whole
+# matched line — without this, value-shaped entries such as ^postgres$ never bind.
+regexTarget = "secret"
 
 regexes = [
     # Explicit placeholder markers
@@ -72,6 +75,14 @@ regexes = [
     '''^password123$''',
     '''^postgres$''',
     '''(?i)^password$''',
+    # Marker written by the history scrub (git filter-repo --replace-text).
+    # Historical files contain e.g. "DB_PASSWORD=***REMOVED-BY-SECURITY-CLEANUP***",
+    # and the rule captures the "REMOVED-" fragment.
+    '''(?i)^REMOVED[-_]''',
+    '''(?i)REMOVED-BY-SECURITY''',
+    # The official NestJS starter README ships this CircleCI badge URL
+    # ("...?token=abc123def456"). It is template boilerplate, not a credential.
+    '''^abc123def456$''',
     '''(?i)^(ci[-_])?test[-_]''',
     '''(?i)test[-_]?secret''',
     '''(?i)e2e[-_]?secret''',
